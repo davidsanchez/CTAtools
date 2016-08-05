@@ -35,7 +35,15 @@ class CTAsim():
         else:
             self.sim.run()
 
-        
+    def Print(self):
+        print(self.sim.obs())
+        for obscontainer in self.sim.obs():
+            print(obscontainer.events())
+            
+    def Fit(self):
+        self.like = ctools.ctlike(self.sim.obs())
+        self.like.run()
+        print(self.like.opt())
         
 if __name__ == '__main__':
     Sim = CTAsim()
@@ -45,4 +53,6 @@ if __name__ == '__main__':
     Sim.SetIRFs("prod2","South_0.5h")
     Sim.SetOutFile("events.fits")
     Sim.SetModel("crab.xml")
-    Sim.Exec(False)
+    Sim.Exec()
+    Sim.Print()
+    Sim.Fit()
