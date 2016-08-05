@@ -1,0 +1,179 @@
+2016-08-05T12:35:10: ********************************************************************************
+2016-08-05T12:35:10: *                                   ctobssim                                   *
+2016-08-05T12:35:10: * ---------------------------------------------------------------------------- *
+2016-08-05T12:35:10: * Version: 1.1.0                                                               *
+2016-08-05T12:35:10: ********************************************************************************
+2016-08-05T12:35:17: +============+
+2016-08-05T12:35:17: | Parameters |
+2016-08-05T12:35:17: +============+
+2016-08-05T12:35:17:  inobs .....................: NONE
+2016-08-05T12:35:17:  inmodel ...................: crab.xml
+2016-08-05T12:35:17:  caldb .....................: prod2
+2016-08-05T12:35:17:  irf .......................: South_0.5h
+2016-08-05T12:35:17:  edisp .....................: no
+2016-08-05T12:35:17:  outevents .................: events.fits
+2016-08-05T12:35:17:  prefix ....................: sim_events_
+2016-08-05T12:35:17:  seed ......................: 1
+2016-08-05T12:35:17:  ra ........................: 83.63
+2016-08-05T12:35:17:  dec .......................: 22.01
+2016-08-05T12:35:17:  rad .......................: 5.0
+2016-08-05T12:35:17:  tmin ......................: 0.0
+2016-08-05T12:35:17:  tmax ......................: 1800.0
+2016-08-05T12:35:17:  emin ......................: 0.1
+2016-08-05T12:35:17:  emax ......................: 100.0
+2016-08-05T12:35:17:  deadc .....................: 0.95
+2016-08-05T12:35:17:  maxrate ...................: 1.0e6
+2016-08-05T12:35:17:  eslices ...................: 10
+2016-08-05T12:35:17:  chatter ...................: 2
+2016-08-05T12:35:17:  clobber ...................: yes
+2016-08-05T12:35:17:  debug .....................: no
+2016-08-05T12:35:17:  mode ......................: ql
+2016-08-05T12:35:17:  logfile ...................: ctobssim.log
+2016-08-05T12:35:17: 
+2016-08-05T12:35:17: +================+
+2016-08-05T12:35:17: | Execution mode |
+2016-08-05T12:35:17: +================+
+2016-08-05T12:35:17:  Event list management .....: Save and dispose (reduces memory needs)
+2016-08-05T12:35:17:  Output format .............: Write single event list FITS file
+2016-08-05T12:35:17: 
+2016-08-05T12:35:17: +=============+
+2016-08-05T12:35:17: | Seed values |
+2016-08-05T12:35:17: +=============+
+2016-08-05T12:35:17:  Seed 0 ....................: 9717486569
+2016-08-05T12:35:17: 
+2016-08-05T12:35:17: +=============+
+2016-08-05T12:35:17: | Observation |
+2016-08-05T12:35:17: +=============+
+2016-08-05T12:35:17: === GObservations ===
+2016-08-05T12:35:17:  Number of observations ....: 1
+2016-08-05T12:35:17:  Number of models ..........: 2
+2016-08-05T12:35:17:  Number of observed events .: 0
+2016-08-05T12:35:17:  Number of predicted events : 0
+2016-08-05T12:35:17: 
+2016-08-05T12:35:17: +======================+
+2016-08-05T12:35:17: | Simulate observation |
+2016-08-05T12:35:17: +======================+
+2016-08-05T12:35:17: === CTA observation ===
+2016-08-05T12:35:17:  Simulation cone ...........: RA=83.63 deg, Dec=22.01 deg, radius=5.5 deg
+2016-08-05T12:35:17:  Time interval .............: 0 - 1800 s
+2016-08-05T12:35:17:  Photon energy range .......: 100 GeV - 199.526 GeV
+2016-08-05T12:35:17:  Event energy range ........: 100 GeV - 199.526 GeV
+2016-08-05T12:35:17:   Simulation area ..........: 5.75561e+09 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 3.76031e-10 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 3.76031e-10 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 2.16429 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 3889 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 1226 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 1226 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 199.526 GeV - 398.107 GeV
+2016-08-05T12:35:17:  Event energy range ........: 199.526 GeV - 398.107 GeV
+2016-08-05T12:35:17:   Simulation area ..........: 1.13576e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 1.35277e-10 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 1.35277e-10 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 1.53642 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 2838 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 986 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 986 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 398.107 GeV - 794.328 GeV
+2016-08-05T12:35:17:  Event energy range ........: 398.107 GeV - 794.328 GeV
+2016-08-05T12:35:17:   Simulation area ..........: 2.02963e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 4.86658e-11 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 4.86658e-11 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.987737 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 1771 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 618 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 618 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 794.328 GeV - 1.58489 TeV
+2016-08-05T12:35:17:  Event energy range ........: 794.328 GeV - 1.58489 TeV
+2016-08-05T12:35:17:   Simulation area ..........: 3.61308e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 1.75075e-11 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 1.75075e-11 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.63256 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 1176 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 419 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 419 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 1.58489 TeV - 3.16228 TeV
+2016-08-05T12:35:17:  Event energy range ........: 1.58489 TeV - 3.16228 TeV
+2016-08-05T12:35:17:   Simulation area ..........: 5.53917e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 6.29831e-12 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 6.29831e-12 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.348874 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 639 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 253 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 253 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 3.16228 TeV - 6.30957 TeV
+2016-08-05T12:35:17:  Event energy range ........: 3.16228 TeV - 6.30957 TeV
+2016-08-05T12:35:17:   Simulation area ..........: 7.06201e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 2.26581e-12 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 2.26581e-12 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.160012 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 271 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 104 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 104 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 6.30957 TeV - 12.5893 TeV
+2016-08-05T12:35:17:  Event energy range ........: 6.30957 TeV - 12.5893 TeV
+2016-08-05T12:35:17:   Simulation area ..........: 7.88321e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 8.15124e-13 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 8.15124e-13 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.064258 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 121 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 56 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 56 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 12.5893 TeV - 25.1189 TeV
+2016-08-05T12:35:17:  Event energy range ........: 12.5893 TeV - 25.1189 TeV
+2016-08-05T12:35:17:   Simulation area ..........: 8.05758e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 2.9324e-13 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 2.9324e-13 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.0236281 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 30 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 15 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 15 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 25.1189 TeV - 50.1187 TeV
+2016-08-05T12:35:17:  Event energy range ........: 25.1189 TeV - 50.1187 TeV
+2016-08-05T12:35:17:   Simulation area ..........: 8.10299e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 1.05493e-13 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 1.05493e-13 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.0085481 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 21 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 7 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 7 (all source models)
+2016-08-05T12:35:17:  Photon energy range .......: 50.1187 TeV - 100 TeV
+2016-08-05T12:35:17:  Event energy range ........: 50.1187 TeV - 100 TeV
+2016-08-05T12:35:17:   Simulation area ..........: 8.25584e+10 cm2
+2016-08-05T12:35:17:   Use model ................: Crab
+2016-08-05T12:35:17:   Normalization ............: 1 [Crab]
+2016-08-05T12:35:17:   Flux .....................: 3.79511e-14 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Normalized flux ..........: 3.79511e-14 [Crab] photons/cm2/s
+2016-08-05T12:35:17:   Photon rate ..............: 0.00313318 photons/s [Crab]
+2016-08-05T12:35:17:   MC source photons ........: 3 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 2 [Crab]
+2016-08-05T12:35:17:   MC source events .........: 2 (all source models)
+2016-08-05T12:35:17:  MC source photons .........: 10759 [Crab]
+2016-08-05T12:35:17:  MC source events ..........: 3686 [Crab]
+2016-08-05T12:35:28:  MC events outside ROI .....: 0
+2016-08-05T12:35:28:  MC background events ......: 19339
+2016-08-05T12:35:28:  MC events .................: 23025 (all models)
+2016-08-05T12:35:28: 
+2016-08-05T12:35:28: +==================+
+2016-08-05T12:35:28: | Save observation |
+2016-08-05T12:35:28: +==================+
+2016-08-05T12:35:28: 
+2016-08-05T12:35:28: Application "ctobssim" terminated after 18 wall clock seconds, consuming 11.0505 seconds of CPU time.
