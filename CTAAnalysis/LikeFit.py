@@ -2,41 +2,44 @@ import ctools as ct
 import gammalib as gl
 from math import log10,floor
 import sys
-import Loggin
+import CTAAnalysis.Loggin as Loggin
+from CTAAnalysis.config import get_config
 
 class Analyser(Loggin.base):
-    def __init__(self):
+    def __init__(self,conffile):
         super(Analyser,self).__init__()
         self.m_obs = None
         self.like  = None
         
-        self.m_evtfile  = "events_selected.fits"        
-        self.m_raw_evt  = "events.fits"
-        self.m_cntfile  = "cntmap.fits"
+        config = get_config(conffile)
+        
+        self.m_evtfile  = config['file']["rawevent"]
+        self.m_raw_evt  = config['file']["selectedevent"]
+        self.m_cntfile  = config['out']+"/"+config['target']["name"]+"_countmap.fits"
         self.m_ebinalg  = "LOG"
         self.m_eunit    = "TeV"
-        self.m_ra       = 83.63
-        self.m_dec      = 22.01
-        self.m_roi      = 2.
-        self.m_tmin     = 0.
-        self.m_tmax     = 0.
-        self.m_emin     = 0.1#emin
-        self.m_emax     = 10.#emax
-        self.m_enumbins = 10#nbins
+        self.m_ra       = config['target']["ra"]
+        self.m_dec      = config['target']["dec"]
+        self.m_roi      = config['space']["rad"]
+        self.m_tmin     = config['time']["tmin"]
+        self.m_tmax     = config['time']["tmax"]
+        self.m_emin     = config['energy']["emin"]
+        self.m_emax     = config['energy']["emax"]
+        self.m_enumbins = config['energy']["enumbins_per_decade"]
         self.m_usepnt   = True # Use pointing for map centre
-        self.m_nxpix    = 200#npix
-        self.m_nypix    = 200#npix
+        self.m_nxpix    = config['space']["nxpix"]
+        self.m_nypix    = config['space']["nypix"]
         self.m_binsz    = 0.05#binsz
-        self.m_coordsys = "GAL"#coord
-        self.m_proj     = "TAN"#proj
+        self.m_coordsys = config['space']["coordsys"]
+        self.m_proj     = config['space']["proj"]
         self.m_binned   = False
         
         self.m_stat     = "POISSON"#stat
-        self.m_caldb    = "dummy"
-        self.m_irf      = "cta_dummy_irf"
+        self.m_caldb    = config['irfs']["caldb"]
+        self.m_irf      = config['irfs']["irfs"]
         self.m_edisp    = False
-        self.m_xml      = "$PWD/crab.xml"
-        self.m_xml_out  = "$PWD/crab_results.xml"
+        self.m_xml      = config['file']["xml"]
+        self.m_xml_out  = config['out']+"/"+config['target']["name"]+"_results.xml"
 
 
     def set_obs(self,obs):
@@ -92,8 +95,6 @@ class Analyser(Loggin.base):
             bin = ct.ctbin()
             bin["inobs"] = self.m_evtfile## TODO verife ca avec le setup de la suite
         
-            
-            
         bin["outcube"] = self.m_cntfile
         bin["ebinalg"].string(self.m_ebinalg)
         bin["emin"].real(self.m_emin)
@@ -133,16 +134,16 @@ class Analyser(Loggin.base):
         else:
             self.like = ct.ctlike()
             if self.m_binned:
-                self.like["infile"] = self.m_cntfile
+                self.like["inobs"] = self.m_cntfile
             else:
-                self.like["infile"] = self.m_evtfile
+                self.like["inobs"] = self.m_evtfile
                 
             self.like["stat"].string(self.m_stat)
             self.like["caldb"].string(self.m_caldb)
             self.like["irf"].string(self.m_irf)
-            self.like["srcmdl"] = self.m_xml 
+            self.like["inmodel"] = self.m_xml 
         self.like["edisp"].boolean(self.m_edisp)
-        self.like["outmdl"] = self.m_xml_out
+        self.like["outmodel"] = self.m_xml_out
 
         # Optionally open the log file
         if log:
@@ -173,3 +174,6 @@ if __name__ == '__main__':
     ana = Analyser()
     ana.ctselect()
     ana.ctbin()
+    ana.create_fit()
+    ana.fit()
+    ana.PrintResults()

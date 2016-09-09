@@ -3,7 +3,7 @@ import sys
 from os.path import join
 from CTAAnalysis.extern.configobj import ConfigObj, flatten_errors
 from CTAAnalysis.extern.validate import Validator
-from CTAAnalysis.environ import CONFIG_DIR
+from environ import CONFIG_DIR
 import CTAAnalysis.Loggin as Loggin
 
 def get_config(infile, configspec=join(CONFIG_DIR, 'default.conf')):
