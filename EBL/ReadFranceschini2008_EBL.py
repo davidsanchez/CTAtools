@@ -7,13 +7,12 @@ class FranceschiniReader():
     def __init__(self,z):
         self._changeRedshift(z)
 
-
     def _changeRedshift(self,z):
         self.z = z
         if z<1:
-            self.file = join(INST_DIR, 'EBL/Franceschini2018_EBL_z0_1.dat')
+            self.file = join(INST_DIR, 'EBL/Franceschini2018/Franceschini2018_EBL_z0_1.dat')
         else:
-            self.file = join(INST_DIR, 'EBL/Franceschini2018_EBL_z1_2.dat')
+            self.file = join(INST_DIR, 'EBL/Franceschini2018/Franceschini2018_EBL_z1_2.dat')
         self.data = open(self.file,"r").readlines()
         self.RedshiftTable = []
         self._Read()
