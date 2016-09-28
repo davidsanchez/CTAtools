@@ -1,13 +1,13 @@
-    # author David Sanchez david.sanchez@moi-hd.mpg.de
-# Library to plot spectrum and SED. Also can correct for EBL
+# author David Sanchez david.sanchez@lapp.in2p3.fr
+# Library to plot spectrum and SED. 
 
 
 # Import
 from math import *
 import numpy as np
 from array import *
-import ROOT
 import string
+
 class Spectrum:
   def __init__(self,Parameters,Model,Emin,Emax,Representation = "e2dnde",escale = "TeV",Npt=200):
 
@@ -45,6 +45,7 @@ class Spectrum:
     if self.Model=="PowerLaw"  :
         self.Ed       = Parameters[4]  #Decorrelation Energy in self.escale unit 
 
+    print Parameters
 
     if self.Model=="LogParabola" :
         self.Beta  = Parameters[4] #input units :  cm-2 s-1 (self.escale unit)-1
@@ -63,17 +64,17 @@ class Spectrum:
   def CheckNumParemeters(self, Params):
     if  self.Model=="PowerLaw" and not(len(Params)==5) :
         self.usage()
-        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 6")
+        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 5")
 
     if  self.Model=="PowerLaw2" and not(len(Params)==4) :
         self.usage()
-        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 5")
+        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 4")
 
 
     if  self.Model=="LogParabola"  and not(len(Params)==10) :
-      if  not(len(Params)==8) :
+      if  not(len(Params)==7) :
         self.usage()
-        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 11")
+        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 10")
       else :
         import logging
         logging.warn("Add 3 zeros for the covariance terms")
@@ -82,7 +83,7 @@ class Spectrum:
         Params.append(0)
     if  self.Model=="PLExpCutoff"  and not(len(Params)==7) :
         self.usage()
-        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 8")
+        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 7")
 
     return Params
 
@@ -127,7 +128,7 @@ class Spectrum:
     return ene,Phi,dPhi
 
   def GetModel(self,Emin=0,Emax=10e10):
-    ene,Phi,_ = self.GetValueAndError(Emin=0,Emax=10e10)
+    ene,Phi,_ = self.MakeFluxAndError(Emin=Emin,Emax=Emax)
     ene,Phi,_ = self._HandleUnit(ene,Phi)
     return ene,Phi
 
@@ -162,7 +163,7 @@ class Spectrum:
           if dflux!=None:
               dflux *= ener
               
-      if self.Representation == "e2dnde":
+      elif self.Representation == "e2dnde":
         "in ergs.cm-2.s-1"
         fac = 1.6022
         if self.escale == "MeV":
@@ -174,52 +175,4 @@ class Spectrum:
               dflux *= ener**2*fac
       return ener,flux,dflux
 
-Norm = 1480.18  *1e-12*1e-3
-DNorm =    70.4701*1e-12*1e-3
-Index = 2.9485
-DIndex =  0.22477 
-Beta = 1.04002
-DBeta =  0.312364   
-Ec = 0.1412*1e3
-Eminh2 = 0.11*1e3
-Emaxh2 =4.715*1e3
-cov1 =-0.0001163*1e-4*1e-3
-cov2 = 0.2765*1e-4*1e-3
-cov3 =-0.00322
-SpecHESS = Spectrum([Norm,DNorm,Index,DIndex,Beta,DBeta,Ec,cov1,cov2,cov3],Model='LogParabola',Emin=Eminh2,Emax=Emaxh2,escale = "GeV")
 
-
-enerHESS,ButHESS = SpecHESS.GetButterfly()
-
-import ROOT
-Xmin = 50/1e3
-Xmax = 9.9e6/1e3
-Ymin = .05e-12
-Ymax = .06e-8
-lsiz = 0.04
-c1=ROOT.TCanvas("c1");
-c1.SetLogx()
-c1.SetLogy()
-c1.SetTickx(0)
-c1.SetTicky(0)
-c1.SetTopMargin(0.12);
-gh = ROOT.TH2F("gh1","",10000,Xmin,Xmax,100,Ymin,Ymax);
-gh.GetXaxis().SetTitleSize(lsiz)
-gh.GetXaxis().SetLabelSize(lsiz)
-gh.GetYaxis().SetTitleSize(lsiz)
-gh.GetXaxis().SetLabelSize(lsiz)
-
-gh.SetStats(000)
-gh.SetXTitle("E [GeV]")
-gh.SetYTitle("E^{2}dN/dE [ erg cm^{-2} s^{-1} ] ")
-gh.Draw()
-gh.SetLabelSize(0.04,"xyz");
-gh.SetTitleSize(0.04,"xyz");
-gh.SetTitleOffset(1.2,"x");
-gh.SetTitleOffset(1.4,"y");
-gh.GetXaxis().CenterTitle()
-gh.GetYaxis().CenterTitle()
-
-tgrButHESSII = ROOT.TGraph(len(enerHESS),array('f',enerHESS),array('f',ButHESS))
-
-tgrButHESSII.Draw("FL")

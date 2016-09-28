@@ -1,14 +1,17 @@
+# author David Sanchez david.sanchez@lapp.in2p3.fr
+
 import pyfits,string,numpy
-import Plot import PlotLibrary
+from Plot import PlotLibrary
 import Loggin
 from math import *
 
-class CatalogReader(Loggin.base):
-  def __init__(self,name,folder=""):
-    super(CatalogReader,self).__init__()
+class FermiCatalogReader(Loggin.base):
+  def __init__(self,name,folder="",Representation = "e2dnde",escale = "TeV"):
+    super(FermiCatalogReader,self).__init__()
     Loggin.base.__init__(self)
 
-    self.SEDmode = True
+    self.Representation = Representation
+    self.escale = escale
 
     self.CatalogData = {'3FGL':{},'2FGL':{},'1FHL':{},'2FHL':{}}
     self.CatalogData['3FGL']['fits'] = folder+"/gll_psc_v14.fit"
@@ -30,27 +33,21 @@ class CatalogReader(Loggin.base):
 
 
 
-    self.CatalogData['3FGL']['eMax'] = numpy.array([300,1000,3000,10000,100000])
-    self.CatalogData['2FGL']['eMax'] = numpy.array([300,1000,3000,10000,100000])
-    self.CatalogData['1FHL']['eMax'] = numpy.array([30e3,100e3,500e3])
-    self.CatalogData['2FHL']['eMax'] = numpy.array([171e3,585e3,2000e3])
+    self.CatalogData['3FGL']['eMax'] = self._HandleEnergyUnit(numpy.array([300,1000,3000,10000,100000]))
+    self.CatalogData['2FGL']['eMax'] = self._HandleEnergyUnit(numpy.array([300,1000,3000,10000,100000]))
+    self.CatalogData['1FHL']['eMax'] = self._HandleEnergyUnit(numpy.array([30e3,100e3,500e3]))
+    self.CatalogData['2FHL']['eMax'] = self._HandleEnergyUnit(numpy.array([171e3,585e3,2000e3]))
 
 
-    self.CatalogData['3FGL']['eMin'] = numpy.array([100,300,1000,3000,10000])
-    self.CatalogData['2FGL']['eMin'] = numpy.array([100,300,1000,3000,10000])
-    self.CatalogData['1FHL']['eMin'] = numpy.array([10e3,30e3,100e3])
-    self.CatalogData['2FHL']['eMin'] = numpy.array([50e3,171e3,585e3])
-
-
-#    self.Info2FGL = open(folder+"/2LACselection_all","r").readlines()
-#    self.Info1FHL = pyfits.open(folder+"/FHL_AGN_Table_v3.fit")[1].data
-#    self.ShawData = open(folder+"/Shaw_BLLac_z.txt","r").readlines()
+    self.CatalogData['3FGL']['eMin'] = self._HandleEnergyUnit(numpy.array([100,300,1000,3000,10000]))
+    self.CatalogData['2FGL']['eMin'] = self._HandleEnergyUnit(numpy.array([100,300,1000,3000,10000]))
+    self.CatalogData['1FHL']['eMin'] = self._HandleEnergyUnit(numpy.array([10e3,30e3,100e3]))
+    self.CatalogData['2FHL']['eMin'] = self._HandleEnergyUnit(numpy.array([50e3,171e3,585e3]))
 
     self.name = name
     self.Spec = None
 
     self.info("creating catalogues Reader with\n\t "+self.CatalogData['3FGL']['fits']+"\n\t "+self.CatalogData['2FGL']['fits']+"\n\t "+self.CatalogData['1FHL']['fits']+"\n\t "+self.CatalogData['2FHL']['fits'])
-#    self.info("Aux Info from "+folder+"/2LACselection_all, "+folder+"/FHL_AGN_Table_v3.fit and "+folder+"/Shaw_BLLac_z.txt")
 
     self.GetIndices()
 
@@ -158,16 +155,18 @@ class CatalogReader(Loggin.base):
         data = self.ReadPL2(key)
       if model=="PowerLaw":
         data = self.ReadPL(key)
-#        print data
       if model=="LogParabola":
         data = self.ReadLP(key)
-
-      self.CatalogData[key]['spectrum'] = PlotLibrary.Spectrum(data,Model=model,Emin=Emin,Emax=Emax,Npt=1000)
-
-      self.success("Reading spectral informations from "+key)
-
     except :
       self.error("No such catalog: "+key)
+      
+    self.CatalogData[key]['spectrum'] = PlotLibrary.Spectrum(data,Model=model,Emin=Emin,
+                                Emax=Emax,Representation=self.Representation,escale=self.escale,
+                                Npt=1000)
+
+    self.success("Reading spectral informations from "+key)
+
+
   def ReadPL(self,key):
     indice = self.CatalogData[key]['indice']
     index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
@@ -177,6 +176,8 @@ class CatalogReader(Loggin.base):
     flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]
     eflux  = self.CatalogData[key]['data'].field('Unc_Flux_Density')[indice]
     pivot  = self.CatalogData[key]['data'].field('Pivot_Energy')[indice]
+    
+    print flux," ",pivot
 #    except :
 #        flux   = self.CatalogData[key]['data'].field('Flux50')[indice]
 ##        eflux  = self.CatalogData[key]['data'].field('Unc_Flux50')[indice]
@@ -190,7 +191,11 @@ class CatalogReader(Loggin.base):
       pivot *= 1e3
       flux  *= 1e-3
       eflux *= 1e-3
-    return [self.name,flux,eflux,index,eindex,pivot]
+
+    pivot = self._HandleEnergyUnit(pivot)
+    flux = self._HandleFluxUnit(flux)
+    eflux = self._HandleFluxUnit(eflux)
+    return [flux,eflux,index,eindex,pivot]
 
 
   def ReadPL2(self,key):
@@ -199,7 +204,8 @@ class CatalogReader(Loggin.base):
     eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
     flux   = self.CatalogData[key]['data'].field('Flux50')[indice]
     eflux  = self.CatalogData[key]['data'].field('Unc_Flux50')[indice]
-    return [self.name,flux,eflux,index,eindex]
+
+    return [flux,eflux,index,eindex]
 
 
   def ReadLP(self,key):
@@ -215,27 +221,27 @@ class CatalogReader(Loggin.base):
       pivot *= 1e3
       flux  *= 1e-3
       eflux *= 1e-3
-    return [self.name,flux,eflux,index,eindex,beta,ebeta,pivot]
+
+    pivot = self._HandleEnergyUnit(pivot)
+    flux = self._HandleFluxUnit(flux)
+    eflux = self._HandleFluxUnit(eflux)
+    return [flux,eflux,index,eindex,beta,ebeta,pivot]
 
   def Plot(self,key):
-
 
     if self.CatalogData[key]['found'] == False: 
         self.error("This source does not belong to "+key)
     if not('spectrum' in self.CatalogData[key]):
         self.error("No spectrum computed for "+key)
-#    try:
-    if 1:
-      ## Draw part
-      ener,but = self.CatalogData[key]['spectrum'].GetButterfly(SED=self.SEDmode)
-      tgrbut = PlotLibrary.MakeTGraph(ener,but)
-      ener,phi = self.CatalogData[key]['spectrum'].GetModel(SED=self.SEDmode)
-      tgrphi = PlotLibrary.MakeTGraph(ener,phi)
-      self.success("Building TGRAPH from "+key)
 
-      return tgrphi,tgrbut
-#    except :
-#      self.error("No such catalog: "+key)
+    ## Draw part
+    enerbut,but = self.CatalogData[key]['spectrum'].GetButterfly()
+    enerphi,phi = self.CatalogData[key]['spectrum'].GetModel()
+
+    #enerbut = self._HandleUnit(enerbut)
+    #enerphi = self._HandleUnit(enerphi)
+
+    return enerbut,but,enerphi,phi
 
 
   def Association(self,key,asso = 'ASSOC1'):
@@ -261,6 +267,25 @@ class CatalogReader(Loggin.base):
 
     except :
       self.error("No such catalog: "+key)
+
+
+
+  def _HandleEnergyUnit(self,ener):
+      fac = 1
+      if self.escale == "TeV":
+          fac = 1e-6
+      if self.escale == "GeV":
+          fac = 1e-3
+      return ener*fac
+
+  def _HandleFluxUnit(self,flux):
+      fac = 1
+      if self.escale == "TeV":
+          fac = 1e6
+      if self.escale == "GeV":
+          fac = 1e3
+      return fac*flux
+
 
 
 #Side functions

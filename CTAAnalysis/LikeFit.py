@@ -1,3 +1,5 @@
+# author David Sanchez david.sanchez@lapp.in2p3.fr
+
 import ctools as ct
 import gammalib as gl
 from math import log10,floor
