@@ -5,9 +5,11 @@ from environ import INST_DIR
 
 class FranceschiniReader():
     def __init__(self,z):
+        '''init function with the user redshift'''
         self._changeRedshift(z)
 
     def _changeRedshift(self,z):
+        '''function call at the init of the class and use is the user want to change the redshit'''
         self.z = z
         if z<1:
             self.file = join(INST_DIR, 'EBL/Franceschini2018/Franceschini2018_EBL_z0_1.dat')
@@ -18,6 +20,7 @@ class FranceschiniReader():
         self._Read()
         
     def _Read(self):
+        '''Read the table'''
         for i in xrange(len(self.data)):
             words = string.split(self.data[i])
             if words[0] == "redshift":
@@ -26,6 +29,7 @@ class FranceschiniReader():
                     self.indice = i+2
                 
     def GetTau(self):
+        '''Function to get the energy and the value of tau for the given redshift'''
         Size = 50
         tau = numpy.zeros(Size)
         ener = numpy.zeros(Size)
