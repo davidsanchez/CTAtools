@@ -3,12 +3,12 @@ from EBL.ReadFinke2010_EBL import *
 
 
 def EBLCorrection(reader,ener,flux,dflux=None,alpha=1.,unit = "TeV"):
-'''small function called with a EBL reader a flux value and possibly and error on the flux
-  z : redshift of the source
-  flux and ener are the tabulated flux (SED) of the source and the correspondind enegrgy 
-  alpha = 1 means absorption
-  alpha = -1 means deabsorption
-  unit can be MeV, GeV or TeV'''
+    '''small function called with a EBL reader a flux value and possibly and error on the flux
+    z : redshift of the source
+    flux and ener are the tabulated flux (SED) of the source and the correspondind enegrgy 
+    alpha = 1 means absorption
+    alpha = -1 means deabsorption
+    unit can be MeV, GeV or TeV'''
 
     if unit == "MeV":
         ener*=1e-6

@@ -13,6 +13,9 @@ Table of Contents
 
    setup
    EBL
+   
+   Indices and tables
+==================
 
 * :ref:`genindex`
 * :ref:`modindex`
