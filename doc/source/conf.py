@@ -40,8 +40,8 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'Enrico'
-copyright = u'2011 - 2013, The Enrico Developers'
+project = u'CTATools'
+copyright = u'2016 - , The CTATools Developers'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -164,7 +164,7 @@ html_static_path = ['_static']
 #html_file_suffix = None
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'Enricodoc'
+htmlhelp_basename = 'ctatoolsdoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -178,8 +178,8 @@ htmlhelp_basename = 'Enricodoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Enrico.tex', u'Enrico Documentation',
-   u'The Enrico Developers', 'manual'),
+  ('index', 'CTATTools.tex', u'CTATTools Documentation',
+   u'The CTATTools Developers', 'manual'),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -211,6 +211,6 @@ latex_documents = [
 # One entry per manual page. List of tuples
 # (source start file, name, description, authors, manual section).
 man_pages = [
-    ('index', 'enrico', u'Enrico Documentation',
-     [u'The Enrico Developers'], 1)
+    ('index', 'CTATTools', u'CTATTools Documentation',
+     [u'The CTATTools Developers'], 1)
 ]
