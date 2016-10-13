@@ -20,21 +20,40 @@ print "3FGL Var Index ",Cat.GetVarIndex("3FGL")
 
 
 #create a spectrum for a given catalog and compute the model+butterfly
-Cat.MakeSpectrum("3FGL",2e-4,0.3)
+Cat.MakeSpectrum("3FGL",1e-4,0.3)
 enerbut,but,enerphi,phi = Cat.Plot("3FGL")
 
-Cat.MakeSpectrum("2FGL",2e-4,0.3)
+Cat.MakeSpectrum("2FGL",1e-4,0.3)
 enerbut2FGL,but2FGL,enerphi2FGL,phi2FGL = Cat.Plot("2FGL")
 
 Cat.MakeSpectrum("2FHL",5e-2,2)
 enerbut2FHL,but2FHL,enerphi2FHL,phi2FHL = Cat.Plot("2FHL")
 
+
+# read DATA Point 
+em,ep,flux,dflux =  Cat.GetDataPoints('3FGL') #energy in TeV since the user ask for that in the call of Cat
+ener = numpy.sqrt(em*ep) 
+dem = ener-em
+dep = ep-ener
+c=Cat.ReadPL('3FGL')[3]
+dnde = (-c+1)*flux*numpy.power(ener*1e6,-c+2)/(numpy.power((ep*1e6),-c+1)-numpy.power((em*1e6),-c+1))*1.6e-6
+ddnde = dnde*dflux/flux
+
 #plot
 import matplotlib.pyplot as plt
 plt.loglog()
-plt.plot(enerbut, but, 'b-', enerphi,phi, 'b-',enerbut2FGL,but2FGL,'g-',enerphi2FGL,phi2FGL,'g-',
-        enerbut2FHL,but2FHL,'r-',enerphi2FHL,phi2FHL,'r-')
+plt.plot(enerbut, but, 'b-',label = "3FGL")
+plt.plot(enerphi,phi, 'b-')
+plt.plot(enerbut2FGL,but2FGL,'g-',label = "2FGL")
+plt.plot(enerphi2FGL,phi2FGL,'g-')
+plt.plot(enerbut2FHL,but2FHL,'r-',label = "2FHL")
+plt.plot(enerphi2FHL,phi2FHL,'r-')
+
+plt.errorbar(ener, dnde, xerr= [dem,dep], yerr = ddnde,fmt='o')
         
+plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=1,
+           ncol=1, borderaxespad=0.)
+           
 plt.ylabel('E2dN/dE(erg.cm-2.s-1)')
 plt.xlabel('energy (TeV)')
 plt.show()

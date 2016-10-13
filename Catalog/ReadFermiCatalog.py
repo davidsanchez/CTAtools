@@ -159,6 +159,7 @@ class FermiCatalogReader(Loggin.base):
             dflux.append(abs(-tmp[0]+tmp[1])/2.)
           else:
             dflux.append(self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']])
+
       return self.CatalogData[key]['eMin'],self.CatalogData[key]['eMax'],numpy.array(flux),numpy.array(dflux)
     except :
       self.error("No such catalog: "+key)
@@ -215,12 +216,15 @@ class FermiCatalogReader(Loggin.base):
 
   def ReadPL2(self,key):
     ''' read Power Law 2 information'''
-    indice = self.CatalogData[key]['indice']
-    index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
-    eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
-    flux   = self.CatalogData[key]['data'].field('Flux50')[indice]
-    eflux  = self.CatalogData[key]['data'].field('Unc_Flux50')[indice]
-
+    if key == '2FHL':
+        indice = self.CatalogData[key]['indice']
+        index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
+        eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
+        flux   = self.CatalogData[key]['data'].field('Flux50')[indice]
+        eflux  = self.CatalogData[key]['data'].field('Unc_Flux50')[indice]
+    else:
+        self.error("No PL2 infor for catalog: "+key)
+    
     return [flux,eflux,index,eindex]
 
 
