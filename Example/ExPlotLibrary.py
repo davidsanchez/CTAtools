@@ -2,6 +2,7 @@
 
 from Plot import PlotLibrary
 
+## Spectral information of PKS 2155-304 by HESS phase II mono reported here : 
 Norm = 1480.18  *1e-12*1e-3
 DNorm =    70.4701*1e-12*1e-3
 Index = 2.9485
@@ -26,4 +27,6 @@ enerbut,but = Spec.GetButterfly()
 import matplotlib.pyplot as plt
 plt.loglog()
 plt.plot(enerbut, but, 'b-', enerphi,phi, 'b-')
+plt.ylabel('E2dN/dE(erg.cm-2.s-1)')
+plt.xlabel('energy (TeV)')
 plt.show()

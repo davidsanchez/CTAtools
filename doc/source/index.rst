@@ -13,6 +13,7 @@ Table of Contents
 
    setup
    EBL
+   FermiCatalog
    
    Indices and tables
 ==================

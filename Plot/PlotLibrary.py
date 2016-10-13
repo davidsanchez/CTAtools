@@ -45,8 +45,6 @@ class Spectrum:
     if self.Model=="PowerLaw"  :
         self.Ed       = Parameters[4]  #Decorrelation Energy in self.escale unit 
 
-    print Parameters
-
     if self.Model=="LogParabola" :
         self.Beta  = Parameters[4] #input units :  cm-2 s-1 (self.escale unit)-1
         self.ErrBeta = Parameters[5]
