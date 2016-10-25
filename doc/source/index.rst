@@ -12,6 +12,7 @@ Table of Contents
    :maxdepth: 2
 
    setup
+   Coordinate
    EBL
    FermiCatalog
    

@@ -37,8 +37,6 @@ def GetAltAzHESS(coords, date='2016-06-06 00:00:00'):
     time = Time(date, format='iso', scale='utc')
     return _GetAltAz(coords,location,time)
     
-    
-    
 def GetAltAzLAPALMA(coords, date='2016-06-06 00:00:00'):
     '''Get AltAz of a source at a given date for the LAPALMA site'''
     #Site Location

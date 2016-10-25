@@ -53,6 +53,6 @@ if __name__ == '__main__':
     print "looking at M87"
     m87coord = CH.CoordinatesHandler.fromName("M87",FK5)
     print CU.GetCoordInHMSDMS(m87coord)
-    altaz = CU.GetAltAzHESS(m87coord)
+    altaz = CU.GetAltAzHESS(m87coord,date='2016-06-06 00:00:00')
     print "Object's Altitude = {0.alt:.4}".format(altaz)
 
