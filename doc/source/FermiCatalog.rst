@@ -30,6 +30,11 @@ The usere need to provide :
    * Representations for the plot (dnde, ednde, e2dnde)
    * energy scale : MeV, GeV or TeV
 
+There is also the possiblity to declare a FermiCatalogReader based on a source name. This use the astropy module to resolve the named
+
+.. code-block:: python
+    source = "M 87"
+    Cat = FermiCatalogReader.fromName(source,FK5,"/home/sanchez/work/Catalog/","e2dnde","TeV")
 
 Capability
 ----------
@@ -45,6 +50,7 @@ This module can :
    * Retrive the data point to plot them
    * Retrive the source model parameters
    * Be used to plot the spectral models
+
 
 
 Exemple

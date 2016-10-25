@@ -1,2 +1,8 @@
-CONFIG_DIR = "/home/sanchez/work/CTA/Code/CTAtools/CTAAnalysis/config"
-INST_DIR = "/home/sanchez/work/CTA/Code/CTAtools/"
+import os
+
+CONFIG_DIR = os.environ.get("CTATOOLS_CONF",'')
+INST_DIR = os.environ.get("CTATOOLS_DIR",'')
+
+
+DIRS = {"CONFIG_DIR":CONFIG_DIR,
+        "INST_DIR":INST_DIR}

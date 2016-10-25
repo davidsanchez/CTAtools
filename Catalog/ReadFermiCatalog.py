@@ -1,12 +1,21 @@
-# author David Sanchez david.sanchez@lapp.in2p3.fr
+# author David Sanchez
+# david.sanchez@lapp.in2p3.fr
 
 import pyfits,string,numpy
 from Plot import PlotLibrary
 import Loggin
 from math import *
 
+astropy = True
+try :
+    import Coordinates.CoordHandler as CH
+    from astropy.coordinates import ICRS, Galactic, FK4, FK5 
+except :
+    astropy = False #for coordinate management
+    pass
+
 class FermiCatalogReader(Loggin.base):
-  def __init__(self,name,folder="",Representation = "e2dnde",escale = "TeV"):
+  def __init__(self,name=None,folder="",Representation = "e2dnde",escale = "TeV"):
     '''init function with information provided by the user
         * catalog name of the source
         * folder where the Fermi catalog are
@@ -65,7 +74,25 @@ class FermiCatalogReader(Loggin.base):
     self.info("creating catalogues Reader with\n\t "+self.CatalogData['3FGL']['fits']+"\n\t "+self.CatalogData['2FGL']['fits']+"\n\t "+self.CatalogData['1FHL']['fits']+"\n\t "+self.CatalogData['2FHL']['fits'])
 
     # get table indices corresponding to the source entry
-    self.GetIndices()
+    if name != None:
+        self.GetIndices()
+    
+    
+  @classmethod
+  def fromName(self,name, FK5,folder="",Representation = "e2dnde",escale = "TeV"):
+    if astropy:
+        c = CH.CoordinatesHandler.fromName(name,FK5)
+        catalog = FermiCatalogReader(None,folder)
+        for k in ['3FGL','2FGL','2FHL','1FHL']:
+            catalog.findfromCoordinate(k,c.ra.deg,c.dec.deg)
+            if catalog.CatalogData[k]['found']:
+                break
+            
+        return FermiCatalogReader(catalog.CatalogData[k]['name'],folder=folder,Representation = Representation, escale = escale)
+
+    else :
+        self.warning("No astropy module found, returning None")
+        return None
 
   def SetSEDmode(self,b):
     self.SEDmode = b
@@ -103,10 +130,11 @@ class FermiCatalogReader(Loggin.base):
     '''find a source based on coordinates'''
     ra  = self.CatalogData[k]['data'].field('RAJ2000')
     dec = self.CatalogData[k]['data'].field('DEJ2000')
+
     r = calcAngSepDeg(ra,dec,ra0,dec0)
     res = r.argmin()
     if min(r) > 0.5:
-      self.warning("No source closer than 0.5 degrees")
+      self.warning("No source closer than 0.5 degrees in catalog ",k)
       self.CatalogData[k]['found'] = False
 
       return

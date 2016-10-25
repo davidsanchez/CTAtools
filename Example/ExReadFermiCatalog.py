@@ -1,12 +1,11 @@
 # author David Sanchez david.sanchez@lapp.in2p3.fr
-from math import *
-from array import *
-import string
+
+# ------ Imports --------------- #
 import numpy
 from Plot.PlotLibrary import *
 
 from Catalog.ReadFermiCatalog import *
-
+# ------------------------------ #
 #look for this 2FGL source
 source = "2FGL J1015.1+4925"
 #source = "1FHL J2158.8-3013"

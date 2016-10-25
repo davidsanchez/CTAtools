@@ -1,8 +1,11 @@
+
+# ------ Imports --------------- #
 import numpy
 from EBL.ReadFinke2010_EBL import *
 from EBL.ReadDominguez2011 import *
 from EBL.ReadFranceschini2008_EBL import *
 from EBL.EBLCorrection import *
+# ------------------------------ #
 
 ## load each reader and correct for EBL for a putatibe source a z=.117
 readerFinke = FinkeReader(0.117)
