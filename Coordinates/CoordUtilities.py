@@ -14,7 +14,7 @@ except :
 
 def GetCoordInDegrees(coords):
     '''return the Coordinate in degree stored into an array'''
-    return [coords.ra.degree,coords.dec.degree]
+    return [coords.X.degree,coords.Y.degree]
 
 def GetCoordInHMSDMS(coords):
     '''return the Coordinate in Hours-minutes-seconds and Degrees-minutes-seconds in a string'''

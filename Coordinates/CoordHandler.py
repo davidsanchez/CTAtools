@@ -20,8 +20,15 @@ class CoordinatesHandler():
         except:
             self.skycoord = SkyCoord(x*u.degree, y*u.degree, frame=frame)
             
-        self.ra = self.skycoord.ra
-        self.dec = self.skycoord.dec
+        try :
+            self.X = self.skycoord.ra
+            self.Y = self.skycoord.dec
+        except:
+            self.X = self.skycoord.l
+            self.Y = self.skycoord.b
+            
+        self.to_string = self.skycoord.to_string
+
         self.to_string = self.skycoord.to_string
         self.frame = self.skycoord.frame.name
     
