@@ -84,7 +84,7 @@ class FermiCatalogReader(Loggin.base):
         c = CH.CoordinatesHandler.fromName(name,FK5)
         catalog = FermiCatalogReader(None,folder)
         for k in ['3FGL','2FGL','2FHL','1FHL']:
-            catalog.findfromCoordinate(k,c.ra.deg,c.dec.deg)
+            catalog.findfromCoordinate(k,c.skycoord.ra.deg,c.skycoord.dec.deg)
             if catalog.CatalogData[k]['found']:
                 break
             
