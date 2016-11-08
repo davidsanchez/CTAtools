@@ -13,6 +13,7 @@ try :
     from astropy.coordinates import ICRS, Galactic, FK4, FK5 
 except :
     astropy = False #for coordinate management
+    print "\033[33m WARNING : you don't have astropy installed. Creation of a catalog with name will not work\033[0m"
     pass
 
 class FermiCatalogReader(Loggin.base):
