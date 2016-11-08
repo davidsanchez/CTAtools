@@ -17,8 +17,9 @@ xdata = []
 ydata = []
 dydata = []
 
-# Read DATA
-#either you use the FGL name or another name (should be recognize by the astropy module
+
+
+#Read Data : either you use the FGL name or another name (should be recognize by the astropy module
 source = "3FGL J1517.6-2422"
 Cat = FermiCatalogReader(source,FERMI_CATALOG_DIR,"e2dnde","TeV")
 #source = "AP Librae"
@@ -77,7 +78,7 @@ for i in xrange(len(ener2FHL)):
     dydata.append(de2dnde2FHL[i])
 
 
-############### READ TeV Data 
+#Read TEV DATA
 TeVData = numpy.genfromtxt("HESS_ApLIB_2015_loose.dat",unpack=True)
 #read data from  https://arxiv.org/abs/1410.5897
 
