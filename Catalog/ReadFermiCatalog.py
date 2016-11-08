@@ -3,6 +3,7 @@
 
 import pyfits,string,numpy
 from Plot import PlotLibrary
+from environ import VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL
 import Loggin
 from math import *
 
@@ -38,10 +39,10 @@ class FermiCatalogReader(Loggin.base):
 
     #all the information are in a python dictionnary
     self.CatalogData = {'3FGL':{},'2FGL':{},'1FHL':{},'2FHL':{}}
-    self.CatalogData['3FGL']['fits'] = folder+"/gll_psc_v14.fit"
-    self.CatalogData['2FGL']['fits'] = folder+"/gll_psc_v08.fit"
-    self.CatalogData['1FHL']['fits'] = folder+"/gll_psch_v07.fit"
-    self.CatalogData['2FHL']['fits'] = folder+"/gll_psch_v08.fit"
+    self.CatalogData['3FGL']['fits'] = folder+"/gll_psc_v"+VERSION_3FGL+".fit"
+    self.CatalogData['2FGL']['fits'] = folder+"/gll_psc_v"+VERSION_2FGL+".fit"
+    self.CatalogData['1FHL']['fits'] = folder+"/gll_psch_v"+VERSION_1FHL+".fit"
+    self.CatalogData['2FHL']['fits'] = folder+"/gll_psch_v"+VERSION_2FHL+".fit"
 
     self.CatalogData['3FGL']['data'] = pyfits.open(self.CatalogData['3FGL']['fits'])[1].data
     
@@ -213,12 +214,14 @@ class FermiCatalogReader(Loggin.base):
         data = self.ReadLP(key)
     except :
       self.error("No such catalog: "+key)
-      
-    self.CatalogData[key]['spectrum'] = PlotLibrary.Spectrum(data,Model=model,Emin=Emin,
+    
+    try :
+        self.CatalogData[key]['spectrum'] = PlotLibrary.Spectrum(data,Model=model,Emin=Emin,
                                 Emax=Emax,Representation=self.Representation,escale=self.escale,
                                 Npt=1000)
-
-    self.success("Reading spectral informations from "+key)
+    except :
+        self.error("cannot create spectrum for model "+model+" and catalog "+key)
+    self.success("Reading spectral informations from "+key+" for model "+model)
 
 
   def ReadPL(self,key):

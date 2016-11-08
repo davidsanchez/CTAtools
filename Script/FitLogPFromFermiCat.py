@@ -7,10 +7,7 @@ import string
 import numpy,scipy.optimize
 from Plot.PlotLibrary import *
 from Catalog.ReadFermiCatalog import *
-
-#Setup
-FermiCatalogLocation = "/home/sanchez/work/Catalog/"
-
+from environ import FERMI_CATALOG_DIR
 
 #logparabola func to fit
 logparabola = lambda x,norm,alpha,beta, : norm * (x / .1) ** (-alpha - beta * numpy.log(x / .1))
@@ -20,12 +17,12 @@ xdata = []
 ydata = []
 dydata = []
 
-### Read DATA
+# Read DATA
 #either you use the FGL name or another name (should be recognize by the astropy module
-#source = "3FGL J1517.6-2422"
-#Cat = FermiCatalogReader(source,"/home/sanchez/work/Catalog/","e2dnde","TeV")
-source = "AP Librae"
-Cat = FermiCatalogReader.fromName(source,FK5,FermiCatalogLocation,"e2dnde","TeV")
+source = "3FGL J1517.6-2422"
+Cat = FermiCatalogReader(source,FERMI_CATALOG_DIR,"e2dnde","TeV")
+#source = "AP Librae"
+#Cat = FermiCatalogReader.fromName(source,FK5,FERMI_CATALOG_DIR,"e2dnde","TeV")
 
 
 #print some information
@@ -101,7 +98,7 @@ dydata = numpy.array(dydata)
 popt, pcov = scipy.optimize.curve_fit(logparabola, xdata, ydata, p0=[1e-12,1.5,0.3], sigma=dydata)
 
 x= numpy.logspace(-6,2,1000)
-plt.plot(x,logparabola(x, popt[0],popt[1],popt[2]), "b-")
+
 print "Norm at 0.1 TeV : ",popt[0]," +/- ",numpy.sqrt(pcov[0][0])
 print "Alpha : ",popt[1]," +/- ",numpy.sqrt(pcov[1][1])
 print "Beta : ",popt[2]," +/- ",numpy.sqrt(pcov[2][2])
@@ -122,7 +119,9 @@ plt.errorbar(ener_TeV, flux_TeV, yerr = [Dflux_TeV_m,Dflux_TeV_p],fmt='o',label 
         
 plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=1,
            ncol=1, borderaxespad=0.)
-           
+
+#plot fit function    
+plt.plot(x,logparabola(x, popt[0],popt[1],popt[2]), "b-")       
 
 plt.ylabel('E2dN/dE(erg.cm-2.s-1)')
 plt.xlabel('energy (TeV)')

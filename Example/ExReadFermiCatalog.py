@@ -3,14 +3,14 @@
 # ------ Imports --------------- #
 import numpy
 from Plot.PlotLibrary import *
-
 from Catalog.ReadFermiCatalog import *
+from environ import FERMI_CATALOG_DIR
 # ------------------------------ #
 #look for this 2FGL source
 source = "2FGL J1015.1+4925"
 #source = "1FHL J2158.8-3013"
 #source = "3FGL J2158.8-3013"
-Cat = FermiCatalogReader(source,"/home/sanchez/work/Catalog/","e2dnde","TeV")
+Cat = FermiCatalogReader(source,FERMI_CATALOG_DIR,"e2dnde","TeV")
 
 #print some information
 print "2FGL association ",Cat.Association('3FGL')
