@@ -9,6 +9,7 @@ export VERSION_2FHL="08"
 #code location
 export CTATOOLS_DIR="Where is the CTAtools code"
 export CTATOOLS_CONF=$CTATOOLS_DIR"/ctoolsAnalysis/config"
+export EBL_FILE_PATH=$CTATOOLS_DIR"/ebltable/ebl_model_files"
 
 #manage Python
 unset PYTHONPATH

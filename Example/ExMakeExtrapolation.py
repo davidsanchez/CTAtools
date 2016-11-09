@@ -6,8 +6,7 @@ from array import *
 import string
 import numpy
 from Plot.PlotLibrary import *
-from EBL.ReadDominguez2011 import *
-from EBL.EBLCorrection import *
+from ebltable.tau_from_model import OptDepth as OD
 from Catalog.ReadFermiCatalog import *
 # ------------------------------ #
 
@@ -37,10 +36,12 @@ enerphi_NotExtrapolated,phi_NotExtrapolated = SpecNotExtrapolated.GetModel()
 enerbut_NotExtrapolated,but_NotExtrapolated = SpecNotExtrapolated.GetButterfly()
 
 #Correct for EBL using Dominguez model
-readerDominguez = DominguezReader(z)
-enerDominguez,tauDominguez = readerDominguez.GetTau()
-EBL_corrected_phi,_ = EBLCorrection(readerDominguez,enerphi,phi)
-EBL_corrected_but,_ = EBLCorrection(readerDominguez,enerbut,but)
+tau = OD(model = 'dominguez')
+Tau_dominguez = tau.opt_depth_array(z,enerphi)
+EBL_corrected_phi = phi*numpy.exp(-1. * Tau_dominguez[0])
+
+Tau_dominguez = tau.opt_depth_array(z,enerbut)
+EBL_corrected_but = but*numpy.exp(-1. * Tau_dominguez[0])
 
 
 #draw
@@ -57,13 +58,7 @@ plt.xlabel('energy (TeV)')
 
 plt.plot(enerbut_NotExtrapolated , but_NotExtrapolated , 'b-')
 plt.plot(enerphi_NotExtrapolated ,phi_NotExtrapolated , 'b-',label ="Fermi energy range")
-plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=1,
-           ncol=1, borderaxespad=0.)
-       
 plt.plot(enerbut , EBL_corrected_but , 'r--')
 plt.plot(enerphi ,EBL_corrected_phi , 'r--',label ="Corrected for EBL")
-plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=1,
-           ncol=1, borderaxespad=0.)
-           
-
+plt.legend(loc = 3)
 plt.show()

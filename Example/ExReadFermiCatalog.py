@@ -49,10 +49,7 @@ plt.plot(enerbut2FHL,but2FHL,'r-',label = "2FHL")
 plt.plot(enerphi2FHL,phi2FHL,'r-')
 
 plt.errorbar(ener, dnde, xerr= [dem,dep], yerr = ddnde,fmt='o')
-        
-plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=1,
-           ncol=1, borderaxespad=0.)
-           
+plt.legend(loc = 3)
 plt.ylabel('E2dN/dE(erg.cm-2.s-1)')
 plt.xlabel('energy (TeV)')
 plt.show()

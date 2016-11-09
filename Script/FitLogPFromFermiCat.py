@@ -22,14 +22,11 @@ xdata = []
 ydata = []
 dydata = []
 
-
-
 #Read Data : either you use the FGL name or another name (should be recognize by the astropy module
 source = "3FGL J1517.6-2422"
 Cat = FermiCatalogReader(source,FERMI_CATALOG_DIR,"e2dnde","TeV")
 #source = "AP Librae"
 #Cat = FermiCatalogReader.fromName(source,FK5,FERMI_CATALOG_DIR,"e2dnde","TeV")
-
 
 #print some information
 print "2FGL association ",Cat.Association('3FGL')

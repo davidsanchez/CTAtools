@@ -1,44 +1,51 @@
-
+#exemple script to use the ebltable from M. Meyer
+# have a loot at the repo https://github.com/me-manu/ebltable
 # ------ Imports --------------- #
-import numpy
-from EBL.ReadFinke2010_EBL import *
-from EBL.ReadDominguez2011 import *
-from EBL.ReadFranceschini2008_EBL import *
-from EBL.EBLCorrection import *
+from ebltable.tau_from_model import OptDepth as OD
+import numpy 
+import matplotlib.pyplot as plt
 # ------------------------------ #
 
-## load each reader and correct for EBL for a putatibe source a z=.117
-readerFinke = FinkeReader(0.117)
-enerFinke,tauFinke = readerFinke.GetTau()
+# ------------------------------ #
 
-oneFinke = numpy.ones(len(enerFinke))
-correctedFinke,_ = EBLCorrection(readerFinke,enerFinke,oneFinke)
+# Source redshift
+z = 0.117
+# array with energies in TeV
+ETeV = numpy.logspace(-1,1,50)
 
-readerDominguez = DominguezReader(0.117)
-enerDominguez,tauDominguez = readerDominguez.GetTau()
+#compute the optical depth 
+#Supported EBL models:
+#	Name:		Publication:
+#	franceschini	Franceschini et al. (2008)	http://www.astro.unipd.it/background/
+#	kneiske		Kneiske & Dole (2010)
+#	dominguez	Dominguez et al. (2011)
+#	inoue		Inuoe et al. (2013)		http://www.slac.stanford.edu/~yinoue/Download.html
+#	gilmore		Gilmore et al. (2012)		(fiducial model)
+tau = OD(model = 'franceschini')
+Tau_franceschini = tau.opt_depth_array(z,ETeV)
 
-oneDominguez = numpy.ones(len(enerDominguez))
-correctedDominguez,_ = EBLCorrection(readerDominguez,enerDominguez,oneDominguez)
+tau = OD(model = 'kneiske')
+Tau_kneiske = tau.opt_depth_array(z,ETeV)
 
-readerFranceschini = FranceschiniReader(0.117)
-enerFranceschini,tauFranceschini = readerFranceschini.GetTau()
-    
-oneFranceschini = numpy.ones(len(enerFranceschini))
-correctedFranceschini,_ = EBLCorrection(readerFranceschini,enerFranceschini,oneFranceschini)
+tau = OD(model = 'dominguez')
+Tau_dominguez = tau.opt_depth_array(z,ETeV)
+
+#tau = OD(model = 'inoue')
+#Tau_inuoe = tau.opt_depth_array(z,ETeV)
+
+tau = OD(model = 'gilmore')
+Tau_gilmore = tau.opt_depth_array(z,ETeV)
 
 #Draw part
 import matplotlib.pyplot as plt
 plt.ylim(ymax = 1.1, ymin = 1e-4   )
 plt.ylim(ymax = 10, ymin = 0.01  )
-plt.loglog(enerFinke,correctedFinke,'r', label ="Finke 2010")
-plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=3,
-           ncol=2, borderaxespad=0.)
-plt.loglog(enerDominguez,correctedDominguez,'b',label ="Dominguez 2011")
-plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=3,
-           ncol=2, borderaxespad=0.)
-plt.loglog(enerFranceschini,correctedFranceschini,'g',label ="Franceschini 2008")
-plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=3,
-           ncol=2, borderaxespad=0.)
+plt.loglog(ETeV,numpy.exp(-1. * Tau_franceschini[0]), lw = 2., ls = '-', label ="Franceschini et al. (2008)")
+plt.loglog(ETeV,numpy.exp(-1. * Tau_kneiske[0]), lw = 2., ls = '-', label ="Kneiske & Dole (2010)")
+plt.loglog(ETeV,numpy.exp(-1. * Tau_dominguez[0]), lw = 2., ls = '-', label ="Dominguez et al. (2011)")
+#plt.loglog(ETeV,numpy.exp(-1. * Tau_inuoe[0]), lw = 2., ls = '-', label ="Inuoe et al. (2013")
+plt.loglog(ETeV,numpy.exp(-1. * Tau_gilmore[0]), lw = 2., ls = '-', label ="Gilmore et al. (2012)")
+plt.legend(loc = 3)
 plt.ylabel('A.U.')
 plt.xlabel('energy (TeV)')
 plt.show()

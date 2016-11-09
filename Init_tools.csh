@@ -9,6 +9,7 @@ setenv VERSION_2FHL "08"
 #code location
 setenv CTATOOLS_DIR "Where is the CTAtools code"
 setenv CTATOOLS_CONF $CTATOOLS_DIR"/ctoolsAnalysis/config"
+setenv EBL_FILE_PATH $CTATOOLS_DIR"/ebltable/ebl_model_files"
 
 #manage Python
 unset PYTHONPATH
