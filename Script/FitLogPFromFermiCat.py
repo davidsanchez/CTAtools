@@ -8,6 +8,11 @@ import numpy,scipy.optimize
 from Plot.PlotLibrary import *
 from Catalog.ReadFermiCatalog import *
 from environ import FERMI_CATALOG_DIR
+try :
+    from astropy.coordinates import ICRS, Galactic, FK4, FK5 
+except :
+    print "\033[33m WARNING : you don't have astropy installed. Creation of a catalog with name will not work\033[0m"
+    pass
 
 #logparabola func to fit
 logparabola = lambda x,norm,alpha,beta, : norm * (x / .1) ** (-alpha - beta * numpy.log(x / .1))
