@@ -31,7 +31,7 @@ class FermiCatalogReader(Loggin.base):
     super(FermiCatalogReader,self).__init__()
     Loggin.base.__init__(self)
 
-    if folder = None
+    if folder == None :
         self.folder = FERMI_CATALOG_DIR
     else:
         self.folder = folder
