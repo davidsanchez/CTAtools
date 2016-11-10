@@ -6,11 +6,13 @@ Catalog Reader
 Supported catalog
 -----------------
 
-Currently the catalogs that can be read are the 2FGL, the 3FGL, the 1FHL and the 2FHL. Fits files should be :
-  * gll_psc_v14.fit
-  * gll_psc_v08.fit
-  * gll_psch_v07.fit
-  * gll_psch_v08.fit
+Currently the catalogs that can be read are the 2FGL, the 3FGL, the 1FHL and the 2FHL. In the init script the location
+of the Fits files is given as well as the version of the files. In Init_tools.sh, this is :
+
+  * export VERSION_3FGL="16"
+  * export VERSION_2FGL="09"
+  * export VERSION_1FHL="07"
+  * export VERSION_2FHL="08"
 
 
 Code
@@ -18,23 +20,22 @@ Code
 
 A Catalog instance can be created using 
 
-
 .. code-block:: python
 
-	Cat = FermiCatalogReader(source,"Where are the catalog files","e2dnde","TeV")
+    Cat = FermiCatalogReader(source,Folder = None,Representation = "e2dnde",escale = "TeV")
 
 The usere need to provide :
 
-   * catalog name of the source
-   * folder where the Fermi catalog are
-   * Representations for the plot (dnde, ednde, e2dnde)
-   * energy scale : MeV, GeV or TeV
+    name    : catalog name of the source
+    folder  : where the Fermi catalog are. If None, the FERMI_CATALOG_DIR environnement variable is used
+    Representation : for the plot (dnde, ednde, e2dnde)
+    escale  : energy scale in MeV, GeV or TeV
 
 There is also the possiblity to declare a FermiCatalogReader based on a source name. This use the astropy module to resolve the named
 
 .. code-block:: python
     source = "M 87"
-    Cat = FermiCatalogReader.fromName(source,FK5,"/home/sanchez/work/Catalog/","e2dnde","TeV")
+    Cat = FermiCatalogReader.fromName(source,FK5,None,"e2dnde","TeV")
 
 Capability
 ----------
@@ -52,8 +53,7 @@ This module can :
    * Be used to plot the spectral models
 
 
-
-Exemple
+Example
 -------
 
 An exemple of the capability and how to use the code can be found un the exemple folder. The script is named ExReadFermiCatalog.py and will produce a nice plot with 3 catalog results and 

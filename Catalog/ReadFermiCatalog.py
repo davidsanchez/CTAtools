@@ -4,7 +4,7 @@ Class to read the Fermi catalogs
 """
 import pyfits,string,numpy
 from Plot import PlotLibrary
-from environ import VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL
+from environ import VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL,FERMI_CATALOG_DIR
 import Loggin
 from math import *
 
@@ -19,19 +19,22 @@ except :
 
 class FermiCatalogReader(Loggin.base):
   ''' Class to read the Fermi Catalogs '''
-  def __init__(self,name=None,folder="",Representation = "e2dnde",escale = "TeV"):
+  def __init__(self,name=None,folder=None,Representation = "e2dnde",escale = "TeV"):
     ''' init function
     Parameters
     ---------
     name    : catalog name of the source
-    folder  : where the Fermi catalog are
+    folder  : where the Fermi catalog are. If None, the FERMI_CATALOG_DIR environnement variable is used
     Representation : for the plot (dnde, ednde, e2dnde)
-    energy scale : MeV, GeV or TeV
+    escale  : energy scale in MeV, GeV or TeV
     '''
     super(FermiCatalogReader,self).__init__()
     Loggin.base.__init__(self)
 
-    self.folder = folder
+    if folder = None
+        self.folder = FERMI_CATALOG_DIR
+    else:
+        self.folder = folder
     self.Representation = Representation
     self.escale = escale
 

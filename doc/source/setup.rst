@@ -36,7 +36,7 @@ The second step is to download the mandatory libraries from git repositories. Th
     
 which will download the repositories :
 
-  * ebltable
+  * ebltable (see https://github.com/me-manu/ebltable) by M. Meyer
 
 Then to test the installation and if you have all the libraries (install_CTAtools.py do it also), you can run
 
