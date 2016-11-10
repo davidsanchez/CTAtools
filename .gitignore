@@ -1,6 +1,8 @@
 *.pyc
 *~
+*.log
 .project
 .settings
 .pydevproject
 ebltable
+Test

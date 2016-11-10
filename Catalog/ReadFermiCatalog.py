@@ -1,6 +1,7 @@
-# author David Sanchez
-# david.sanchez@lapp.in2p3.fr
-
+"""
+Class to read the Fermi catalogs
+ author David Sanchez  david.sanchez@lapp.in2p3.fr
+"""
 import pyfits,string,numpy
 from Plot import PlotLibrary
 from environ import VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL
@@ -17,12 +18,16 @@ except :
     pass
 
 class FermiCatalogReader(Loggin.base):
+  ''' Class to read the Fermi Catalogs '''
   def __init__(self,name=None,folder="",Representation = "e2dnde",escale = "TeV"):
-    '''init function with information provided by the user
-        * catalog name of the source
-        * folder where the Fermi catalog are
-        * Representations for the plot (dnde, ednde, e2dnde)
-        * energy scale : MeV, GeV or TeV'''
+    ''' init function
+    Parameters
+    ---------
+    name    : catalog name of the source
+    folder  : where the Fermi catalog are
+    Representation : for the plot (dnde, ednde, e2dnde)
+    energy scale : MeV, GeV or TeV
+    '''
     super(FermiCatalogReader,self).__init__()
     Loggin.base.__init__(self)
 
@@ -81,9 +86,19 @@ class FermiCatalogReader(Loggin.base):
     
     
   @classmethod
-  def fromName(self,name, FK5,folder="",Representation = "e2dnde",escale = "TeV"):
+  def fromName(self,name, frame = FK5,folder="",Representation = "e2dnde",escale = "TeV"):
+    ''' return a FermiCatalogReader object based on a name of a source
+    Parameters
+    ----------
+    name    : catalog name (see astropy manual for the valid names)
+    frame   : Astropy coordinate frame ICRS, Galactic, FK4, FK5 , see astropy for more information
+    folder  : where the Fermi catalog are
+    Representation : for the plot (dnde, ednde, e2dnde)
+    energy scale : MeV, GeV or TeV
+    
+    '''
     if astropy:
-        c = CH.CoordinatesHandler.fromName(name,FK5)
+        c = CH.CoordinatesHandler.fromName(name,frame)
         catalog = FermiCatalogReader(None,folder)
         for k in ['3FGL','2FGL','2FHL','1FHL']:
             catalog.findfromCoordinate(k,c.skycoord.ra.deg,c.skycoord.dec.deg)
@@ -95,9 +110,6 @@ class FermiCatalogReader(Loggin.base):
     else :
         self.warning("No astropy module found, returning None")
         return None
-
-  def SetSEDmode(self,b):
-    self.SEDmode = b
 
   def GetIndices(self):
     ''' look for the table indices where the source data are in the catalog'''
@@ -129,7 +141,14 @@ class FermiCatalogReader(Loggin.base):
     return ra[self.CatalogData[k]['indice']],dec[self.CatalogData[k]['indice']]
 
   def findfromCoordinate(self, k,ra0,dec0):
-    '''find a source based on coordinates'''
+    '''
+    find a source based on coordinates
+    Parameters
+    ----------
+    k   : name of the catalog 2FGL, 3FGL, etc...
+    ra0 : coordinate of the source in J2000. The column read is RAJ2000
+    dec0 : coordinate of the source in J2000. The column read is DEJ2000
+    '''
     ra  = self.CatalogData[k]['data'].field('RAJ2000')
     dec = self.CatalogData[k]['data'].field('DEJ2000')
 
@@ -160,7 +179,9 @@ class FermiCatalogReader(Loggin.base):
       self.info(k+" model type: "+self.CatalogData[k]['model'])
 
   def GetClass(self):
-    ''' retrive the object class from the CLASS1 field and fill the dictionnary'''
+    '''
+    retrive the object class from the CLASS1 field and fill the dictionnary
+    '''
     for k in self.CatalogData.keys():
       if self.CatalogData[k]['found'] == False:
         continue
@@ -172,7 +193,11 @@ class FermiCatalogReader(Loggin.base):
       self.info(k+" Object class: "+self.CatalogData[k]['class'])
 
   def GetDataPoints(self,key):
-    ''' read data points and fill the dictionnary'''
+    ''' read data points and fill the dictionnary
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
     flux  = []
     dflux = []
     try:
@@ -197,11 +222,18 @@ class FermiCatalogReader(Loggin.base):
 
 #########################
   def MakeSpectrum(self,key,Emin=100,Emax=3e5):
-    '''depending on the found spectral model, this function will call another function that
-       read the catalog and return the data in a format readable by the plot library.
-       A spectrum object is then created and stored in the python dictionnary. It
-       is possible to create spectrum for each catalog, they will be stored in a different
-       entry.'''
+    '''
+    Depending on the found spectral model, this function will call another function that
+    read the catalog and return the data in a format readable by the plot library.
+    A spectrum object  (from the plotlibrary) is then created and stored in the python dictionnary. It
+    is possible to create spectrum for each catalog, they will be stored in a different
+    entry.
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    Emin  : minimal energy for the plot : unit is defined by the scale (see _init__ function)
+    Emax  : maximal energy for the plot : unit is defined by the scale (see _init__ function)
+    '''
     if self.CatalogData[key]['found'] == False: 
         self.error("This source does not belong to "+key)
     try:
@@ -226,7 +258,12 @@ class FermiCatalogReader(Loggin.base):
 
 
   def ReadPL(self,key):
-    ''' read Power Law information'''
+    '''
+    read the information of the catalog in the case of a Power Law model
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
     indice = self.CatalogData[key]['indice']
     index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
     eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
@@ -247,7 +284,12 @@ class FermiCatalogReader(Loggin.base):
 
 
   def ReadPL2(self,key):
-    ''' read Power Law 2 information'''
+    '''
+    read the information of the catalog in the case of a Power Law 2 model
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
     if key == '2FHL':
         indice = self.CatalogData[key]['indice']
         index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
@@ -261,7 +303,12 @@ class FermiCatalogReader(Loggin.base):
 
 
   def ReadLP(self,key):
-    ''' read LogParabola information'''
+    '''
+    read the information of the catalog in the case of a LogParabola model
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
     indice = self.CatalogData[key]['indice']
     flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]
     pivot  = self.CatalogData[key]['data'].field('Pivot_Energy')[indice]
@@ -281,7 +328,12 @@ class FermiCatalogReader(Loggin.base):
     return [flux,eflux,index,eindex,beta,ebeta,pivot]
 
   def Plot(self,key):
-    '''Compute model and butterfly'''
+    '''
+    Compute model and butterfly for the catalog key
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
     if self.CatalogData[key]['found'] == False: 
         self.error("This source does not belong to "+key)
     if not('spectrum' in self.CatalogData[key]):
@@ -298,7 +350,13 @@ class FermiCatalogReader(Loggin.base):
 
 
   def Association(self,key,asso = 'ASSOC1'):
-    ''' Look for the association of the sources based on a field given by the used; defaul is ASSOC1'''
+    '''
+    Look for the association of the sources based on a field given by the used; defaul is ASSOC1
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    asso  : Name of the association column in the fits file
+    '''
     try:
       if self.CatalogData[key]['found'] == False: 
         self.error("This source does not belong to "+key)
@@ -310,7 +368,12 @@ class FermiCatalogReader(Loggin.base):
 
 
   def GetVarIndex(self,key):
-    ''' return the variability index of the source '''
+    '''
+    return the variability index of the source
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc... 
+    '''
     try : 
       if self.CatalogData[key]['found'] == False: 
         self.error("This source does not belong to "+key)
@@ -322,7 +385,6 @@ class FermiCatalogReader(Loggin.base):
 
     except :
       self.error("No such catalog: "+key)
-
 
 
   def _HandleEnergyUnit(self,ener):

@@ -25,11 +25,20 @@ The setup of the code is quite simple but require to edit the file name Init_too
     export CTATOOLS_DIR="Where is the CTAtools code"
     export FERMI_CATALOG_DIR = "Where are the Fermi catalog in fits format"
 
-by the actual location of the code and the Fermi catalogs. You can also change the version of the catalogs with the variable "VERSION_XXX"
+by the actual location of the code and the Fermi catalogs. You can also change the version of the catalogs with the variable "VERSION_XXX". a .csh file is also available.
 
 
+The second step is to download the mandatory libraries from git repositories. This is done by running 
 
-Then to test the installation and if you have all the libraries, you can run
+.. code-block:: bash
+
+    python install_CTAtools.py
+    
+which will download the repositories :
+
+  * ebltable
+
+Then to test the installation and if you have all the libraries (install_CTAtools.py do it also), you can run
 
 .. code-block:: bash
 

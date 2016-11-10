@@ -1,6 +1,7 @@
-# author David Sanchez david.sanchez@lapp.in2p3.fr
-# Library to plot spectrum and SED. 
-
+"""
+Class to plot spectrum and SED.
+ author David Sanchez  david.sanchez@lapp.in2p3.fr
+"""
 
 # Import
 from math import *
@@ -9,7 +10,30 @@ from array import *
 import string
 
 class Spectrum:
+  ''' Class to store spectral parameter and plot butteflies and models in different representations '''
   def __init__(self,Parameters,Model,Emin,Emax,Representation = "e2dnde",escale = "TeV",Npt=200):
+
+    ''' init function
+    Parameters
+    ---------
+    Parameters   : list of parameters for the spectral models. Supported models are
+    Model : spectral model to be plotted. Supported models are "PowerLaw","PowerLaw2","LogParabola","PLExpCutoff"
+        
+        Note that the Parameters shape has to be in agreement with the Model
+        PowerLaw  Prefactor DPrefactor Index DIndex E_decorrelation
+        PowerLaw2 Flux  DFlux Index DIndex 
+        LogParabola Norm dNorm Alpha DAlpha Beta dBeta Escale 
+        PLExpCutoff  Prefactor DPrefactor Index DIndex Ecut DEcut E_norm
+        
+        Units are cm^-2 s-1 (escale unit)^-1 for differential flux
+        Units are cm^-2 s-1  for differential flux
+        Units are escale unit for energy
+        
+    folder         : where the Fermi catalog are
+    Representation : for the plot (dnde, ednde, e2dnde)
+    energy scale   : MeV, GeV or TeV
+    Npt            : number of point for the plot
+    '''
 
     supportedRep = ["dnde","ednde","e2dnde"]
     if not(Representation in supportedRep):
@@ -33,24 +57,25 @@ class Spectrum:
     #Check the number of parameters
     Parameters = self.CheckNumParemeters(Parameters)
 
-    #input units : cm-2 s-1 (self.escale unit)-1 for diff_flux and 
+    #input units : cm-2 s-1 (self.escale unit)-1 for diff_flux and cm-2 s-1  for integral flux
     self.Norm     = Parameters[0] 
     # Index
     self.Gamma    = Parameters[2]
 
-      # Errors
-    self.ErrNorm    = Parameters[1]#input units :  cm-2 s-1 (self.escale unit)-1
+    # Errors
+    #input units : cm-2 s-1 (self.escale unit)-1 for diff_flux and cm-2 s-1  for integral flux
+    self.ErrNorm    = Parameters[1]
     self.ErrGamma = Parameters[3]
 
     if self.Model=="PowerLaw"  :
         self.Ed       = Parameters[4]  #Decorrelation Energy in self.escale unit 
 
     if self.Model=="LogParabola" :
-        self.Beta  = Parameters[4] #input units :  cm-2 s-1 (self.escale unit)-1
+        self.Beta  = Parameters[4] 
         self.ErrBeta = Parameters[5]
-        self.Ed  = Parameters[6] #Scale energy  in self.escale unit
-        self.Cov1  = Parameters[7] #input units :  cm-2 s-1 (self.escale unit)-1
-        self.Cov2 = Parameters[8]
+        self.Ed  = Parameters[6]    #Scale energy  in self.escale unit
+        self.Cov1  = Parameters[7]  #input units :  cm^-2 s^-1 (self.escale unit)^-1
+        self.Cov2 = Parameters[8]   #input units :  cm^-2 s^-1 (self.escale unit)^-1
         self.Cov3  = Parameters[9]
 
     if self.Model=="PLExpCutoff" :
@@ -60,6 +85,12 @@ class Spectrum:
 
 
   def CheckNumParemeters(self, Params):
+    '''
+    Helper function call by the init function to check the number of parameters according to the model
+    Parameters
+    ---------
+    Params   : list of parameters for the spectral models.
+    '''
     if  self.Model=="PowerLaw" and not(len(Params)==5) :
         self.usage()
         raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 5")
@@ -67,7 +98,6 @@ class Spectrum:
     if  self.Model=="PowerLaw2" and not(len(Params)==4) :
         self.usage()
         raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 4")
-
 
     if  self.Model=="LogParabola"  and not(len(Params)==10) :
       if  not(len(Params)==7) :
@@ -86,10 +116,16 @@ class Spectrum:
     return Params
 
   def usage(self):
-    print "not implemented at the moment"
+    print "wrong input. see the class docstring"
 
   def MakeFluxAndError(self,Emin=0,Emax=10e10):
-
+    '''
+    Actually compute the energy, spectral model Phi(E) and butterfly  dPhi(E) in the representation 'Representation' (see _init__ function)
+    Parameters
+    ---------
+    Emin  : minimal energy for the plot : unit is defined by the scale (see _init__ function)
+    Emax  : maximal energy for the plot : unit is defined by the scale (see _init__ function)
+    '''
     mylog  = lambda x: np.log(x)
 
     #Compute the energy array using either the parameters of the class 
@@ -126,11 +162,25 @@ class Spectrum:
     return ene,Phi,dPhi
 
   def GetModel(self,Emin=0,Emax=10e10):
+    '''
+    wrapper function :return the energy and spectral model Phi(E) in the representation 'Representation' (see _init__ function)
+    Parameters
+    ---------
+    Emin  : minimal energy for the plot : unit is defined by the scale (see _init__ function)
+    Emax  : maximal energy for the plot : unit is defined by the scale (see _init__ function)
+    '''
     ene,Phi,_ = self.MakeFluxAndError(Emin=Emin,Emax=Emax)
     ene,Phi,_ = self._HandleUnit(ene,Phi)
     return ene,Phi
 
   def GetButterfly(self,Emin=0,Emax=10e10):
+    '''
+    wrapper function :return the energy and butterfly  dPhi(E) in the representation 'Representation' (see _init__ function)
+    Parameters
+    ---------
+    Emin  : minimal energy for the plot : unit is defined by the scale (see _init__ function)
+    Emax  : maximal energy for the plot : unit is defined by the scale (see _init__ function)
+    '''
     ene,Phi,dPhi = self.MakeFluxAndError(Emin=Emin,Emax=Emax)
 
     N = 2*len(ene)+1

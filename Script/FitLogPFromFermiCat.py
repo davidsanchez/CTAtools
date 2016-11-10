@@ -23,10 +23,10 @@ ydata = []
 dydata = []
 
 #Read Data : either you use the FGL name or another name (should be recognize by the astropy module
-source = "3FGL J1517.6-2422"
-Cat = FermiCatalogReader(source,FERMI_CATALOG_DIR,"e2dnde","TeV")
-#source = "AP Librae"
-#Cat = FermiCatalogReader.fromName(source,FK5,FERMI_CATALOG_DIR,"e2dnde","TeV")
+#source = "3FGL J1517.6-2422"
+#Cat = FermiCatalogReader(source,FERMI_CATALOG_DIR,"e2dnde","TeV")
+source = "AP Librae"
+Cat = FermiCatalogReader.fromName(source,FK5,FERMI_CATALOG_DIR,"e2dnde","TeV")
 
 #print some information
 print "2FGL association ",Cat.Association('3FGL')
@@ -120,8 +120,7 @@ plt.errorbar(ener2FHL, e2dnde2FHL, xerr= [dem2FHL,dep2FHL], yerr = de2dnde2FHL,f
     
 plt.errorbar(ener_TeV, flux_TeV, yerr = [Dflux_TeV_m,Dflux_TeV_p],fmt='o',label = "H.E.S.S.")
         
-plt.legend(bbox_to_anchor=(.2, .98, .40, .102), loc=1,
-           ncol=1, borderaxespad=0.)
+plt.legend(loc=3)
 
 #plot fit function    
 plt.plot(x,logparabola(x, popt[0],popt[1],popt[2]), "b-")       
