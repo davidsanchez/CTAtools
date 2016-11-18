@@ -40,10 +40,13 @@ class CTA_ctools_common():
         self.config['time']["tmax"] = T2
 
 
+    def SetSrcName(self,name):
+        self.config['target']["name"] = name
+
     def SetRADEC(self,RA,DEC):
         c_icrs = CH.CoordinatesHandler(RA * u.degree, DEC * u.degree,ICRS)
-        self.config["target"]['ra'] = c_icrs.X
-        self.config["target"]['dec'] =c_icrs.Y
+        self.config["target"]['ra'] = c_icrs.X.degree
+        self.config["target"]['dec'] =c_icrs.Y.degree
         self.config["target"]['l'] =c_icrs.skycoord.galactic.l.value
         self.config["target"]['b'] =c_icrs.skycoord.galactic.b.value
         self._set_center()
@@ -52,8 +55,8 @@ class CTA_ctools_common():
         c_gal = CH.CoordinatesHandler(L * u.degree, B * u.degree,Galactic)
         self.config["target"]['ra'] = c_gal.skycoord.icrs.ra.value
         self.config["target"]['dec'] = c_gal.skycoord.icrs.dec.value
-        self.config["target"]['l'] =c_gal.X
-        self.config["target"]['b'] =c_gal.Y
+        self.config["target"]['l'] =c_gal.X.degree
+        self.config["target"]['b'] =c_gal.Y.degree
         self._set_center()
         
     def _set_center(self):
@@ -72,10 +75,10 @@ class CTA_ctools_common():
         self.config['irfs']["irf"] = irf
 
     def SetOutFile(self,out):
-        self.sim["outevents"] = out
+        self.config['out'] = out
         
     def SetModel(self,xmlfile):
-        self.sim["inmodel"] = xmlfile
+        self.config['file']['inmodel'] = xmlfile
 
             
 if __name__ == '__main__':

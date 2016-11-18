@@ -44,7 +44,7 @@ class CoordinatesHandler():
     
     @classmethod
     def fromName(cls, name, frame = FK5):
-        ''' return a FermiCatalogReader object based on a name of a source
+        ''' return a CoordinatesHandler object based on a name of a source
         Parameters
         ----------
         name    : catalog name (see astropy manual for the valid names)

@@ -14,7 +14,7 @@ def CreateLib():
                                       (sys.argv[0], time.asctime())))
     return lib, doc
 
-def fluxScale(flux_value):
+def MakeScale(flux_value):
     """Get the scale of the flux value
     ex : 1.4e-14 ---> 1e-14"""
     return 10 ** numpy.floor(numpy.log10(flux_value) + 0.5)
@@ -154,15 +154,15 @@ def addCTABackgroundPolynom(lib, Coeff, Coeff_free):
 def addCTAIrfBackground(lib):
     doc = lib.ownerDocument
     src = doc.createElement('source')
-    src.setAttribute('name', "Background")
+    src.setAttribute('name', "CTABackgroundModel")
     src.setAttribute('type', "CTAIrfBackground")
     src.setAttribute('instrument', "CTA")
     
     spec = doc.createElement('spectrum')
     spec.setAttribute('type', 'PowerLaw')
-    addParameter(spec, 'Prefactor',1, 1e+3, 1, 1e-3, 1e3)
-    addParameter(spec, 'Index', 1, 1.0, 1.0, -5,5)
-    addParameter(spec, 'Scale', 0, 1.e6, 1.0, 0.01, 1000)
+    addParameter(spec, 'Prefactor',1, 1, 1, 1e-3, 1e3)
+    addParameter(spec, 'Index', 1, 0, 1.0, -5,5)
+    addParameter(spec, 'PivotEnergy', 0, 1., 1.e6, 0.01, 1e3)
     src.appendChild(spec)
 
     return src
@@ -170,15 +170,15 @@ def addCTAIrfBackground(lib):
 def addCTACubeBackground(lib):
     doc = lib.ownerDocument
     src = doc.createElement('source')
-    src.setAttribute('name', "Background")
+    src.setAttribute('name', "CTABackgroundModel")
     src.setAttribute('type', "CTACubeBackground")
     src.setAttribute('instrument', "CTA")
     
     spec = doc.createElement('spectrum')
     spec.setAttribute('type', 'PowerLaw')
-    addParameter(spec, 'Prefactor',1, 1e+3, 1, 1e-3, 1e3)
-    addParameter(spec, 'Index', 1, 1.0, 1.0, -5,5)
-    addParameter(spec, 'Scale', 0, 1.e6, 1.0, 0.01, 1000)
+    addParameter(spec, 'Prefactor',1, 1, 1, 1e-3, 1e3)
+    addParameter(spec, 'Index', 1, 0, 1.0, -5,5)
+    addParameter(spec, 'PivotEnergy', 0, 1., 1.e6, 0.01, 1e3)
     src.appendChild(spec)
 
     return src
@@ -192,7 +192,7 @@ def addPowerLaw1(lib, name, type = "PointSource", eflux=0,
     elim_min = 30
     elim_max = 3e7
     if flux_scale == 0:
-        flux_scale = fluxScale(flux_value)
+        flux_scale = MakeScale(flux_value)
     flux_value /= flux_scale
     doc = lib.ownerDocument
     src = doc.createElement('source')
@@ -223,7 +223,7 @@ def addPowerLaw2(lib, name, type = "PointSource", emin=30, emax=3e7,
     if emax > elim_max:
         elim_max = emax
     if flux_scale == 0:
-        flux_scale = fluxScale(flux_value)
+        flux_scale = MakeScale(flux_value)
     flux_value /= flux_scale
     doc = lib.ownerDocument
     src = doc.createElement('source')
@@ -248,7 +248,7 @@ def addLogparabola(lib, name,  type = "PointSource", enorm=300,
                    alpha_free=1, alpha_value=1.0,
                    alpha_min=.5, alpha_max=5.,
                    beta_free=1, beta_value=1.0,
-                   beta_min=0.0005, beta_max=5.0,extendedName=""):
+                   beta_min=0.0005, beta_max=5.0):
     """Add a source with a LOGPARABOLA model"""
     elim_min = 30
     elim_max = 3e7
@@ -257,7 +257,7 @@ def addLogparabola(lib, name,  type = "PointSource", enorm=300,
         enorm = 2e5  # meanEnergy(emin,emax,index_value)
         norm_value *= (enorm / 100.0) ** alpha_value
     if norm_scale == 0:
-        norm_scale = fluxScale(norm_value)
+        norm_scale = MakeScale(norm_value)
     norm_value /= norm_scale
     doc = lib.ownerDocument
     src = doc.createElement('source')
@@ -267,10 +267,16 @@ def addLogparabola(lib, name,  type = "PointSource", enorm=300,
     spec.setAttribute('type', 'LogParabola')
     addParameter(spec, 'norm',
                  norm_free, norm_value, norm_scale, norm_min, norm_max)
-    addParameter(spec, 'Index', alpha_free, alpha_value, 1.0,
+    addParameter(spec, 'alpha', alpha_free, alpha_value, 1.0,
                  alpha_min, alpha_max)
-    addParameter(spec, 'Scale', 0, enorm, 1.0, elim_min, elim_max)
-    addParameter(spec, 'Curvature', beta_free, beta_value, 1.0, beta_min, beta_max)
+    addParameter(spec, 'Eb', 0, enorm, 1.0, elim_min, elim_max)
+    addParameter(spec, 'beta', beta_free, beta_value, 1.0, beta_min, beta_max)
+    #addParameter(spec, 'Prefactor',
+                 #norm_free, norm_value, norm_scale, norm_min, norm_max)
+    #addParameter(spec, 'Index', alpha_free, alpha_value, 1.0,
+                 #alpha_min, alpha_max)
+    #addParameter(spec, 'Curvature', 0, enorm, 1.0, elim_min, elim_max)
+    #addParameter(spec, 'Scale', beta_free, beta_value, 1.0, beta_min, beta_max)
     src.appendChild(spec)
 
     return src
@@ -289,7 +295,7 @@ def addExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
     elim_min = 30
     elim_max = 3e7
     if flux_scale == 0:
-        flux_scale = fluxScale(flux_value)
+        flux_scale = MakeScale(flux_value)
     flux_value /= flux_scale
     doc = lib.ownerDocument
     src = doc.createElement('source')
@@ -319,13 +325,13 @@ def addGaussian(lib, name, type = "PointSource",norm_scale=0,
     elim_min = 30
     elim_max = 3e7
     if norm_scale == 0:
-        norm_scale = fluxScale(norm_value)
+        norm_scale = MakeScale(norm_value)
     norm_value /= norm_scale
     if mean_scale == 0:
-        mean_scale = fluxScale(mean_value)
+        mean_scale = MakeScale(mean_value)
     mean_value /= mean_scale
     if sigma_scale == 0:
-        sigma_scale = fluxScale(sigma_value)
+        sigma_scale = MakeScale(sigma_value)
     sigma_value /= sigma_scale
     
     
