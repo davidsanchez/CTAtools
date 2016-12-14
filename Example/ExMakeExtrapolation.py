@@ -15,11 +15,11 @@ Emax = 10 #let's extrapolate up to 10 TeV
 #Make extrapolation from user numbers
 # use spectral parameters of Ap Librae (see https://arxiv.org/abs/1410.5897)
 
-Flux   = 2.717986274e-12
-DFlux  = 0.09558767091e-12
-Index  = 2.105534772
-DIndex = 0.03118624899
-Ec     = 1454e-6
+Flux   = 2.717986274e-6 #ph/cm2/s/TeV
+DFlux  = 0.09558767091e-6
+Index  = 2.11
+DIndex = 0.03
+Ec     = 1454e-6 #TeV
 z=0.049
 
 data = [Flux,DFlux,Index,DIndex,Ec]
