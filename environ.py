@@ -8,7 +8,7 @@ VERSION_3FGL = os.environ.get("VERSION_3FGL",'')
 VERSION_2FGL = os.environ.get("VERSION_2FGL",'')
 VERSION_1FHL = os.environ.get("VERSION_1FHL",'')
 VERSION_2FHL = os.environ.get("VERSION_2FHL",'')
-
+VERSION_3FHL = os.environ.get("VERSION_3FHL",'')
 
 DIRS = {"CONFIG_DIR":CONFIG_DIR,
         "INST_DIR":INST_DIR,

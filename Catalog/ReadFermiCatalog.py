@@ -4,7 +4,7 @@ Class to read the Fermi catalogs
 """
 import pyfits,string,numpy
 from Plot import PlotLibrary
-from environ import VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL,FERMI_CATALOG_DIR
+from environ import VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL,VERSION_3FHL,FERMI_CATALOG_DIR
 import Loggin
 from math import *
 
@@ -47,19 +47,21 @@ class FermiCatalogReader(Loggin.base):
         raise RuntimeError("Escale not supported")
 
     #all the information are in a python dictionnary
-    self.CatalogData = {'3FGL':{},'2FGL':{},'1FHL':{},'2FHL':{}}
+    self.CatalogData = {'3FGL':{},'2FGL':{},'1FHL':{},'2FHL':{},'3FHL':{}}
     self.CatalogData['3FGL']['fits'] = folder+"/gll_psc_v"+VERSION_3FGL+".fit"
     self.CatalogData['2FGL']['fits'] = folder+"/gll_psc_v"+VERSION_2FGL+".fit"
     self.CatalogData['1FHL']['fits'] = folder+"/gll_psch_v"+VERSION_1FHL+".fit"
     self.CatalogData['2FHL']['fits'] = folder+"/gll_psch_v"+VERSION_2FHL+".fit"
+    self.CatalogData['3FHL']['fits'] = folder+"/gll_psch_v"+VERSION_3FHL+".fit"
 
     self.CatalogData['3FGL']['data'] = pyfits.open(self.CatalogData['3FGL']['fits'])[1].data
-    
     self.CatalogData['2FGL']['data'] = pyfits.open(self.CatalogData['2FGL']['fits'])[1].data
     self.CatalogData['1FHL']['data'] = pyfits.open(self.CatalogData['1FHL']['fits'])[1].data
     self.CatalogData['2FHL']['data'] = pyfits.open(self.CatalogData['2FHL']['fits'])[1].data
+    self.CatalogData['3FHL']['data'] = pyfits.open(self.CatalogData['3FHL']['fits'])[1].data
 
     #read data points
+    self.CatalogData['3FHL']['Band'] = ['Flux_Band','Flux_Band','Flux_Band','Flux_Band','Flux_Band']
     self.CatalogData['3FGL']['Band'] = ['Flux100_300','Flux300_1000','Flux1000_3000','Flux3000_10000','Flux10000_100000']
     self.CatalogData['2FGL']['Band'] = ['Flux100_300','Flux300_1000','Flux1000_3000','Flux3000_10000','Flux10000_100000']
     self.CatalogData['1FHL']['Band'] = ['Flux10_30GeV','Flux30_100GeV','Flux100_500GeV']
@@ -69,14 +71,15 @@ class FermiCatalogReader(Loggin.base):
     self.CatalogData['3FGL']['eMax'] = self._HandleEnergyUnit(numpy.array([300,1000,3000,10000,100000]))
     self.CatalogData['2FGL']['eMax'] = self._HandleEnergyUnit(numpy.array([300,1000,3000,10000,100000]))
     self.CatalogData['1FHL']['eMax'] = self._HandleEnergyUnit(numpy.array([30e3,100e3,500e3]))
-    self.CatalogData['2FHL']['eMax'] = self._HandleEnergyUnit(numpy.array([171e3,585e3,2000e3]))
-
+    self.CatalogData['2FHL']['eMax'] = self._HandleEnergyUnit(numpy.array([171e3,585e3,1e6]))
+    self.CatalogData['3FHL']['eMax'] = self._HandleEnergyUnit(numpy.array([20e3,50e3,150e3,500e3,2000e3]))
 
     #lower bound of the energy bins of Fermi catalogs
     self.CatalogData['3FGL']['eMin'] = self._HandleEnergyUnit(numpy.array([100,300,1000,3000,10000]))
     self.CatalogData['2FGL']['eMin'] = self._HandleEnergyUnit(numpy.array([100,300,1000,3000,10000]))
     self.CatalogData['1FHL']['eMin'] = self._HandleEnergyUnit(numpy.array([10e3,30e3,100e3]))
     self.CatalogData['2FHL']['eMin'] = self._HandleEnergyUnit(numpy.array([50e3,171e3,585e3]))
+    self.CatalogData['3FHL']['eMin'] = self._HandleEnergyUnit(numpy.array([10e3,20e3,50e3,150e3,500e3]))
 
     self.name = name
     self.Spec = None
@@ -103,7 +106,7 @@ class FermiCatalogReader(Loggin.base):
     if astropy:
         c = CH.CoordinatesHandler.fromName(name,frame)
         catalog = FermiCatalogReader(None,folder)
-        for k in ['3FGL','2FGL','2FHL','1FHL']:
+        for k in ['3FGL','2FGL','2FHL','1FHL', '3FHL']:
             catalog.findfromCoordinate(k,c.skycoord.ra.deg,c.skycoord.dec.deg)
             if catalog.CatalogData[k]['found']:
                 break
@@ -209,11 +212,18 @@ class FermiCatalogReader(Loggin.base):
         return 0,0,0,0
       self.info("Results for "+key)
       for i in xrange(len(self.CatalogData[key]['Band'])):
-          flux.append(self.CatalogData[key]['data'].field(self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']])
-          print self.CatalogData[key]['Band'][i]," ",self.CatalogData[key]['data'].field(self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']]," +/- ",self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']]
-
-          if key == '3FGL' or key == '1FHL' or key == '2FHL':
-            tmp = self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']]
+          #print self.CatalogData[key]
+          if key == '3FHL':
+            flux.append(self.CatalogData[key]['data'].field(self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']][i])
+          else:
+            flux.append(self.CatalogData[key]['data'].field(self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']])
+          
+          if key == '3FHL' or key == '3FGL' or key == '1FHL' or key == '2FHL':
+            if key == '3FHL':
+              tmp = self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']][i]
+            else:
+              tmp = self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']]
+            
             dflux.append(abs(-tmp[0]+tmp[1])/2.)
           else:
             dflux.append(self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']])
@@ -275,7 +285,7 @@ class FermiCatalogReader(Loggin.base):
     eflux  = self.CatalogData[key]['data'].field('Unc_Flux_Density')[indice]
     pivot  = self.CatalogData[key]['data'].field('Pivot_Energy')[indice]
     
-    if key == '1FHL' :
+    if key == '1FHL' or key == '3FHL' :
       pivot *= 1e3
       flux  *= 1e-3
       eflux *= 1e-3
@@ -293,7 +303,7 @@ class FermiCatalogReader(Loggin.base):
     ----------
     key   : name of the catalog 2FGL, 3FGL, etc...
     '''
-    if key == '2FHL':
+    if key == '2FHL' :
         indice = self.CatalogData[key]['indice']
         index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
         eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
@@ -320,7 +330,8 @@ class FermiCatalogReader(Loggin.base):
     eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
     beta = self.CatalogData[key]['data'].field('beta')[indice]
     ebeta = self.CatalogData[key]['data'].field('Unc_beta')[indice]
-    if key == '1FHL':
+    
+    if key == '1FHL'  or key == '3FHL' :
       pivot *= 1e3
       flux  *= 1e-3
       eflux *= 1e-3
