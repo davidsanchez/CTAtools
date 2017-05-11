@@ -380,6 +380,15 @@ class FermiCatalogReader(Loggin.base):
     except :
       self.error("No association "+asso+" in catalog: "+key)
 
+  def GetSignificance(self,key):
+    '''
+    Look for the average significance of the sources
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
+    return self.CatalogData[key]['data'].field("Signif_Avg")[self.CatalogData[key]['indice']]
+
 
   def GetVarIndex(self,key):
     '''
