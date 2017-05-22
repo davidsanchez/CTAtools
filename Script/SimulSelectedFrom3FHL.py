@@ -18,8 +18,10 @@ from ctoolsAnalysis.config import get_config,get_default_config
 from ctoolsAnalysis.SimulateSource import CTA_ctools_sim
 # ------------------------------ #
 
-out='/Users/gateflorian/Documents/devCTAtools/CTAtools/Script/out'
-work='/Users/gateflorian/Documents/devCTAtools/CTAtools/Script/work'
+     
+#default work and out path. 
+out =  join(os.getcwd(), "out")
+work = join(os.getcwd(), "work")
 
 def GetInfoFromTable(fitstable,indice):
     '''read salvatore table and return info corresponding to the source at the place indice
