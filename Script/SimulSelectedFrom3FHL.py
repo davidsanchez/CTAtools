@@ -12,6 +12,7 @@ from Catalog.ReadFermiCatalog import *
 from environ import FERMI_CATALOG_DIR,INST_DIR
 from Plot.PlotLibrary import *
 from ebltable.tau_from_model import OptDepth as OD
+from os.path import join
 import Common_Functions as CF
 import ctoolsAnalysis.xml_generator as xml
 from ctoolsAnalysis.config import get_config,get_default_config
