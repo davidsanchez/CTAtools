@@ -119,6 +119,8 @@ def addCTABackgroundGauss(lib):
     addParameter(radmod,'Sigma',1,3.0,1,0.01,10)
     src.appendChild(radmod)
     return src
+
+
     
 
 def addCTABackgroundProfile(lib, width= 1.5,core = 3, tail =5.):
@@ -167,6 +169,8 @@ def addCTAIrfBackground(lib):
 
     return src
 
+
+
 def addCTACubeBackground(lib):
     doc = lib.ownerDocument
     src = doc.createElement('source')
@@ -198,6 +202,7 @@ def addPowerLaw1(lib, name, type = "PointSource", eflux=0,
     src = doc.createElement('source')
     src.setAttribute('name', name)
     src.setAttribute('type', type)
+    src.setAttribute('tscalc',1)
     spec = doc.createElement('spectrum')
     spec.setAttribute('type', 'PowerLaw')
     addParameter(spec, 'Prefactor',
@@ -229,6 +234,7 @@ def addPowerLaw2(lib, name, type = "PointSource", emin=30, emax=3e7,
     src = doc.createElement('source')
     src.setAttribute('name', name)
     src.setAttribute('type', type)
+    src.setAttribute('tscalc',1)
     spec = doc.createElement('spectrum')
     spec.setAttribute('type', 'PowerLaw2')
     addParameter(spec, 'Integral',
@@ -246,7 +252,7 @@ def addLogparabola(lib, name,  type = "PointSource", enorm=300,
                    norm_free=1, norm_value=1e-9, norm_scale=0,
                    norm_max=1000.0, norm_min=1e-5,
                    alpha_free=1, alpha_value=1.0,
-                   alpha_min=.5, alpha_max=5.,
+                   alpha_min=.1, alpha_max=5.,
                    beta_free=1, beta_value=1.0,
                    beta_min=0.0005, beta_max=5.0):
     """Add a source with a LOGPARABOLA model"""
@@ -263,6 +269,7 @@ def addLogparabola(lib, name,  type = "PointSource", enorm=300,
     src = doc.createElement('source')
     src.setAttribute('name', name)
     src.setAttribute('type', type)
+    src.setAttribute('tscalc',1)
     spec = doc.createElement('spectrum')
     spec.setAttribute('type', 'LogParabola')
     addParameter(spec, 'norm',
@@ -301,6 +308,7 @@ def addExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
     src = doc.createElement('source')
     src.setAttribute('name', name)
     src.setAttribute('type', type)
+    src.setAttribute('tscalc',1)
     spec = doc.createElement('spectrum')
     spec.setAttribute('type', 'ExpCutoff')
     addParameter(spec, 'Prefactor',
@@ -339,6 +347,7 @@ def addGaussian(lib, name, type = "PointSource",norm_scale=0,
     src = doc.createElement('source')
     src.setAttribute('name', name)
     src.setAttribute('type', type)
+    src.setAttribute('tscalc',1)
     spec = doc.createElement('spectrum')
     spec.setAttribute('type', 'Gaussian')
     addParameter(spec, 'Normalization',norm_free, norm_value, norm_scale, norm_min, norm_max)
@@ -347,21 +356,3 @@ def addGaussian(lib, name, type = "PointSource",norm_scale=0,
     src.appendChild(spec)
     return src
 
-
-def addFileFunction(lib, name, type = "PointSource",filefun="file.txt",
-                   flux_free=1, flux_value=1., flux_scale=1.,
-                   flux_max=100000000.0, flux_min=0.0):
-    """Add a source with a file function model"""
-    if flux_scale == 0:
-        flux_scale = MakeScale(flux_value)
-    flux_value /= flux_scale
-    doc = lib.ownerDocument
-    src = doc.createElement('source')
-    src.setAttribute('name', name)
-    src.setAttribute('type', type)
-    spec = doc.createElement('spectrum')
-    spec.setAttribute('type', 'FileFunction')
-    spec.setAttribute('file', filefun)
-    addParameter(spec, 'Normalization', flux_free, flux_value, flux_scale, flux_min, flux_max)
-    src.appendChild(spec)
-    return src
