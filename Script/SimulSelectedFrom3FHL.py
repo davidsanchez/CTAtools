@@ -13,10 +13,13 @@ from environ import FERMI_CATALOG_DIR,INST_DIR
 from Plot.PlotLibrary import *
 from ebltable.tau_from_model import OptDepth as OD
 import Common_Functions as CF
-import  ctoolsAnalysis.xml_generator as xml
+import ctoolsAnalysis.xml_generator as xml
 from ctoolsAnalysis.config import get_config,get_default_config
 from ctoolsAnalysis.SimulateSource import CTA_ctools_sim
 # ------------------------------ #
+
+out='/Users/gateflorian/Documents/devCTAtools/CTAtools/Script/out'
+work='/Users/gateflorian/Documents/devCTAtools/CTAtools/Script/work'
 
 def GetInfoFromTable(fitstable,indice):
     '''read salvatore table and return info corresponding to the source at the place indice
@@ -79,7 +82,7 @@ def ComputeExtrapolateSpectrum(sourcename,z,eblmodel = "dominguez",alpha = -1):
     
     return outfile, Etau2
 
-TableInfo = pyfits.open(INST_DIR+'data/table_20161213.fits')
+TableInfo = pyfits.open(INST_DIR+'/data/table_20161213.fits')
 outfolder = "out"
 os.system("mkdir -p "+outfolder)
 simutime = 20 #Hours
@@ -98,11 +101,12 @@ lib.appendChild(spec)
 
 bkg = xml.addCTAIrfBackground(lib)
 lib.appendChild(bkg)
-open(outfolder+"/"+sourcename.replace(" ","")+'_forSimu3FGL.xml', 'w').write(doc.toprettyxml('  '))
+open(outfolder+"/"+sourcename.replace(" ","")+'.xml', 'w').write(doc.toprettyxml('  '))
 #######################
 
 
 irfTime = CF.IrfChoice(simutime)
+
 # setup : Time, Energy and IRFS.
 tmin = 0
 tmax = int(simutime*3600)
@@ -112,8 +116,8 @@ irf = "South_z20_"+str(irfTime)+"h"
 caldb = "prod3b"
 
 
-config = MakeconfigFromDefault(out,work,source,ra,dec)
-config.write(open("simu_"+source.replace(" ","")+"_"+str(simutime)+"h"+".conf", 'w'))
+config = CF.MakeconfigFromDefault(out,work,sourcename,ra,dec)
+config.write(open("simu_"+sourcename.replace(" ","")+"_"+str(simutime)+"h"+".conf", 'w'))
 
 #creation of the simulation object    
 simu = CTA_ctools_sim.fromConfig(config)
@@ -124,7 +128,7 @@ simu.SetIRFs(caldb,irf)
 for emin in emin_table:
     simu.SetEnergyRange(emin,emax)
 
-    simu.config.write(open(work+"/simu_"+source.replace(" ","")+"_"+str(simutime)+"h_"+str(emin)+"TeV.conf", 'w'))
+    simu.config.write(open(work+"/simu_"+sourcename.replace(" ","")+".conf", 'w'))
     # run the simulation
-    simu.run_sim(prefix = source.replace(" ","")+"_"+str(simutime)+"h_"+str(emin)+"TeV" ,nsim = 1, write=True, clobber = True)
+    simu.run_sim(prefix = sourcename.replace(" ","") ,nsim = 1, write=True, clobber = True)
     simu.Print()
