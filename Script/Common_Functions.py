@@ -1,4 +1,4 @@
-import os,sys
+import os,sys,numpy
 from os.path import join
 from ctoolsAnalysis.config import get_config,get_default_config
 
@@ -42,3 +42,22 @@ def MakeconfigFromFile(out,work,source,ra,dec,conf_template):
     config['target']['dec'] = dec
     return config
 
+def MakeFileFunction(energy,flux, name = 'output.txt'):
+    ''' Make file function for ctools
+    Parameters
+    ---------
+    energy : in MeV
+    flux : ph/MeV/s/cm2
+    '''
+
+    datafile = numpy.array([energy,flux]).T
+    print "write file function in ",name
+    fileout=open(name,'w+')
+    numpy.savetxt(fileout, datafile, fmt=['%.8E','%.8E'])
+    fileout.close()
+    print "done"
+
+def IrfChoice(simutime):
+    available_time = numpy.array([.5,5,50])
+    indice =  numpy.abs(available_time-simutime).argmin()
+    return str(available_time[indice])

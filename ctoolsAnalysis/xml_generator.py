@@ -347,3 +347,21 @@ def addGaussian(lib, name, type = "PointSource",norm_scale=0,
     src.appendChild(spec)
     return src
 
+
+def addFileFunction(lib, name, type = "PointSource",filefun="file.txt",
+                   flux_free=1, flux_value=1., flux_scale=1.,
+                   flux_max=100000000.0, flux_min=0.0):
+    """Add a source with a file function model"""
+    if flux_scale == 0:
+        flux_scale = MakeScale(flux_value)
+    flux_value /= flux_scale
+    doc = lib.ownerDocument
+    src = doc.createElement('source')
+    src.setAttribute('name', name)
+    src.setAttribute('type', type)
+    spec = doc.createElement('spectrum')
+    spec.setAttribute('type', 'FileFunction')
+    spec.setAttribute('file', filefun)
+    addParameter(spec, 'Normalization', flux_free, flux_value, flux_scale, flux_min, flux_max)
+    src.appendChild(spec)
+    return src
