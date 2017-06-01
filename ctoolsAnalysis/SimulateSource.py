@@ -48,12 +48,17 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         for k in self.config.keys():
             try:
                 for kk in self.config[k].keys():
+                    print kk, " ", self.config[k][kk]
                     if self.sim._has_par(kk):
+                        print kk
                         self.sim[kk] = self.config[k][kk]
             except:
                 if self.sim._has_par(k):
                     self.sim[k] = self.config[k]
-                    
+        #TODO : dirty hack
+        self.sim['ra'] = float(self.config['target']['ra'])
+        self.sim['dec'] = float(self.config['target']['dec'])
+
         self.sim['inobs'] = "" #be sure that this field is empty for the simulation
         
         for i in range(1,nsim + 1):#run each simulation
