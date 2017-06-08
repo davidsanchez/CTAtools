@@ -4,10 +4,10 @@ from ctoolsAnalysis.config import get_config,get_default_config
 
 def MakeconfigFromDefault(out,work,source,ra,dec):
     '''
-    Generate a config file from another the module default config 
+    Generate a config file from another the module default config
     Parameters
     ---------
-    out : place where the fits file 
+    out : place where the fits file
     work : place where fits file will be temporarily stored and where the log file will be kept
     source : source name
     ra : right Ascension of the source
@@ -21,7 +21,7 @@ def MakeconfigFromFile(out,work,source,ra,dec,conf_template):
     Generate a config file from another default config file given in the parameters
     Parameters
     ---------
-    out : place where the fits file 
+    out : place where the fits file
     work : place where fits file will be temporarily stored and where the log file will be kept
     source : source name
     ra : right Ascension of the source
@@ -33,10 +33,10 @@ def MakeconfigFromFile(out,work,source,ra,dec,conf_template):
     config = get_config(conf_template)
     config['file']['inobs'] = join(work, 'event_'+source.replace(" ","")+".fits")
     config['file']['selectedevent'] = join(work, 'event_selected_'+source.replace(" ","")+".fits")
-    config['file']['inmodel'] = join(out, source.replace(" ","")+'_forSimu3FGLPosition.xml')
+    config['file']['inmodel'] = join(out, source.replace(" ","")+'.xml')
     config['file']['cube'] = join(work, 'Cube_'+source.replace(" ","")+".fits")
     config['file']['model'] = join(work, 'Model_'+source.replace(" ","")+".fits")
-    
+
     config['target']['name'] = source.replace(" ","")
     config['target']['ra'] = ra
     config['target']['dec'] = dec

@@ -19,8 +19,8 @@ from ctoolsAnalysis.config import get_config,get_default_config
 from ctoolsAnalysis.SimulateSource import CTA_ctools_sim
 # ------------------------------ #
 
-     
-#default work and out path. 
+
+#default work and out path.
 out =  join(os.getcwd(), "out")
 work = join(os.getcwd(), "work")
 
@@ -29,14 +29,14 @@ def GetInfoFromTable(fitstable,indice):
     Parameters
     ---------
     fitstable : pyfits object : table to be browsed
-    indice : place of the source in the table 
+    indice : place of the source in the table
     '''
     data = fitstable[1].data[indice]
     sourcename = data[0]
     ra = data[1]
     dec = data[2]
     z = data[4]
-    
+
     if math.isnan(z):
         z=0
     hemisphere = data[6]
@@ -47,8 +47,8 @@ def GetInfoFromTable(fitstable,indice):
         hemisphere ='North'
 
     return sourcename,ra,dec,z,hemisphere,observation_type
-    
-    
+
+
 def cutoff(energy):
     '''correct with JB cut off prescription
     Parameters
@@ -56,7 +56,7 @@ def cutoff(energy):
     energy : in TeV.
     '''
     return numpy.exp(-energy*3/(1+z))
-    
+
 def ComputeExtrapolateSpectrum(sourcename,z,eblmodel = "dominguez",alpha = -1):
     try :
         Cat = FermiCatalogReader.fromName(sourcename,FK5,FERMI_CATALOG_DIR,"dnde","MeV") #read 3FHL
@@ -64,25 +64,25 @@ def ComputeExtrapolateSpectrum(sourcename,z,eblmodel = "dominguez",alpha = -1):
         print 'can read 3FHL for some reason, returning'
         return
     emin = 1e5 #Mev
-    emax = 1e8
+    emax = 5e7
     Cat.MakeSpectrum("3FHL",emin,emax)
     _,_,energy,phi = Cat.Plot("3FHL")
     SpectreWithCutoff = cutoff(energy/1e6)
-    
-    #Correct for EBL using Dominguez model
-    tau = OD(model = eblmodel)
-    TauEBL = tau.opt_depth_array(z,energy/1e6)
 
-    Etau2 = numpy.interp([2.],TauEBL[0],energy/1e6)*1e6 # Input in TeV -> Get MeV at the end
-    
-    EBL_corrected_phi = phi*numpy.exp(alpha * TauEBL[0])
+    #Correct for EBL using Dominguez model
+    tau = OD.readmodel(model = eblmodel)
+    TauEBL = tau.opt_depth(z,energy/1e6)
+
+    Etau2 = numpy.interp([2.],TauEBL,energy/1e6)*1e6 # Input in TeV -> Get MeV at the end
+
+    EBL_corrected_phi = phi*numpy.exp(alpha * TauEBL)
 
     phi_extrapolated = EBL_corrected_phi*SpectreWithCutoff
 
     os.system("mkdir -p out")
     outfile = INST_DIR+"/Script/out/"+sourcename.replace(" ","")+"_File.txt"
     CF.MakeFileFunction(energy,phi_extrapolated,outfile)
-    
+
     return outfile, Etau2
 
 TableInfo = pyfits.open(INST_DIR+'/data/table_20161213.fits')
@@ -113,16 +113,16 @@ irfTime = CF.IrfChoice(simutime)
 # setup : Time, Energy and IRFS.
 tmin = 0
 tmax = int(simutime*3600)
-emin_table =[0.05,Etau2*1e-6] #TeV 
+emin_table =[0.05,Etau2*1e-6] #TeV
 emax = 100 #TeV
-irf = "South_z20_"+str(irfTime)+"h"
+irf = "South_z20_"+str(irfTime.replace(".0",""))+"h"
 caldb = "prod3b"
 
 
 config = CF.MakeconfigFromDefault(out,work,sourcename,ra,dec)
 config.write(open("simu_"+sourcename.replace(" ","")+"_"+str(simutime)+"h"+".conf", 'w'))
 
-#creation of the simulation object    
+#creation of the simulation object
 simu = CTA_ctools_sim.fromConfig(config)
 
 simu.SetTimeRange(tmin,tmax)

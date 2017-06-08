@@ -36,12 +36,12 @@ enerphi_NotExtrapolated,phi_NotExtrapolated = SpecNotExtrapolated.GetModel()
 enerbut_NotExtrapolated,but_NotExtrapolated = SpecNotExtrapolated.GetButterfly()
 
 #Correct for EBL using Dominguez model
-tau = OD(model = 'dominguez')
-Tau_dominguez = tau.opt_depth_array(z,enerphi)
-EBL_corrected_phi = phi*numpy.exp(-1. * Tau_dominguez[0])
+tau = OD.readmodel(model = 'dominguez')
+Tau_dominguez = tau.opt_depth(z,enerphi)
+EBL_corrected_phi = phi*numpy.exp(-1. * Tau_dominguez)
 
-Tau_dominguez = tau.opt_depth_array(z,enerbut)
-EBL_corrected_but = but*numpy.exp(-1. * Tau_dominguez[0])
+Tau_dominguez = tau.opt_depth(z,enerbut)
+EBL_corrected_but = but*numpy.exp(-1. * Tau_dominguez)
 
 
 #draw

@@ -21,30 +21,30 @@ ETeV = numpy.logspace(-1,1,50)
 #	dominguez	Dominguez et al. (2011)
 #	inoue		Inuoe et al. (2013)		http://www.slac.stanford.edu/~yinoue/Download.html
 #	gilmore		Gilmore et al. (2012)		(fiducial model)
-tau = OD(model = 'franceschini')
-Tau_franceschini = tau.opt_depth_array(z,ETeV)
+tau = OD.readmodel(model = 'franceschini')
+Tau_franceschini = tau.opt_depth(z,ETeV)
 
-tau = OD(model = 'kneiske')
-Tau_kneiske = tau.opt_depth_array(z,ETeV)
+tau = OD.readmodel(model = 'kneiske')
+Tau_kneiske = tau.opt_depth(z,ETeV)
 
-tau = OD(model = 'dominguez')
-Tau_dominguez = tau.opt_depth_array(z,ETeV)
+tau = OD.readmodel(model = 'dominguez')
+Tau_dominguez = tau.opt_depth(z,ETeV)
 
 #tau = OD(model = 'inoue')
 #Tau_inuoe = tau.opt_depth_array(z,ETeV)
 
-tau = OD(model = 'gilmore')
-Tau_gilmore = tau.opt_depth_array(z,ETeV)
+tau = OD.readmodel(model = 'gilmore')
+Tau_gilmore = tau.opt_depth(z,ETeV)
 
 #Draw part
 import matplotlib.pyplot as plt
 plt.ylim(ymax = 1.1, ymin = 1e-4   )
 plt.ylim(ymax = 10, ymin = 0.01  )
-plt.loglog(ETeV,numpy.exp(-1. * Tau_franceschini[0]), lw = 2., ls = '-', label ="Franceschini et al. (2008)")
-plt.loglog(ETeV,numpy.exp(-1. * Tau_kneiske[0]), lw = 2., ls = '-', label ="Kneiske & Dole (2010)")
-plt.loglog(ETeV,numpy.exp(-1. * Tau_dominguez[0]), lw = 2., ls = '-', label ="Dominguez et al. (2011)")
-#plt.loglog(ETeV,numpy.exp(-1. * Tau_inuoe[0]), lw = 2., ls = '-', label ="Inuoe et al. (2013")
-plt.loglog(ETeV,numpy.exp(-1. * Tau_gilmore[0]), lw = 2., ls = '-', label ="Gilmore et al. (2012)")
+plt.loglog(ETeV,numpy.exp(-1. * Tau_franceschini), lw = 2., ls = '-', label ="Franceschini et al. (2008)")
+plt.loglog(ETeV,numpy.exp(-1. * Tau_kneiske), lw = 2., ls = '-', label ="Kneiske & Dole (2010)")
+plt.loglog(ETeV,numpy.exp(-1. * Tau_dominguez), lw = 2., ls = '-', label ="Dominguez et al. (2011)")
+#plt.loglog(ETeV,numpy.exp(-1. * Tau_inuoe), lw = 2., ls = '-', label ="Inuoe et al. (2013")
+plt.loglog(ETeV,numpy.exp(-1. * Tau_gilmore), lw = 2., ls = '-', label ="Gilmore et al. (2012)")
 plt.legend(loc = 3)
 plt.ylabel('A.U.')
 plt.xlabel('energy (TeV)')

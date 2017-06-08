@@ -16,7 +16,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.config  = None
         self.verbose = verbose
         Common.CTA_ctools_common.__init__(self,workdir=workdir,outdir=outdir)
-        
+
     @classmethod
     def fromConfig(cls, config,verbose = True):
         obj = cls(verbose = verbose)
@@ -34,7 +34,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         #if self.m_obs:
             #for obs in self.m_obs:
                 #obs.events().ebounds(ebounds)
-        
+
     def ctselect(self,log=False,debug=False):
         '''
         Create ctselect instance with given parameters
@@ -47,25 +47,25 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         if self.m_obs:
             filter = ct.ctselect(self.m_obs)
         else:
-            filter = ct.ctselect()## 
-            
+            filter = ct.ctselect()##
+
             for k in self.config.keys():
                 try:
                     for kk in self.config[k].keys():
-                        if filter._has_par(kk):
+                        if filter.has_par(kk):
                             filter[kk] = self.config[k][kk]
                 except:
-                    if filter._has_par(k):
+                    if filter.has_par(k):
                         filter[k] = self.config[k]
             
-            
+
             filter["inobs"] = join(self.workdir,self.config['file']["inobs"])
-            filter["outobs"] = join(self.workdir,self.config['file']["selectedevent"])        
+            filter["outobs"] = join(self.workdir,self.config['file']["selectedevent"])
         filter.logFileOpen()
 
         if self.verbose:
             print filter
-        
+
         # Optionally open the log file
         if log:
             filter.logFileOpen()
@@ -74,7 +74,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         if debug:
             filter["debug"].boolean(True)
 
-        
+
         filter.run()
         if not(self.m_obs):
             filter.save()
@@ -84,7 +84,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             # (the ctbin object will go out of scope one the function is
             # left)
             self.m_obs = filter.obs().copy()
-        
+
     def ctmodel(self,log=False,debug=False):
         '''
         Create ctmodel instance with given parameters
@@ -98,16 +98,16 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             model = ct.ctmodel(self.m_obs)
         else:
             model = ct.ctmodel()
-            
+
             for k in self.config.keys():
                 try:
                     for kk in self.config[k].keys():
-                        if model._has_par(kk):
+                        if model.has_par(kk):
                             model[kk] = self.config[k][kk]
                 except:
-                    if model._has_par(k):
+                    if model.has_par(k):
                         model[k] = self.config[k]
-            
+
             model["inobs"] = join(self.workdir,self.config['file']["selectedevent"])
             model["incube"] = join(self.workdir,self.config['file']["cube"])
             model["outcube"] = join(self.workdir,self.config['file']["model"])
@@ -122,7 +122,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         if self.verbose:
             print model
-        
+
         # Run ctbin application. This will loop over all observations in
         # the container and bin the events in counts maps
         model.run()
@@ -132,7 +132,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             # (the ctbin object will go out of scope one the function is
             # left)
             self.m_obs = model.obs().copy()
-    
+
     def ctbin(self,log=False,debug=False):
         '''
         Create ctbin instance with given parameters
@@ -146,16 +146,16 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             bin = ct.ctbin(self.m_obs)
         else:
             bin = ct.ctbin()
-            
+
             for k in self.config.keys():
                 try:
                     for kk in self.config[k].keys():
-                        if bin._has_par(kk):
+                        if bin.has_par(kk):
                             bin[kk] = self.config[k][kk]
                 except:
-                    if bin._has_par(k):
+                    if bin.has_par(k):
                         bin[k] = self.config[k]
-            
+
             bin["inobs"] = join(self.workdir,self.config['file']["selectedevent"])
             bin["outcube"] = join(self.workdir,self.config['file']["cube"])
 
@@ -179,8 +179,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             # (the ctbin object will go out of scope one the function is
             # left)
             self.m_obs = bin.obs().copy()
-    
-    
+
+
     def create_fit(self,log=False,debug=False):
         '''
         Create ctlike instance with given parameters
@@ -197,17 +197,17 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             for k in self.config.keys():
                 try:
                     for kk in self.config[k].keys():
-                        if self.like._has_par(kk):
+                        if self.like.has_par(kk):
                             self.like[kk] = self.config[k][kk]
                 except:
-                    if self.like._has_par(k):
+                    if self.like.has_par(k):
                         self.like[k] = self.config[k]
-            
+
             if self.config["analysis"]["likelihood"] == "binned":
-                self.like["inobs"] = join(self.workdir,self.config['file']["cube"])   
-                        
+                self.like["inobs"] = join(self.workdir,self.config['file']["cube"])
+
         self.like["outmodel"] = self.config['out']+"/"+self.config['target']["name"]+"_results.xml"
-        
+
         # Optionally open the log file
         if log:
             self.like.logFileOpen()
@@ -216,7 +216,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             self.like["debug"].boolean(True)
 
         if self.verbose:
-            print self.like            
+            print self.like
 
     def fit(self,log=False,debug=False):
         '''
@@ -236,7 +236,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.like.save()
         self.success("Fit performed")
         self._moveFiles()
-        
+
     def _moveFiles(self):
         '''
         move file from the out work folder to the out folder
@@ -249,5 +249,3 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
     def PrintResults(self,srcname = ""):
         self.info("Results of the Fit")
         print self.like.obs().models()
-                
-

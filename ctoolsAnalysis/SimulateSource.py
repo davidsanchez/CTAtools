@@ -16,7 +16,7 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         Parameters
         ---------
         workdir : place where fits file will be temporarily stored and where the log file will be kept
-        outdir : place where the fits file 
+        outdir : place where the fits file
         '''
         super(CTA_ctools_sim,self).__init__()
         self.sim = ctools.ctobssim()
@@ -29,13 +29,13 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         ''' return a CTA_ctools_sim object based on a config file
         Parameters
         ----------
-        config    : config instance 
+        config    : config instance
         '''
         obj = cls(workdir = config["work"],outdir = config["out"])
         obj.config = config
         obj._set_center()
         return obj
-        
+
     def run_sim(self,prefix = "",nsim = 1, write=True, clobber = True):
         ''' set up and run the simulations
         Parameters
@@ -48,23 +48,23 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         for k in self.config.keys():
             try:
                 for kk in self.config[k].keys():
-                    if self.sim._has_par(kk):
+                    if self.sim.has_par(kk):
                         self.sim[kk] = self.config[k][kk]
             except:
-                if self.sim._has_par(k):
+                if self.sim.has_par(k):
                     self.sim[k] = self.config[k]
         #TODO : dirty hack
         self.sim['ra'] = float(self.config['target']['ra'])
         self.sim['dec'] = float(self.config['target']['dec'])
 
         self.sim['inobs'] = "" #be sure that this field is empty for the simulation
-        
+
         for i in range(1,nsim + 1):#run each simulation
             self.outfiles.append(path.join(self.outdir,
                 '{0:s}_event{1:05n}.fits'.format(prefix,i)))
             self.workfiles.append(path.join(self.workdir,
                 '{0:s}_event{1:05n}.fits'.format(prefix,i)))
-                
+
             self.sim['outevents'] = self.workfiles[-1]
 
             if not path.isfile(self.outfiles[-1]) or clobber: #check the excistance of the file
@@ -88,4 +88,3 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         print(self.sim.obs())
         for obscontainer in self.sim.obs():
             print(obscontainer.events())
-            
