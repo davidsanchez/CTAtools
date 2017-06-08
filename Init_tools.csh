@@ -5,6 +5,7 @@ setenv VERSION_2FGL "09"
 setenv VERSION_1FHL "07"
 setenv VERSION_2FHL "08"
 
+setenv FARM "LAPP"
 
 #code location
 setenv CTATOOLS_DIR "Where is the CTAtools code"

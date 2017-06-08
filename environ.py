@@ -13,3 +13,6 @@ VERSION_3FHL = os.environ.get("VERSION_3FHL",'')
 DIRS = {"CONFIG_DIR":CONFIG_DIR,
         "INST_DIR":INST_DIR,
         "FERMI_CATALOG_DIR":FERMI_CATALOG_DIR}
+
+FARM = os.environ.get("FARM",'')
+QUEUE = os.environ.get('QUEUE','batch')

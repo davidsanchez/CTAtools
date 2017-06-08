@@ -5,6 +5,7 @@ export VERSION_2FGL="09"
 export VERSION_1FHL="07"
 export VERSION_2FHL="08"
 
+export FARM="LAPP"
 
 #code location
 export CTATOOLS_DIR="Where is the CTAtools code"

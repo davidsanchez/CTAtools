@@ -140,7 +140,7 @@ lib.appendChild(spec)
 bkg = xml.addCTAIrfBackground(lib)
 lib.appendChild(bkg)
 
-open("out/"+source.replace(" ","")+'_forSimu3FGLPosition.xml', 'w').write(doc.toprettyxml('  '))
+open("out/"+source.replace(" ","")+'.xml', 'w').write(doc.toprettyxml('  '))
 
 ########################################"plot
 import matplotlib.pyplot as plt

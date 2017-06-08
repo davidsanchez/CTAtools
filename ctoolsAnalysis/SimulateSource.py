@@ -5,9 +5,13 @@ from os import environ, path
 from ctoolsAnalysis.config import get_config
 import ctoolsAnalysis.Loggin as Loggin
 import ctoolsAnalysis.Common as Common
-import Coordinates.CoordHandler as CH
-from astropy.coordinates import ICRS, Galactic
-from astropy import units as u
+try :
+    import Coordinates.CoordHandler as CH
+    from astropy.coordinates import ICRS, Galactic
+    from astropy import units as u
+except :
+    pass
+    #TODO
 
 class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
     ''' Class to simulate source with the ctools framework'''

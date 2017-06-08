@@ -6,18 +6,22 @@ from os import environ
 from os import path
 from ctoolsAnalysis.config import get_config
 import ctoolsAnalysis.Loggin as Loggin
-import Coordinates.CoordHandler as CH
-from astropy.coordinates import ICRS, Galactic
-from astropy import units as u
+try :
+    import Coordinates.CoordHandler as CH
+    from astropy.coordinates import ICRS, Galactic
+    from astropy import units as u
+except :
+    pass
+    #TODO
 
 class CTA_ctools_common():
     def __init__(self,workdir='.',outdir='.'):
         self.config = None
-        
+
         self.outdir = outdir
         if not os.path.exists(outdir):
             os.mkdir(outdir)
-            
+
         self.workdir = workdir
         if not os.path.exists(workdir):
             os.mkdir(workdir)
@@ -30,7 +34,7 @@ class CTA_ctools_common():
         obj.config = config
         obj._set_center()
         return obj
-        
+
     def SetEnergyRange(self,E1,E2):
         self.config["energy"]["emin"] = E1
         self.config["energy"]["emax"] = E2
@@ -58,7 +62,7 @@ class CTA_ctools_common():
         self.config["target"]['l'] =c_gal.X.degree
         self.config["target"]['b'] =c_gal.Y.degree
         self._set_center()
-        
+
     def _set_center(self):
         if self.config['space']['coordsys'] == "CEL":
             self.config['space']['xref'] = self.config["target"]['ra']
@@ -76,11 +80,11 @@ class CTA_ctools_common():
 
     def SetOutFile(self,out):
         self.config['out'] = out
-        
+
     def SetModel(self,xmlfile):
         self.config['file']['inmodel'] = xmlfile
 
-            
+
 if __name__ == '__main__':
     Sim = CTAsim()
     Sim.SetEnergyRange(0.1,100)
