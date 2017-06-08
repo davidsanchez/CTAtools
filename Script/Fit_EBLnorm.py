@@ -129,6 +129,8 @@ def getValuets(param,sourcename):
     fichier.close()
     return value_param
 
+i = int(sys.argv[1])
+
 #Define data and parameters
 TableInfo = pyfits.open(INST_DIR+'/data/table_20161213.fits')
 Gmin = 1.5
@@ -142,27 +144,29 @@ eblmodel = "dominguez"
 out = INST_DIR+"/Script/out/"
 work = INST_DIR+"/Script/work/"
 
+#for i in range(221,221): #Long-term monitoring sources are between 215 and 228 in Salvatore's fits file
+print 'i=',i
+line = ''
+sourcename,ra,dec,z,_,_ = GetInfoFromTable(TableInfo,i)
+#Correct for EBL using EBL model
+tau = OD(model = eblmodel)
+TauEBL = tau.opt_depth_array(z,energy/1e6)
 
-for i in range(215,228): #Long-term monitoring sources are between 215 and 228 in Salvatore's fits file
-    line = ''
-    sourcename,ra,dec,z,_,_ = GetInfoFromTable(TableInfo,221)
-    #Correct for EBL using EBL model
-    tau = OD(model = eblmodel)
-    TauEBL = tau.opt_depth_array(z,energy/1e6)
+for index in np.arange(Gmin,Gmax,Gstep):
+    phi = powerlaw(energy,norm,index)
 
-    for index in np.arange(Gmin,Gmax,Gstep):
-        
-        phi = powerlaw(energy,norm,index)
+    for alpha in np.arange(alphamin,alphamax,alphastep):
+        print index,'/',Gmax,'    ',alpha,'/',alphamax
+        create_fileFunctions(TauEBL, sourcename,phi,alpha,index)
+        create_xml_from_fileFunctions(sourcename,ra,dec,alpha,index)
+        fit_fileFuntions(ra,dec,alpha,index)
+        ts=getValuets("ts",sourcename)
+        line = line +str(alpha) + '\t' + str(index) + '\t' + str(ts) + '\n'
+fichier = open(out+"/"+sourcename.replace(" ","")+"_results.txt", "w")
+fichier.write(line)
+fichier.close()
 
-        for alpha in np.arange(alphamin,alphamax,alphastep):
-            
-            create_fileFunctions(TauEBL, sourcename,phi,alpha,index)
-            create_xml_from_fileFunctions(sourcename,ra,dec,alpha,index)
-            fit_fileFuntions(ra,dec,alpha,index)
-            ts=getValuets("ts",sourcename)
-            line = line +str(alpha) + '\t' + str(index) + '\t' + str(ts) + '\n'
-    fichier = open(out+"/"+sourcename.replace(" ","")+"_results.txt", "w")
-    fichier.write(line)
-    fichier.close()
+
+
 
 
