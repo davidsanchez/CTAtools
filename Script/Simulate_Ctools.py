@@ -3,7 +3,7 @@ from os.path import join
 import ctools
 from ctoolsAnalysis.config import get_config,get_default_config
 from ctoolsAnalysis.SimulateSource import CTA_ctools_sim
-from Common_Functions import *
+from Script.Common_Functions import *
 
 Astropy = True
 try :

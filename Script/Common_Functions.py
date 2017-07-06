@@ -50,7 +50,7 @@ def MakeFileFunction(energy,flux, name = 'output.txt'):
     flux : ph/MeV/s/cm2
     '''
 
-    datafile = numpy.array([energy,flux]).T
+    datafile = numpy.array([energy,flux+1.e-200]).T
     print "write file function in ",name
     fileout=open(name,'w+')
     numpy.savetxt(fileout, datafile, fmt=['%.8E','%.8E'])

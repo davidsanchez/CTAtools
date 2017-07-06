@@ -278,7 +278,7 @@ class FermiCatalogReader(Loggin.base):
     key   : name of the catalog 2FGL, 3FGL, etc...
     '''
     indice = self.CatalogData[key]['indice']
-    index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
+    index  = self.CatalogData[key]['data'].field('Powerlaw_Index')[indice]
     eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
 
     flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]

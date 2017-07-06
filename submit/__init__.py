@@ -118,14 +118,21 @@ def call(cmd,
             text += '\ncd {0}\n\n'.format(exec_dir)
 
         text +='export CTOOLS='+os.environ['CTOOLS']+'\n'
-        text +='export GAMMALIB='+os.environ['CTOOLS']+'\n'
+        text +='export GAMMALIB='+os.environ['GAMMALIB']+'\n'
         text +='source $GAMMALIB/bin/gammalib-init.sh\n'
-        text +='source $CTOOLS/bin/ctools-init.sh\n'
+        text +='source $CTOOLS/bin/ctools-init.sh\n\n'
 
         text +='export CTATOOLS_DIR='+environ.DIRS["INST_DIR"]+'\n'
-        text +='export CTATOOLS_CONF='+environ.DIRS["CONFIG_DIR"]+'\n'
-        text +='export PYTHONPATH=/usr/local/lib/python2.7/dist-packages/:$PYTHONPATH\n'
-        text +='env\n'
+        text +='export CTATOOLS_CONF='+environ.DIRS["CONFIG_DIR"]+'\n\n'
+
+	if environ.FARM=="LAPP":
+	        text +='export SOFTPATH="/gpfs/LAPP-DATA/cta/paubert/"\n'
+        	text +='export PATH=$SOFTPATH"/usr/bin:"$SOFTPATH"/usr/lib:"$SOFTPATH"/usr/lib64:$PATH"\n'
+        	text +='export LD_LIBRARY_PATH=$SOFTPATH"/usr/lib:"$SOFTPATH"/usr/lib64:$LD_LIBRARY_PATH"\n'
+        	text +='export PATH=/grid_sw/soft-dev-cta/Pipeline/anaconda3/bin:$PATH\n'
+        	text +='source activate py27\n'
+   #     text +='export PYTHONPATH=/usr/local/lib/python2.7/dist-packages/:$PYTHONPATH\n'
+   #     text +='env\n'
         text +='#PBS -o '+qsub_log+'\n'
         text +='#PBS -j oe\n'
         text += cmd
