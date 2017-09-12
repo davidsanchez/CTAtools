@@ -84,6 +84,9 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             # (the ctbin object will go out of scope one the function is
             # left)
             self.m_obs = filter.obs().copy()
+	
+	#change the inobs (data) to the selected data set
+	self.config['file']["inobs"] = self.config['file']["selectedevent"]
 
     def ctmodel(self,log=False,debug=False):
         '''

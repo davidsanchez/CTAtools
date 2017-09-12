@@ -40,7 +40,7 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         obj._set_center()
         return obj
 
-    def run_sim(self,prefix = "",nsim = 1, write=True, clobber = True):
+    def run_sim(self,prefix = "",nsim = 1, write=True, clobber = True, verbose = True):
         ''' set up and run the simulations
         Parameters
         ----------
@@ -49,7 +49,7 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         write : save file on disk
         clobber : Erase already excisting files
         '''
-        for k in self.config.keys():
+	for k in self.config.keys():
             try:
                 for kk in self.config[k].keys():
                     if self.sim.has_par(kk):
@@ -60,16 +60,24 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         #TODO : dirty hack
         self.sim['ra'] = float(self.config['target']['ra'])
         self.sim['dec'] = float(self.config['target']['dec'])
-
+        #self.sim['inmodel'] = self.config['file']['inmodel']
+	# seed value 
+        self.sim['seed'] = int(time.time())
         self.sim['inobs'] = "" #be sure that this field is empty for the simulation
+
+	print self.outdir
+	print self.workdir
 
         for i in range(1,nsim + 1):#run each simulation
             self.outfiles.append(path.join(self.outdir,
-                '{0:s}_event{1:05n}.fits'.format(prefix,i)))
+                '{0:s}_event{1:n}.fits'.format(prefix,i)))
             self.workfiles.append(path.join(self.workdir,
-                '{0:s}_event{1:05n}.fits'.format(prefix,i)))
+                '{0:s}_event{1:n}.fits'.format(prefix,i)))
 
             self.sim['outevents'] = self.workfiles[-1]
+	    if verbose :
+		self.info("Simlation "+str(i)+":")
+	    	print self.sim
 
             if not path.isfile(self.outfiles[-1]) or clobber: #check the excistance of the file
                 self.info("\nRunning {0} at {1} ...\n".format('ctobssim',

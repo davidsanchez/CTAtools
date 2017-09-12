@@ -50,7 +50,7 @@ def GetSubCmd():
   queuetext = ""
   if [ environ.QUEUE != "" ]:
       queuetext = "-q %s" %(environ.QUEUE)
-  cmd = {'LAPP' :    ['qsub -V','-l mem=4096mb'],
+  cmd = {'LAPP' :    ['qsub -V','-l mem=4096mb -lnodes=1:ppn=1'],
          'MPIK' :    ['qsub'],
          'LOCAL' :   ['qsub -V','-l nice=19 %s'%queuetext],
          'CCIN2P3' : ['qsub','-l ct=24:00:00 -l vmem=4G -l fsize=20G -l sps=1 -l os=sl6 -P P_hess']}
@@ -94,7 +94,7 @@ def call(cmd,
 
     #Number of Max jobs in the queue
     if environ.FARM=="LAPP":
-        max_jobs = 1000
+        max_jobs = 100
     elif environ.FARM=="LOCAL":
         max_jobs = 2000
     elif environ.FARM=="CCIN2P3":
@@ -121,6 +121,8 @@ def call(cmd,
         text +='export GAMMALIB='+os.environ['GAMMALIB']+'\n'
         text +='source $GAMMALIB/bin/gammalib-init.sh\n'
         text +='source $CTOOLS/bin/ctools-init.sh\n\n'
+	text +='export PFILES=/gpfs/LAPP-DATA/cta/temp\n' 
+	text +='cp $CTOOLS/syspfiles/*.par $PFILES\n'
 
         text +='export CTATOOLS_DIR='+environ.DIRS["INST_DIR"]+'\n'
         text +='export CTATOOLS_CONF='+environ.DIRS["CONFIG_DIR"]+'\n\n'
