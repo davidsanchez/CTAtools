@@ -9,17 +9,17 @@ import ctoolsAnalysis.Common as Common
 
 
 class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
-    def __init__(self,workdir='.',outdir='.',verbose = True):
+    def __init__(self,outdir='.',verbose = True):
         super(CTA_ctools_analyser,self).__init__()
         self.m_obs = None
         self.like  = None
         self.config  = None
         self.verbose = verbose
-        Common.CTA_ctools_common.__init__(self,workdir=workdir,outdir=outdir)
+        Common.CTA_ctools_common.__init__(self,outdir=outdir)
 
     @classmethod
     def fromConfig(cls, config,verbose = True):
-        obj = cls(verbose = verbose)
+        obj = cls(outdir=config["out"],verbose = verbose)
         obj.config = config
         return obj
 
@@ -35,7 +35,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             #for obs in self.m_obs:
                 #obs.events().ebounds(ebounds)
 
-    def ctselect(self,log=False,debug=False):
+    def ctselect(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
         Create ctselect instance with given parameters
         Parameters
@@ -44,51 +44,72 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         debug  : debug mode or not. This will print a lot of information
         '''
         self.info("Running ctselect to cut on events")
-        if self.m_obs:
-            filter = ct.ctselect(self.m_obs)
+
+
+        self.filter = ct.ctselect()
+        Fits_provided = False
+        if obsXml:
+            sim_obs = gl.GObservations(obsXml)
+        elif self.config['file']["inobs"] != '':
+            sim_obs = join(self.outdir,self.config['file']["inobs"])
+            Fits_provided = True
         else:
-            filter = ct.ctselect()##
+            try:
+                sim_obs = self.m_obs
+            except:
+                self.error("No observation given and no simulation run.")
 
-            for k in self.config.keys():
-                try:
-                    for kk in self.config[k].keys():
-                        if filter.has_par(kk):
-                            filter[kk] = self.config[k][kk]
-                except:
-                    if filter.has_par(k):
-                        filter[k] = self.config[k]
+        self.selectobs     = gl.GObservations()
+
+        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
+        for k in self.config.keys():
+            try:
+                for kk in self.config[k].keys():
+                    if self.filter.has_par(kk):
+                        self.filter[kk] = self.config[k][kk]
+            except:
+                if self.filter.has_par(k):
+                    self.filter[k] = self.config[k]
             
+            self.filter["inobs"] = eventfile
+            self.filter["outobs"] = join(self.outdir,self.config['file']["selectedevent"])
 
-            filter["inobs"] = join(self.workdir,self.config['file']["inobs"])
-            filter["outobs"] = join(self.workdir,self.config['file']["selectedevent"])
-        filter.logFileOpen()
-
-        if self.verbose:
-            print filter
+        for k in kwargs.keys():
+            if self.filter.has_par(k):
+                    self.filter[k] = kwargs[k] if not kwargs[k] == None else self.filter[k]
 
         # Optionally open the log file
         if log:
-            filter.logFileOpen()
+            self.filter["logfile"] = self.config['file']["tag"]+"_ctselect.log"
+            self.filter.logFileOpen()
 
         # Optionally switch-on debugging model
         if debug:
-            filter["debug"].boolean(True)
+            self.filter["debug"].boolean(True)
 
+        if self.verbose:
+            print self.filter
 
-        filter.run()
-        if not(self.m_obs):
-            filter.save()
+        self.filter.run()
+        # if not(self.m_obs):
+        self.filter.obs()[0].id(self.config['file']["selectedevent"])
+        self.filter.obs()[0].eventfile(self.config['file']["selectedevent"])
 
-        if self.m_obs:
-            # Make a deep copy of the observation that will be returned
-            # (the ctbin object will go out of scope one the function is
-            # left)
-            self.m_obs = filter.obs().copy()
+        self.filter.save()
+        self.info("Saved counts cube to {0:s}".format(self.filter["outobs"]))
+        # Append result to observations
+        self.selectobs.extend(self.filter.obs())
+
+        # if self.m_obs:
+        #     # Make a deep copy of the observation that will be returned
+        #     # (the ctbin object will go out of scope one the function is
+        #     # left)
+        #     self.m_obs = filter.obs().copy()
 	
-	#change the inobs (data) to the selected data set
-	self.config['file']["inobs"] = self.config['file']["selectedevent"]
+        # change the inobs (data) to the selected data set
+        self.config['file']["inobs"] = self.config['file']["selectedevent"]
 
-    def ctmodel(self,log=False,debug=False):
+    def ctmodel(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
         Create ctmodel instance with given parameters
         Parameters
@@ -97,46 +118,76 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         debug  : debug mode or not. This will print a lot of information
         '''
         self.info("Running ctmodel to create model map")
-        if self.m_obs:
-            model = ct.ctmodel(self.m_obs)
+
+        self.model= ct.ctmodel()
+        Fits_provided = False
+        if obsXml:
+            sim_obs = gl.GObservations(obsXml)
+        elif self.config['file']["selectedevent"] != '':
+            sim_obs = join(self.outdir,self.config['file']["selectedevent"])
+            Fits_provided = True
         else:
-            model = ct.ctmodel()
+            try:
+                sim_obs = self.m_obs
+            except:
+                self.error("No observation given and no simulation run.")
 
-            for k in self.config.keys():
-                try:
-                    for kk in self.config[k].keys():
-                        if model.has_par(kk):
-                            model[kk] = self.config[k][kk]
-                except:
-                    if model.has_par(k):
-                        model[k] = self.config[k]
+        self.modelobs     = gl.GObservations()
 
-            model["inobs"] = join(self.workdir,self.config['file']["selectedevent"])
-            model["incube"] = join(self.workdir,self.config['file']["cube"])
-            model["outcube"] = join(self.workdir,self.config['file']["model"])
+        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
+        for k in self.config.keys():
+            try:
+                for kk in self.config[k].keys():
+                    if self.model.has_par(kk):
+                        self.model[kk] = self.config[k][kk]
+            except:
+                if self.model.has_par(k):
+                    self.model[k] = self.config[k]
+
+
+        for k in kwargs.keys():
+            if self.model.has_par(k):
+                if k == 'enumbins' and not kwargs['incube']:
+                    self.model[k] = kwargs[k] if kwargs[k] else \
+                            int(np.floor(
+                            np.log10(kwargs['emax'] / \
+                            kwargs['emin'])) * \
+                            (kwargs['ebins_per_dec'] + 1)
+                            )
+                else:
+                    self.model[k] = kwargs[k] if not kwargs[k]==None else self.model[k]
+
+        self.model["inobs"] = eventfile
+        self.model["incube"] = join(self.outdir,self.config['file']["cube"])
+        self.model["outcube"] = join(self.outdir,self.config['file']["model"])
 
         # Optionally open the log file
         if log:
-            model.logFileOpen()
+            self.model["logfile"] = self.config['file']["tag"]+"_ctmodel.log"
+            self.model.logFileOpen()
 
         # Optionally switch-on debugging model
         if debug:
-            model["debug"].boolean(True)
+            self.model["debug"].boolean(True)
 
         if self.verbose:
-            print model
+            print self.model
 
         # Run ctbin application. This will loop over all observations in
         # the container and bin the events in counts maps
-        model.run()
-        model.save()
-        if self.m_obs:
-            # Make a deep copy of the observation that will be returned
-            # (the ctbin object will go out of scope one the function is
-            # left)
-            self.m_obs = model.obs().copy()
+        self.model.run()
+        self.model.save()
+        self.info("Saved Model cube to {0:s}".format(self.model["outcube"]))
+        # Append result to observations
+        self.modelobs.extend(self.bin.obs())
 
-    def ctbin(self,log=False,debug=False):
+        # if self.m_obs:
+            # # Make a deep copy of the observation that will be returned
+            # # (the ctbin object will go out of scope one the function is
+            # # left)
+            # self.m_obs = model.obs().copy()
+
+    def ctbin(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
         Create ctbin instance with given parameters
         Parameters
@@ -145,43 +196,76 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         debug  : debug mode or not. This will print a lot of information
         '''
         self.info("Running ctbin to create count map")
-        if self.m_obs:
-            bin = ct.ctbin(self.m_obs)
+
+        self.bin = ct.ctbin()
+        Fits_provided = False
+        if obsXml:
+            sim_obs = gl.GObservations(obsXml)
+        elif self.config['file']["selectedevent"] != '':
+            sim_obs = join(self.outdir,self.config['file']["selectedevent"])
+            Fits_provided = True
         else:
-            bin = ct.ctbin()
+            try:
+                sim_obs = self.m_obs
+            except:
+                self.error("No observation given and no simulation run.")
 
-            for k in self.config.keys():
-                try:
-                    for kk in self.config[k].keys():
-                        if bin.has_par(kk):
-                            bin[kk] = self.config[k][kk]
-                except:
-                    if bin.has_par(k):
-                        bin[k] = self.config[k]
+        self.cubeobs     = gl.GObservations()
 
-            bin["inobs"] = join(self.workdir,self.config['file']["selectedevent"])
-            bin["outcube"] = join(self.workdir,self.config['file']["cube"])
+        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
+        for k in self.config.keys():
+            try:
+                for kk in self.config[k].keys():
+                    if self.bin.has_par(kk):
+                        self.bin[kk] = self.config[k][kk]
+            except:
+                if self.bin.has_par(k):
+                    self.bin[k] = self.config[k]
+
+        for k in kwargs.keys():
+            if self.bin.has_par(k):
+                if k == 'enumbins':
+                    self.bin[k] = kwargs[k] if kwargs[k] else \
+                        int(np.floor(
+                        np.log10(kwargs['emax'] / \
+                        kwargs['emin'])) * \
+                        (kwargs['ebins_per_dec'] + 1)
+                        )
+                else:
+                    self.bin[k] = kwargs[k] if not kwargs[k] == None else self.bin[k]
+
+        self.bin["inobs"] = eventfile
+        self.bin["outcube"] = join(self.outdir,self.config['file']["cube"])
 
         # Optionally open the log file
         if log:
-            bin.logFileOpen()
+            self.bin["logfile"] = self.config['file']["tag"]+"_ctbin.log"
+            self.bin.logFileOpen()
 
         # Optionally switch-on debugging model
         if debug:
-            bin["debug"].boolean(True)
+            self.bin["debug"].boolean(True)
 
         if self.verbose:
-            print bin
+            print self.bin
 
         # Run ctbin application. This will loop over all observations in
         # the container and bin the events in counts maps
-        bin.run()
-        bin.save()
-        if self.m_obs:
-            # Make a deep copy of the observation that will be returned
-            # (the ctbin object will go out of scope one the function is
-            # left)
-            self.m_obs = bin.obs().copy()
+        self.bin.run()
+
+        self.bin.obs()[0].id(self.config['file']["cube"])
+        self.bin.obs()[0].eventfile(self.config['file']["cube"])
+
+        self.bin.save()
+        self.info("Saved counts cube to {0:s}".format(self.bin["outcube"]))
+        # Append result to observations
+        self.cubeobs.extend(self.bin.obs())
+
+        # if self.m_obs:
+        #     # Make a deep copy of the observation that will be returned
+        #     # (the ctbin object will go out of scope one the function is
+        #     # left)
+        #     self.m_obs = bin.obs().copy()
 
 
     def create_fit(self,log=False,debug=False):
@@ -207,12 +291,13 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
                         self.like[k] = self.config[k]
 
             if self.config["analysis"]["likelihood"] == "binned":
-                self.like["inobs"] = join(self.workdir,self.config['file']["cube"])
+                self.like["inobs"] = join(self.outdir,self.config['file']["cube"])
 
-        self.like["outmodel"] = self.config['out']+"/"+self.config['target']["name"]+"_results.xml"
+        self.like["outmodel"] = self.config['out']+"/"+self.config['file']["tag"]+"_results.xml"
 
         # Optionally open the log file
         if log:
+            self.like["logfile"] = self.config['file']["tag"]+"_ctlike.log"
             self.like.logFileOpen()
         # Optionally switch-on debugging model
         if debug:
@@ -238,16 +323,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         # Save the results in XML
         self.like.save()
         self.success("Fit performed")
-        self._moveFiles()
 
-    def _moveFiles(self):
-        '''
-        move file from the out work folder to the out folder
-        '''
-        os.system("cp "+self.config['file']['selectedevent']+" "+self.config['out'])
-        os.system("cp "+self.config['file']['inmodel']+" "+self.config['out'])
-        os.system("cp "+self.config['file']['cube']+" "+self.config['out'])
-        os.system("cp "+self.config['file']['model']+" "+self.config['out'])
 
     def PrintResults(self,srcname = ""):
         self.info("Results of the Fit")

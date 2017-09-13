@@ -1,36 +1,31 @@
 import ctools
 import gammalib
-import os
-import time
-from os import environ
-from os import path
+import os,time
+from os import environ,path
 from ctoolsAnalysis.config import get_config
 import ctoolsAnalysis.Loggin as Loggin
+Astropy = True
 try :
     import Coordinates.CoordHandler as CH
     from astropy.coordinates import ICRS, Galactic
     from astropy import units as u
+    from astropy.io import fits
 except :
-    pass
+    Astropy = False
     #TODO
 
 class CTA_ctools_common():
-    def __init__(self,workdir='.',outdir='.'):
+    def __init__(self,outdir='.'):
         self.config = None
-
         self.outdir = outdir
         if not os.path.exists(outdir):
             os.mkdir(outdir)
 
-        self.workdir = workdir
-        if not os.path.exists(workdir):
-            os.mkdir(workdir)
-
-        os.chdir(workdir)
+        os.chdir(outdir)
 
     @classmethod
     def fromConfig(cls, config):
-        obj = cls(workdir = config["work"],outdir = config["out"])
+        obj = cls(outdir = config["out"])
         obj.config = config
         obj._set_center()
         return obj
@@ -42,7 +37,6 @@ class CTA_ctools_common():
     def SetTimeRange(self,T1,T2):
         self.config['time']["tmin"] = T1
         self.config['time']["tmax"] = T2
-
 
     def SetSrcName(self,name):
         self.config['target']["name"] = name
@@ -83,6 +77,43 @@ class CTA_ctools_common():
 
     def SetModel(self,xmlfile):
         self.config['file']['inmodel'] = xmlfile
+
+
+    def add_obs_keys2model_header(self,outmodel = None):
+        # incube, inmodel, outmodel = None):
+        """
+        Add the keywords from the counts cube headers to the model cube headers
+        so that the model cubes can also be used for a ctlike analysis.
+
+        Overwrites the model cube files with updated ones of outmodel not given.
+
+        Parameters
+        ----------
+        incube: string, 
+            filename of input data observation cube
+        inmodel: string,
+            filename of output model cube
+        
+        kwargs
+        ------
+        outmodel: string, 
+            filename of output model cube (default: same as inmodel)
+        """
+        if Astropy == False :
+            print "No fits i/o support (Astropy module)"
+        c = fits.open(self.config['file']["cube"])
+        m = fits.open(self.config['file']["model"])
+        for k,v in c[0].header.items():
+            try:
+                # check if header keyword exist in model cube
+                m[0].header[k]
+            except KeyError:
+                # if not, add it
+                m[0].header[k] = v
+        # save the updated cube
+        c.close()
+        m.writeto(self.config['file']["cube"] if self.config['file']["model"] == None else self.config['file']["model"], clobber = True)
+        m.close()
 
 
 if __name__ == '__main__':

@@ -1,6 +1,6 @@
 import ctools
 import gammalib
-import os,time
+import os,time,numpy
 from os import environ, path
 from ctoolsAnalysis.config import get_config
 import ctoolsAnalysis.Loggin as Loggin
@@ -15,18 +15,16 @@ except :
 
 class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
     ''' Class to simulate source with the ctools framework'''
-    def __init__(self,workdir='.',outdir='.'):
+    def __init__(self,outdir='.'):
         ''' init function
         Parameters
         ---------
-        workdir : place where fits file will be temporarily stored and where the log file will be kept
-        outdir : place where the fits file
+        outdir : place where the fits files and the log file will be kept
         '''
         super(CTA_ctools_sim,self).__init__()
         self.sim = ctools.ctobssim()
         self.outfiles = []
-        self.workfiles = []
-        Common.CTA_ctools_common.__init__(self,workdir=workdir,outdir=outdir)
+        Common.CTA_ctools_common.__init__(self,outdir=outdir)
 
     @classmethod
     def fromConfig(cls, config):
@@ -35,7 +33,7 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         ----------
         config    : config instance
         '''
-        obj = cls(workdir = config["work"],outdir = config["out"])
+        obj = cls(outdir = config["out"])
         obj.config = config
         obj._set_center()
         return obj
@@ -61,22 +59,18 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
         self.sim['ra'] = float(self.config['target']['ra'])
         self.sim['dec'] = float(self.config['target']['dec'])
         #self.sim['inmodel'] = self.config['file']['inmodel']
-	# seed value 
-        self.sim['seed'] = int(time.time())
+        # seed value 
+        self.sim['seed'] = int(numpy.random.rand()*time.time())
         self.sim['inobs'] = "" #be sure that this field is empty for the simulation
 
-	print self.outdir
-	print self.workdir
 
         for i in range(1,nsim + 1):#run each simulation
             self.outfiles.append(path.join(self.outdir,
                 '{0:s}_event{1:n}.fits'.format(prefix,i)))
-            self.workfiles.append(path.join(self.workdir,
-                '{0:s}_event{1:n}.fits'.format(prefix,i)))
 
-            self.sim['outevents'] = self.workfiles[-1]
+            self.sim['outevents'] = self.outfiles[-1]
 	    if verbose :
-		self.info("Simlation "+str(i)+":")
+        	self.info("Simlation "+str(i)+":")
 	    	print self.sim
 
             if not path.isfile(self.outfiles[-1]) or clobber: #check the excistance of the file
@@ -87,8 +81,6 @@ class CTA_ctools_sim(Loggin.base,Common.CTA_ctools_common):
                     time.strftime("%d %b %Y %H:%M", time.gmtime())))
                 if write: #save file
                     self.sim.save() # save fits file to disk
-                self.info("Move "+self.workfiles[-1]+" to "+self.outfiles[-1])
-                os.system("mv "+self.workfiles[-1]+" "+self.outfiles[-1])
             else:
                 self.warning("Found {0:s} and clobber = {1:n}".format(self.sim,clobber))
 

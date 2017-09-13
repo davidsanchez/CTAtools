@@ -258,6 +258,8 @@ class FermiCatalogReader(Loggin.base):
         data = self.ReadPL(key)
       if model=="LogParabola":
         data = self.ReadLP(key)
+      if model=="PLExpCutoff":
+        data = self.ReadPLcutOff(key)
     except :
       self.error("No such catalog: "+key)
     
@@ -295,6 +297,34 @@ class FermiCatalogReader(Loggin.base):
     eflux = self._HandleFluxUnit(eflux)
     return [flux,eflux,index,eindex,pivot]
 
+
+  def ReadPLcutOff(self,key):
+    '''
+    read the information of the catalog in the case of a PLExpCutoff model
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
+    indice = self.CatalogData[key]['indice']
+    index  = self.CatalogData[key]['data'].field('Powerlaw_Index')[indice]
+    eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
+
+    flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]
+    eflux  = self.CatalogData[key]['data'].field('Unc_Flux_Density')[indice]
+    pivot  = self.CatalogData[key]['data'].field('Pivot_Energy')[indice]
+
+    cutoff = self.CatalogData[key]['data'].field('Cutoff')[indice]
+    ecutoff = self.CatalogData[key]['data'].field('Unc_Cutoff')[indice]
+    
+    if key == '1FHL' or key == '3FHL' :
+      pivot *= 1e3
+      flux  *= 1e-3
+      eflux *= 1e-3
+
+    pivot = self._HandleEnergyUnit(pivot)
+    flux = self._HandleFluxUnit(flux)
+    eflux = self._HandleFluxUnit(eflux)
+    return [flux,eflux,index,eindex,cutoff,ecutoff,pivot]
 
   def ReadPL2(self,key):
     '''
@@ -406,6 +436,25 @@ class FermiCatalogReader(Loggin.base):
         return -1
       return VarI[self.CatalogData[key]['indice']]
 
+    except :
+      self.error("No such catalog: "+key)
+
+
+  def GetRedshift(self,key):
+    '''
+    return the variability index of the source
+    Parameters
+    ----------
+    key   : name of the catalog here only 3FHL
+    '''
+    try : 
+      if self.CatalogData[key]['found'] == False: 
+        self.error("This source does not belong to "+key)
+      try :
+        Redshift=self.CatalogData[key]['data'].field('Redshift')
+      except:
+        return 0
+      return Redshift[self.CatalogData[key]['indice']]
     except :
       self.error("No such catalog: "+key)
 
