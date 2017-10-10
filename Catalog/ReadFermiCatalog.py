@@ -117,6 +117,21 @@ class FermiCatalogReader(Loggin.base):
         self.warning("No astropy module found, returning None")
         return None
 
+  def GetCatalogName(self,key):
+    '''
+      return the fermi name of catalo key
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
+    name=self.CatalogData[key]['data'].field('Source_Name')
+    try :
+      indice = self.CatalogData[key]['indice']
+    except :
+      self.error("cannot find source named in the "+key)
+    return name[indice]
+
+
   def GetIndices(self):
     ''' look for the table indices where the source data are in the catalog'''
     for k in self.CatalogData.keys():
@@ -249,7 +264,8 @@ class FermiCatalogReader(Loggin.base):
     '''
     if self.CatalogData[key]['found'] == False: 
         self.error("This source does not belong to "+key)
-    try:
+    # try:
+    if 1:
       model = self.CatalogData[key]['model']
       if key == "2FHL" :
         model = "PowerLaw2"
@@ -260,8 +276,11 @@ class FermiCatalogReader(Loggin.base):
         data = self.ReadLP(key)
       if model=="PLExpCutoff":
         data = self.ReadPLcutOff(key)
-    except :
-      self.error("No such catalog: "+key)
+      print model
+      if model=="PLSuperExpCutoff":
+        data = self.ReadPLSupercutOff(key)
+    # except :
+    #   self.error("No such catalog: "+key)
     
     try :
         self.CatalogData[key]['spectrum'] = PlotLibrary.Spectrum(data,Model=model,Emin=Emin,
@@ -325,6 +344,38 @@ class FermiCatalogReader(Loggin.base):
     flux = self._HandleFluxUnit(flux)
     eflux = self._HandleFluxUnit(eflux)
     return [flux,eflux,index,eindex,cutoff,ecutoff,pivot]
+
+
+  def ReadPLSupercutOff(self,key):
+    '''
+    read the information of the catalog in the case of a PLSuperExpCutoff model
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
+    indice = self.CatalogData[key]['indice']
+    index  = self.CatalogData[key]['data'].field('Powerlaw_Index')[indice]
+    eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
+
+    flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]
+    eflux  = self.CatalogData[key]['data'].field('Unc_Flux_Density')[indice]
+    pivot  = self.CatalogData[key]['data'].field('Pivot_Energy')[indice]
+
+    cutoff = self.CatalogData[key]['data'].field('Cutoff')[indice]
+    ecutoff = self.CatalogData[key]['data'].field('Unc_Cutoff')[indice]
+    
+    beta = self.CatalogData[key]['data'].field('Exp_Index')[indice]
+    ebeta = self.CatalogData[key]['data'].field('Unc_Exp_Index')[indice]
+
+    if key == '1FHL' or key == '3FHL' :
+      pivot *= 1e3
+      flux  *= 1e-3
+      eflux *= 1e-3
+
+    pivot = self._HandleEnergyUnit(pivot)
+    flux = self._HandleFluxUnit(flux)
+    eflux = self._HandleFluxUnit(eflux)
+    return [flux,eflux,index,eindex,cutoff,ecutoff,beta,ebeta,pivot]
 
   def ReadPL2(self,key):
     '''
@@ -409,6 +460,23 @@ class FermiCatalogReader(Loggin.base):
 
     except :
       self.error("No association "+asso+" in catalog: "+key)
+
+
+  def IsTeVSource(self,key):
+    '''
+    Look for TEV Flag in the catalog
+    Parameters
+    ----------
+    key   : name of the catalog 2FGL, 3FGL, etc...
+    '''
+    try :
+      Flag = self.CatalogData["3FGL"]['data'].field('TEVCAT_FLAG')[self.CatalogData[key]['indice']]
+    except  :
+      self.warning("No TeV Flag in catalog: "+key)
+    if  Flag == "P":
+      return True
+    return False
+
 
   def GetSignificance(self,key):
     '''

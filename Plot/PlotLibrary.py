@@ -48,7 +48,7 @@ class Spectrum:
     self.Emin  = Emin
     self.Emax  = Emax
     self.Model = Model
-    Model_list = ["PowerLaw","PowerLaw2","LogParabola","PLExpCutoff"]
+    Model_list = ["PowerLaw","PowerLaw2","LogParabola","PLExpCutoff","PLSuperExpCutoff"]
 
     #Check the input model
     if not(self.Model in Model_list):
@@ -83,6 +83,12 @@ class Spectrum:
         self.ErrEcut    = Parameters[5]  #Err Cutoff energy Energy in self.escale unit
         self.Ed       = Parameters[6]  #Scale energy Energy in self.escale unit
 
+    if  self.Model=="PLSuperExpCutoff" :
+        self.Ecut       = Parameters[4]  #Cutoff energy Energy in self.escale unit
+        self.ErrEcut    = Parameters[5]  #Err Cutoff energy Energy in self.escale unit
+        self.beta       = Parameters[6]  #super exponnetial index
+        self.Errbeta    = Parameters[7]  #Err super exponnetial index
+        self.Ed       = Parameters[8]  #Scale energy Energy in self.escale unit
 
   def CheckNumParemeters(self, Params):
     '''
@@ -112,6 +118,10 @@ class Spectrum:
     if  self.Model=="PLExpCutoff"  and not(len(Params)==7) :
         self.usage()
         raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 7")
+
+    if  self.Model=="PLSuperExpCutoff"  and not(len(Params)==9) :
+        self.usage()
+        raise RuntimeError("Error : Not good numbers of input parameters\n Got "+str(len(Params))+" Need 9")
 
     return Params
 
@@ -148,8 +158,14 @@ class Spectrum:
       dPhi = np.sqrt( (self.ErrNorm/self.Norm)**2 + (((1./(1-self.Gamma)-mylog(ene))-(mylog(self.Emin)*np.power(self.Emin,1-self.Gamma)-mylog(self.Emax)*np.power(self.Emax,1-self.Gamma))/D)*self.ErrGamma)**2 )*Phi
 
     if self.Model == "PLExpCutoff":
-      Phi  = self.Norm*np.power(ene/self.Ed,-self.Gamma)*np.exp(-(ene-self.Ed)/self.Ecut)
-      dPhi = np.sqrt( (self.ErrNorm/self.Norm)**2 + (mylog(ene/self.Ed)*self.ErrGamma)**2 + ((ene-self.Ed)/self.Ecut**2*self.ErrEcut)**2 )*Phi
+      Phi  = self.Norm*np.power(ene/self.Ed,-self.Gamma)*np.exp(-(ene)/self.Ecut)
+      dPhi = np.sqrt( (self.ErrNorm/self.Norm)**2 + (mylog(ene/self.Ed)*self.ErrGamma)**2 + (ene/self.Ecut**2*self.ErrEcut)**2 )*Phi
+
+    if self.Model == "PLSuperExpCutoff":
+      Phi  = self.Norm*np.power(ene/self.Ed,-self.Gamma)*np.exp(-np.power(ene/self.Ecut,-self.beta))
+      # dPhi = np.sqrt( (self.ErrNorm/self.Norm)**2 + (mylog(ene/self.Ed)*self.ErrGamma)**2 + ((ene-self.Ed)/self.Ecut**2*self.ErrEcut)**2 )*Phi
+      dPhi = np.sqrt( (self.ErrNorm/self.Norm)**2 + (mylog(ene/self.Ed)*self.ErrGamma)**2 + ((ene-self.Ed)/self.Ecut**2*self.ErrEcut)**2 + (np.power(ene/self.Ecut,-self.beta)*np.log(ene/self.Ecut)*self.Errbeta)**2 )*Phi
+
 
     if self.Model == 'LogParabola' :
       x = ene/self.Ed;
