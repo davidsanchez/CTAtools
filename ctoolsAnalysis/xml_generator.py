@@ -183,8 +183,8 @@ def addCTACubeBackground(lib):
 
     return src
 
-def addPowerLaw1(lib, name, type = "PointSource", eflux=0,
-                   flux_free=1, flux_value=1e-9, flux_scale=0,
+def addPowerLaw1(lib, name, type = "PointSource", eflux=1e5,
+                   flux_free=1, flux_value=1e-18, flux_scale=0,
                    flux_max=1000.0, flux_min=1e-5,
                    index_free=1, index_value=-2.0,
                    index_min=-5.0, index_max=5.0):
@@ -205,10 +205,10 @@ def addPowerLaw1(lib, name, type = "PointSource", eflux=0,
                  flux_free, flux_value, flux_scale, flux_min, flux_max)
     addParameter(spec, 'Index', index_free, index_value, 1.0,
                  index_min, index_max)
-    addParameter(spec, 'Scale', 0, eflux, 1.0, elim_min, elim_max)
+    addParameter(spec, 'PivotEnergy', 0, eflux, 1.0, elim_min, elim_max)
     src.appendChild(spec)
     return src
-
+    
 def addFileFunction(lib, name, type = "PointSource",filefun="out/X_File.txt",
                    flux_free=1, flux_value=1., flux_scale=1.,
                    flux_max=100000000.0, flux_min=0.0):
