@@ -66,7 +66,7 @@ for ii in xrange(len(Alpha)):
     #------------------ Make the XML model
     #SOURCE SPECTRUM
     lib,doc = xml.CreateLib()
-    spec = xml.MultiplicativeModel(lib,srcname,filename)
+    spec = xml.PowerLawEBL(lib,srcname,filename)
     spatial = xml.AddPointLike(doc,ra,dec)
     spec.appendChild(spatial)
     lib.appendChild(spec)
@@ -85,4 +85,11 @@ for ii in xrange(len(Alpha)):
     loglike_res.write(str(Alpha[ii])+" "+str(Analyse.like.opt().value())+"\n")
     
 loglike_res.close()
+d = numpy.loadtxt(srcname+"_AlphaScan_DC1.txt",unpack=True)
+plt.plot(d[0],d[1])
+plt.ylabel('Log_like' )
+plt.xlabel('Alpha')
+plt.show()
 
+
+import matplotlib.pyplot as plt

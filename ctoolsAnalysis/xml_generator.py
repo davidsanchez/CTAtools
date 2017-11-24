@@ -406,7 +406,7 @@ def addGaussian(lib, name, type = "PointSource",norm_scale=0,
     src.appendChild(spec)
     return src
     
-def MultiplicativeModel(lib,source,filefun,eflux=1e5,
+def PowerLawEBL(lib,source,filefun,eflux=1e5,
                    flux_free=1, flux_value=1e-14, flux_scale=0,
                    flux_max=1000.0, flux_min=1e-5,
                    index_free=1, index_value=-2.0,
