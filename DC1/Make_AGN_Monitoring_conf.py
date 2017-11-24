@@ -17,6 +17,7 @@ for i in xrange(len(data[0])):
     config['file']['inobs'] = cwd+"/outobs_"+srcname+".xml"
     config['file']['selectedevent'] = cwd+"/outobs_"+srcname+"_selected.xml"
     config['file']['inmodel'] = cwd+"/"+srcname+".xml"
+    config['file']['tag'] = srcname
     # verbosity
 
     from ebltable.tau_from_model import OptDepth as OD
