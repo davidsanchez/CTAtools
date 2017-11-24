@@ -405,4 +405,46 @@ def addGaussian(lib, name, type = "PointSource",norm_scale=0,
     addParameter(spec, 'Sigma', sigma_free, sigma_value, sigma_scale, sigma_min, sigma_max)
     src.appendChild(spec)
     return src
+    
+def MultiplicativeModel(lib,source,filefun,eflux=1e5,
+                   flux_free=1, flux_value=1e-14, flux_scale=0,
+                   flux_max=1000.0, flux_min=1e-5,
+                   index_free=1, index_value=-2.0,
+                   index_min=-5.0, index_max=5.0,ebl_free=0):
 
+    doc = lib.ownerDocument
+    src = doc.createElement('source')
+    src.setAttribute('name', source)
+    src.setAttribute('type', "PointSource")
+    src.setAttribute('tscalc','1')
+
+    specMulti = doc.createElement('spectrum')
+    specMulti.setAttribute('type', 'Multiplicative')
+
+    
+    elim_min = 30
+    elim_max = 3e7
+    if flux_scale == 0:
+        flux_scale = MakeScale(flux_value)
+    flux_value /= flux_scale
+    doc = lib.ownerDocument
+
+    specPL = doc.createElement('spectrum')
+    specPL.setAttribute('type', 'PowerLaw')
+    specPL.setAttribute('component', 'PowerLawComponent')
+    addParameter(specPL, 'Prefactor',
+                 flux_free, flux_value, flux_scale, flux_min, flux_max)
+    addParameter(specPL, 'Index', index_free, index_value, 1.0,
+                 index_min, index_max)
+    addParameter(specPL, 'PivotEnergy', 0, eflux, 1.0, elim_min, elim_max)
+    specMulti.appendChild(specPL)
+    
+    specfile = doc.createElement('spectrum')
+    specfile.setAttribute('type', 'FileFunction')
+    specfile.setAttribute('file', filefun)
+    specfile.setAttribute('component', "EBLComponent")
+    addParameter(specfile, 'Normalization', ebl_free, 1, 1, 1e-5, 1e5)
+    specMulti.appendChild(specfile)
+    
+    src.appendChild(specMulti)
+    return src
