@@ -17,8 +17,11 @@ for i in xrange(len(data[0])):
     config['file']['inobs'] = cwd+"/outobs_"+srcname+".xml"
     config['file']['selectedevent'] = cwd+"/outobs_"+srcname+"_selected.xml"
     config['file']['inmodel'] = cwd+"/"+srcname+".xml"
-    config['file']['tag'] = srcname
-    # verbosity
+    config["file"]["tag"] = srcname+"_DC1"
+    config["file"]["outmap"] = srcname+"_DC1_skymap.fits"
+    
+    config["space"]["xref"] = ra
+    config["space"]["yref"] = dec
 
     from ebltable.tau_from_model import OptDepth as OD
     tau = OD.readmodel(model = 'dominguez')
@@ -27,6 +30,6 @@ for i in xrange(len(data[0])):
     Tau_dominguez = tau.opt_depth(z,ETeV)
 
     Etau = numpy.interp([1.],Tau_dominguez,ETeV)
-    config['energy']['emin'] = Etau[0]
+    config['energy']['emin'] = 0.2
 
     config.write(open(srcname+"_DC1.conf", 'w'))

@@ -79,8 +79,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
                     self.filter[k] = kwargs[k] if not kwargs[k] == None else self.filter[k]
 
         # Optionally open the log file
+        self.filter["logfile"] = self.config['file']["tag"]+"_ctselect.log"
         if log:
-            self.filter["logfile"] = self.config['file']["tag"]+"_ctselect.log"
             self.filter.logFileOpen()
 
         # Optionally switch-on debugging model
@@ -108,6 +108,49 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 	
         # change the inobs (data) to the selected data set
         self.config['file']["inobs"] = self.config['file']["selectedevent"]
+
+
+    def ctskymap(self,obsXml= None, log=False,debug=False, **kwargs):
+        '''
+        Create ctskymap instance with given parameters
+        Parameters
+        ---------
+        log  : save or not the log file
+        debug  : debug mode or not. This will print a lot of information
+        '''
+        self.info("Running ctskymap to make map")
+
+
+        self.skymap = ct.ctskymap()
+        for k in self.config.keys():
+            try:
+                for kk in self.config[k].keys():
+                    if self.skymap.has_par(kk):
+                        self.skymap[kk] = self.config[k][kk]
+            except:
+                if self.skymap.has_par(k):
+                    self.skymap[k] = self.config[k]
+            
+        for k in kwargs.keys():
+            if self.skymap.has_par(k):
+                    self.skymap[k] = kwargs[k] if not kwargs[k] == None else self.skymap[k]
+
+        # Optionally open the log file
+        self.skymap["logfile"] = self.config['file']["tag"]+"_ctskymap.log"
+        if log:
+            self.skymap.logFileOpen()
+
+        # Optionally switch-on debugging model
+        if debug:
+            self.skymap["debug"].boolean(True)
+
+        if self.verbose:
+            print self.skymap
+
+        self.skymap.run()
+
+        self.skymap.save()
+        self.info("Saved sky map to {0:s}".format(self.skymap["outmap"]))
 
     def ctmodel(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
@@ -162,8 +205,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.model["outcube"] = join(self.outdir,self.config['file']["model"])
 
         # Optionally open the log file
+        self.model["logfile"] = self.config['file']["tag"]+"_ctmodel.log"
         if log:
-            self.model["logfile"] = self.config['file']["tag"]+"_ctmodel.log"
             self.model.logFileOpen()
 
         # Optionally switch-on debugging model
@@ -238,8 +281,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.bin["outcube"] = join(self.outdir,self.config['file']["cube"])
 
         # Optionally open the log file
+        self.bin["logfile"] = self.config['file']["tag"]+"_ctbin.log"
         if log:
-            self.bin["logfile"] = self.config['file']["tag"]+"_ctbin.log"
             self.bin.logFileOpen()
 
         # Optionally switch-on debugging model
@@ -296,8 +339,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.like["outmodel"] = self.config['out']+"/"+self.config['file']["tag"]+"_results.xml"
 
         # Optionally open the log file
+        self.like["logfile"] = self.config['file']["tag"]+"_ctlike.log"
         if log:
-            self.like["logfile"] = self.config['file']["tag"]+"_ctlike.log"
             self.like.logFileOpen()
         # Optionally switch-on debugging model
         if debug:
