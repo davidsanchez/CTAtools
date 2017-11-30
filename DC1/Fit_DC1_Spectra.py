@@ -26,39 +26,22 @@ lib,doc = xml.CreateLib()
 
 srcname = config["target"]["name"]
 #SOURCE SPECTRUM
-spec = xml.addPowerLaw1(lib,srcname,"PointSource",flux_value=1e-14)
+spec = xml.addPowerLaw1(lib,srcname,"PointSource",flux_value=1e-14,flux_max=1000.0, flux_min=1e-5)
 ra = config["target"]["ra"]
 dec = config["target"]["dec"]
 spatial = xml.AddPointLike(doc,ra,dec)
 spec.appendChild(spatial)
 lib.appendChild(spec)
 
-
 #CTA BACKGROUND
-#bkg = xml.addCTABackgroundPolynom(lib,[.1,.1,3,5],[0,1,1,1])
-#bkg = xml.addCTABackgroundProfile(lib)
 bkg = xml.addCTAIrfBackground(lib)
 lib.appendChild(bkg)
 
-open(srcname+'.xml', 'w').write(doc.toprettyxml('  '))
-
-#--------------------------
-
-import matplotlib.pyplot as plt
 
 #----------------- make the first DC1 selection 
-import csobsselect
-selection = csobsselect.csobsselect()
-selection["inobs"] = "$CTADATA/obs/obs_agn_baseline.xml"
-selection["outobs"] = config["file"]["inobs"]
-
-selection["pntselect"] = "CIRCLE"
-selection["coordsys"] = "CEL"
-selection["ra"] = ra
-selection["dec"] = dec
-selection["rad"] = 3.0
-selection.execute()
-print selection
+from ctoolsAnalysis.cscriptClass import CTA_ctools_script 
+Script = CTA_ctools_script.fromConfig(config)
+Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
 
 #------------------- Select the files
 Analyse = CTA_ctools_analyser.fromConfig(config)
@@ -71,21 +54,9 @@ Analyse.PrintResults()
 # print "LogLike value for ",sys.argv[-1]," ", Analyse.like.obs().logL()
 
 #------------------- make spectral point
-import csspec
-app = csspec.csspec(Analyse.like.obs())
-#app["inobs"]=config["file"]["inobs"]
-#app["inmodel"]=config["file"]["inmodel"]
-app["srcname"]=config["target"]["name"]
-app["ebinalg"]="LOG"
-
-app["emin"]=config["energy"]["emin"]
-app["emax"]=config["energy"]["emax"]
-app["enumbins"]= 5
-app["method"] = "AUTO"
-app["outfile"] = "spectrum_"+srcname+".fits "
-app.execute()
+Script.csspec(log = True,debug = False)
 
 #------------------- plot the points
 import show_spectrum
-show_spectrum.plot_spectrum(app["outfile"].value(),app["outfile"].value().replace("fits","png"))
+show_spectrum.plot_spectrum(Script.csspec["outfile"].value(),Script.csspec["outfile"].value().replace("fits","png"))
 

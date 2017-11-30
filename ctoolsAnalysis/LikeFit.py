@@ -26,14 +26,6 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
     def set_obs(self,obs):
         self.m_obs = obs #set the GObservation container
 
-    #def set_energy_boundary(self,emin,emax):
-        #self.SetEnergyRange(emin,emax)
-        #ebounds = gl.GEbounds(gl.GEnergy(emin, self.m_eunit), \
-                                #gl.GEnergy(emax, self.m_eunit))
-
-        #if self.m_obs:
-            #for obs in self.m_obs:
-                #obs.events().ebounds(ebounds)
 
     def ctselect(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
@@ -62,21 +54,11 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.selectobs     = gl.GObservations()
 
         eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
-        for k in self.config.keys():
-            try:
-                for kk in self.config[k].keys():
-                    if self.filter.has_par(kk):
-                        self.filter[kk] = self.config[k][kk]
-            except:
-                if self.filter.has_par(k):
-                    self.filter[k] = self.config[k]
-            
-            self.filter["inobs"] = eventfile
-            self.filter["outobs"] = join(self.outdir,self.config['file']["selectedevent"])
 
-        for k in kwargs.keys():
-            if self.filter.has_par(k):
-                    self.filter[k] = kwargs[k] if not kwargs[k] == None else self.filter[k]
+        self._fill_app( self.filter,log=log,debug=debug, **kwargs)
+            
+        self.filter["inobs"] = eventfile
+        self.filter["outobs"] = join(self.outdir,self.config['file']["selectedevent"])
 
         # Optionally open the log file
         self.filter["logfile"] = self.config['file']["tag"]+"_ctselect.log"
@@ -100,17 +82,11 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         # Append result to observations
         self.selectobs.extend(self.filter.obs())
 
-        # if self.m_obs:
-        #     # Make a deep copy of the observation that will be returned
-        #     # (the ctbin object will go out of scope one the function is
-        #     # left)
-        #     self.m_obs = filter.obs().copy()
-	
         # change the inobs (data) to the selected data set
         self.config['file']["inobs"] = self.config['file']["selectedevent"]
 
 
-    def ctskymap(self,obsXml= None, log=False,debug=False, **kwargs):
+    def ctskymap(self,log=False,debug=False, **kwargs):
         '''
         Create ctskymap instance with given parameters
         Parameters
@@ -122,18 +98,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
 
         self.skymap = ct.ctskymap()
-        for k in self.config.keys():
-            try:
-                for kk in self.config[k].keys():
-                    if self.skymap.has_par(kk):
-                        self.skymap[kk] = self.config[k][kk]
-            except:
-                if self.skymap.has_par(k):
-                    self.skymap[k] = self.config[k]
-            
-        for k in kwargs.keys():
-            if self.skymap.has_par(k):
-                    self.skymap[k] = kwargs[k] if not kwargs[k] == None else self.skymap[k]
+        
+        self._fill_app( self.skymap,log=log,debug=debug, **kwargs)
 
         # Optionally open the log file
         self.skymap["logfile"] = self.config['file']["tag"]+"_ctskymap.log"
@@ -177,16 +143,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.modelobs     = gl.GObservations()
 
-        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
-        for k in self.config.keys():
-            try:
-                for kk in self.config[k].keys():
-                    if self.model.has_par(kk):
-                        self.model[kk] = self.config[k][kk]
-            except:
-                if self.model.has_par(k):
-                    self.model[k] = self.config[k]
-
+        self._fill_app( self.modelobs,log=log,debug=debug, **kwargs)
 
         for k in kwargs.keys():
             if self.model.has_par(k):
@@ -255,15 +212,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.cubeobs     = gl.GObservations()
 
-        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
-        for k in self.config.keys():
-            try:
-                for kk in self.config[k].keys():
-                    if self.bin.has_par(kk):
-                        self.bin[kk] = self.config[k][kk]
-            except:
-                if self.bin.has_par(k):
-                    self.bin[k] = self.config[k]
+        self._fill_app(self.cubeobs,log=log,debug=debug, **kwargs)
 
         for k in kwargs.keys():
             if self.bin.has_par(k):
@@ -311,7 +260,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         #     self.m_obs = bin.obs().copy()
 
 
-    def create_fit(self,log=False,debug=False):
+    def create_fit(self,log=False,debug=False, **kwargs):
         '''
         Create ctlike instance with given parameters
         Parameters
@@ -324,14 +273,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             self.like = ct.ctlike(self.m_obs)
         else:
             self.like = ct.ctlike()
-            for k in self.config.keys():
-                try:
-                    for kk in self.config[k].keys():
-                        if self.like.has_par(kk):
-                            self.like[kk] = self.config[k][kk]
-                except:
-                    if self.like.has_par(k):
-                        self.like[k] = self.config[k]
+            self._fill_app(self.like,log=log,debug=debug, **kwargs)
 
             if self.config["analysis"]["likelihood"] == "binned":
                 self.like["inobs"] = join(self.outdir,self.config['file']["cube"])

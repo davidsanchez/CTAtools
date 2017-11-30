@@ -115,6 +115,29 @@ class CTA_ctools_common():
         m.writeto(self.config['file']["cube"] if self.config['file']["model"] == None else self.config['file']["model"], clobber = True)
         m.close()
 
+    def _fill_app(self,ctools_app,log=False,debug=False, **kwargs):
+        '''
+        setup the argument of a CTOOLS application
+        '''
+        for k in self.config.keys():
+            try:
+                for kk in self.config[k].keys():
+                    if ctools_app.has_par(kk):
+                        ctools_app[kk] = self.config[k][kk]
+            except:
+                if ctools_app.has_par(k):
+                    ctools_app[k] = self.config[k]
+            
+        for k in kwargs.keys():
+            if sctools_app.has_par(k):
+                    ctools_app[k] = kwargs[k] if not kwargs[k] == None else ctools_app[k]
+
+        if log:
+            ctools_app.logFileOpen()
+
+        # Optionally switch-on debugging model
+        if debug:
+            ctools_app["debug"].boolean(True)
 
 if __name__ == '__main__':
     Sim = CTAsim()

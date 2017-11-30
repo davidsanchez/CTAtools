@@ -35,30 +35,14 @@ lib.appendChild(spec)
 
 
 #CTA BACKGROUND
-#bkg = xml.addCTABackgroundPolynom(lib,[.1,.1,3,5],[0,1,1,1])
-#bkg = xml.addCTABackgroundProfile(lib)
 bkg = xml.addCTAIrfBackground(lib)
 lib.appendChild(bkg)
 
-#open(srcname+'.xml', 'w').write(doc.toprettyxml('  '))
-
-#--------------------------
-
-import matplotlib.pyplot as plt
-
 #----------------- make the first DC1 selection 
-import csobsselect
-selection = csobsselect.csobsselect()
-selection["inobs"] = "$CTADATA/obs/obs_agn_baseline.xml"
-selection["outobs"] = config["file"]["inobs"]
+from ctoolsAnalysis.cscriptClass import CTA_ctools_script 
+Script = CTA_ctools_script.fromConfig(config)
+Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
 
-selection["pntselect"] = "CIRCLE"
-selection["coordsys"] = "CEL"
-selection["ra"] = ra
-selection["dec"] = dec
-selection["rad"] = 3.0
-selection.execute()
-print selection
 
 #------------------- Select the files
 Analyse = CTA_ctools_analyser.fromConfig(config)
@@ -68,13 +52,5 @@ Analyse.ctselect(log = True)
 Analyse.ctskymap(log = True)
 
 #-------------------detect new sources
-import cssrcdetect
-srcdetect = cssrcdetect.cssrcdetect()
-srcdetect["inmap"] = config["file"]["outmap"]
-srcdetect["outmodel"] = srcname+"_srcdetec.xml"
-srcdetect["outds9file"] = srcname+"_srcdetec.reg"
-srcdetect["srcmodel"] = "POINT"
-srcdetect["bkgmodel"] = config["SkyMap"]["bkgsubtract"]
-srcdetect["threshold"] = 10.
-srcdetect.run()
-srcdetect.save()
+Script.cssrcdetect(10, log = True,debug = False)
+

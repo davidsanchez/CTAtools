@@ -27,30 +27,21 @@ for i in xrange(len(data[0])):
     if srcname == config["target"]["name"]:
         redshift = data[-1][i]
 
+
 srcname = config["target"]["name"]
 ra = config["target"]["ra"]
 dec = config["target"]["dec"]
         
 #------------------ Value of the EBL normalisation and redshift
-Alpha = numpy.arange(.1,1.5001,.1)
+Alpha = numpy.arange(.1,1.5001,.2)
 ETeV = numpy.logspace(-2,2.5,200)
-tau = OD.readmodel(model = 'dominguez')
+tau = OD.readmodel(model = 'franceschini')
 Tau_values = tau.opt_depth(redshift,ETeV)
 
-
 #----------------- make the first DC1 selection 
-import csobsselect
-selection = csobsselect.csobsselect()
-selection["inobs"] = "$CTADATA/obs/obs_agn_baseline.xml"
-selection["outobs"] = config["file"]["inobs"]
-
-selection["pntselect"] = "CIRCLE"
-selection["coordsys"] = "CEL"
-selection["ra"] = ra
-selection["dec"] = dec
-selection["rad"] = 3.0
-selection.execute()
-print selection
+from ctoolsAnalysis.cscriptClass import CTA_ctools_script 
+Script = CTA_ctools_script.fromConfig(config)
+Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
 
 #------------------- Select the files
 Analyse = CTA_ctools_analyser.fromConfig(config)
@@ -91,5 +82,3 @@ plt.ylabel('Log_like' )
 plt.xlabel('Alpha')
 plt.show()
 
-
-import matplotlib.pyplot as plt
