@@ -1,5 +1,6 @@
 import os,numpy
-cwd = os.getcwd()
+cwd = os.getcwd()+"/"+srcname
+os.system("mkdir -p "+cwd)
 import Script.Common_Functions as CF
 from ctoolsAnalysis.config import get_config,get_default_config
 
@@ -14,11 +15,12 @@ for i in xrange(len(data[0])):
     config = get_config('Template.conf')
     config = CF.MakeconfigFromFile(cwd,srcname,ra,dec,'Template.conf')
 
+    config['out'] = cwd
     config['file']['inobs'] = cwd+"/outobs_"+srcname+".xml"
     config['file']['selectedevent'] = cwd+"/outobs_"+srcname+"_selected.xml"
     config['file']['inmodel'] = cwd+"/"+srcname+".xml"
     config["file"]["tag"] = srcname+"_DC1"
-    config["file"]["outmap"] = srcname+"_DC1_skymap.fits"
+    config["file"]["outmap"] = cwd+"/"+srcname+"_DC1_skymap.fits"
     
     config["space"]["xref"] = ra
     config["space"]["yref"] = dec
