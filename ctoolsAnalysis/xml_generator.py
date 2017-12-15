@@ -448,3 +448,53 @@ def PowerLawEBL(lib,source,filefun,eflux=1e5,
     
     src.appendChild(specMulti)
     return src
+
+
+def LogParabolaEBL(lib,source,filefun,enorm=300,
+                   norm_free=1, norm_value=1e-9, norm_scale=0,
+                   norm_max=1000.0, norm_min=1e-5,
+                   alpha_free=1, alpha_value=1.0,
+                   alpha_min=.1, alpha_max=5.,
+                   beta_free=1, beta_value=1.0,
+                   beta_min=-5.0, beta_max=5.0,ebl_free=0):
+
+    doc = lib.ownerDocument
+    src = doc.createElement('source')
+    src.setAttribute('name', source)
+    src.setAttribute('type', "PointSource")
+    src.setAttribute('tscalc','1')
+
+    specMulti = doc.createElement('spectrum')
+    specMulti.setAttribute('type', 'Multiplicative')
+    
+    elim_min = 30
+    elim_max = 3e7
+
+    if enorm == 0:
+        enorm = 2e5  # meanEnergy(emin,emax,index_value)
+        norm_value *= (enorm / 100.0) ** alpha_value
+    if norm_scale == 0:
+        norm_scale = MakeScale(norm_value)
+    norm_value /= norm_scale
+    doc = lib.ownerDocument
+
+    specLP = doc.createElement('spectrum')
+    specLP.setAttribute('type', 'PowerLaw')
+    specLP.setAttribute('component', 'LogParabolaComponent')
+    addParameter(specLP, 'norm',
+                 norm_free, norm_value, norm_scale, norm_min, norm_max)
+    addParameter(specLP, 'alpha', alpha_free, alpha_value, 1.0,
+                 alpha_min, alpha_max)
+    addParameter(specLP, 'Eb', 0, enorm, 1.0, elim_min, elim_max)
+    addParameter(specLP, 'beta', beta_free, beta_value, 1.0, beta_min, beta_max)
+    specMulti.appendChild(specLP)
+    
+    specfile = doc.createElement('spectrum')
+    specfile.setAttribute('type', 'FileFunction')
+    specfile.setAttribute('file', filefun)
+    specfile.setAttribute('component', "EBLComponent")
+    addParameter(specfile, 'Normalization', ebl_free, 1, 1, 1e-5, 1e5)
+    specMulti.appendChild(specfile)
+    
+    src.appendChild(specMulti)
+    return src

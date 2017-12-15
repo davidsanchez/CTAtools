@@ -1,4 +1,5 @@
-
+# ------ Imports --------------- #
+from ebltable.tau_from_model import OptDepth as OD
 import os,sys,numpy
 from os.path import join
 import ctools
@@ -12,21 +13,48 @@ try:
 except :
     pass
 
+Model = "PL"
+Model = "LPEBL"
+Model = "PLEBL"
 
 try:  #conf file provided
-    config = get_config(sys.argv[-1])
+    config = get_config(sys.argv[-2])
+    redshift = float(sys.argv[-1])
 except :
-    print "usage : python "+sys.argv[0]+" config_file"
+    print "usage : python "+sys.argv[0]+" config_file redshift"
     exit()
 
+#------------------ Value of the EBL  and redshift
+ETeV = numpy.logspace(-2,2.5,200)
+tau = OD.readmodel(model = 'franceschini')
+Tau_values = tau.opt_depth(redshift,ETeV)
 
 #------------------ Make the XML model
 lib,doc = xml.CreateLib()
-
-
 srcname = config["target"]["name"]
 #SOURCE SPECTRUM
-spec = xml.addPowerLaw1(lib,srcname,"PointSource",flux_value=1e-14,flux_max=1000.0, flux_min=1e-5)
+if Model == "PL":
+	spec = xml.addPowerLaw1(lib,srcname,"PointSource",flux_value=1e-14,flux_max=1000.0, flux_min=1e-5)
+
+elif Model == "PLEBL":
+	#### EBL
+	filename = config["out"]+"/tau_"+srcname+".txt"
+	filefun = open(filename,"w")
+	for j in xrange(len(ETeV)):
+	    filefun.write(str(ETeV[j]*1e6)+" "+str(max(1e-10,numpy.exp(-Tau_values)[j]))+"\n")
+	#------------------ Make the XML model
+	spec = xml.PowerLawEBL(lib,srcname,filename)
+	#### EBL : end
+elif Model == "LPEBL":
+	#### EBL
+	filename = config["out"]+"/tau_"+srcname+".txt"
+	filefun = open(filename,"w")
+	for j in xrange(len(ETeV)):
+	    filefun.write(str(ETeV[j]*1e6)+" "+str(max(1e-10,numpy.exp(-Tau_values)[j]))+"\n")
+	#------------------ Make the XML model
+	spec = xml.LogParabolaEBL(lib,srcname,filename)
+	#### EBL : end
+
 ra = config["target"]["ra"]
 dec = config["target"]["dec"]
 spatial = xml.AddPointLike(doc,ra,dec)
@@ -56,7 +84,7 @@ Analyse.PrintResults()
 #------------------- make spectral point
 #5 point per decade
 npoint = int((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/5.)
-Script.csspec(npoint = ,log = True,debug = False)
+Script.csspec(npoint = npoint,log = True,debug = False)
 
 #------------------- plot the points
 import show_spectrum

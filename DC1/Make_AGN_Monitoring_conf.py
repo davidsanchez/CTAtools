@@ -1,6 +1,4 @@
 import os,numpy
-cwd = os.getcwd()+"/"+srcname
-os.system("mkdir -p "+cwd)
 import Script.Common_Functions as CF
 from ctoolsAnalysis.config import get_config,get_default_config
 
@@ -8,6 +6,8 @@ data = numpy.genfromtxt("AGN_Monitoring_list.dat",dtype=str,unpack=True)
 
 for i in xrange(len(data[0])):
     srcname = data[0][i]+data[1][i]
+    cwd = os.getcwd()+"/"+srcname
+    os.system("mkdir -p "+cwd)
     ra = data[2][i]
     dec = data[3][i]
     print srcname," ",ra," ",dec
@@ -34,4 +34,4 @@ for i in xrange(len(data[0])):
     Etau = numpy.interp([1.],Tau_dominguez,ETeV)
     config['energy']['emin'] = 0.2
 
-    config.write(open(srcname+"_DC1.conf", 'w'))
+    config.write(open(cwd+"/"+srcname+"_DC1.conf", 'w'))

@@ -50,7 +50,7 @@ Analyse.ctselect(log = True)
 loglike_res = open(srcname+"_AlphaScan_DC1.txt","w")
 
 for ii in xrange(len(Alpha)):
-    filename = "tau_"+str(redshift)+"_"+str(Alpha[ii])+".txt"
+    filename = config["out"]+"/tau_"+str(redshift)+"_"+str(Alpha[ii])+".txt"
     filefun = open(filename,"w")
     for j in xrange(len(ETeV)):
         filefun.write(str(ETeV[j]*1e6)+" "+str(max(1e-10,numpy.exp(-Alpha[ii] * Tau_values)[j]))+"\n")
