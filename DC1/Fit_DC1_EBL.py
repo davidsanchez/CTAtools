@@ -7,6 +7,7 @@ from ctoolsAnalysis.config import get_config,get_default_config
 from ctoolsAnalysis.LikeFit import CTA_ctools_analyser
 from Script.Common_Functions import *
 import  ctoolsAnalysis.xml_generator as xml
+import matplotlib.pyplot as plt
 # ------------------------------ #
 try:
     get_ipython().magic(u'pylab')
