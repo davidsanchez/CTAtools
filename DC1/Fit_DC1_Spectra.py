@@ -1,5 +1,5 @@
 
-import os,sys
+import os,sys,numpy
 from os.path import join
 import ctools
 from ctoolsAnalysis.config import get_config,get_default_config
@@ -54,7 +54,9 @@ Analyse.PrintResults()
 # print "LogLike value for ",sys.argv[-1]," ", Analyse.like.obs().logL()
 
 #------------------- make spectral point
-Script.csspec(log = True,debug = False)
+#5 point per decade
+npoint = int((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/5.)
+Script.csspec(npoint = ,log = True,debug = False)
 
 #------------------- plot the points
 import show_spectrum
