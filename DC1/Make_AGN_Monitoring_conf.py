@@ -10,8 +10,9 @@ for i in xrange(len(data[0])):
     os.system("mkdir -p "+cwd)
     ra = data[2][i]
     dec = data[3][i]
+    z = data[4][i]
     print srcname," ",ra," ",dec
-    z = 0.2
+    
     config = get_config('Template.conf')
     config = CF.MakeconfigFromFile(cwd,srcname,ra,dec,'Template.conf')
 
@@ -26,12 +27,12 @@ for i in xrange(len(data[0])):
     config["space"]["yref"] = dec
 
     from ebltable.tau_from_model import OptDepth as OD
-    tau = OD.readmodel(model = 'dominguez')
+    tau = OD.readmodel(model = 'franceschini')
     # array with energies in TeV
     ETeV = numpy.logspace(-1,1,50)
-    Tau_dominguez = tau.opt_depth(z,ETeV)
+    Tau_franceschini = tau.opt_depth(z,ETeV)
 
-    Etau = numpy.interp([1.],Tau_dominguez,ETeV)
+    Etau = numpy.interp([1.],Tau_franceschini,ETeV)
     config['energy']['emin'] = 0.2
 
     config.write(open(cwd+"/"+srcname+"_DC1.conf", 'w'))
