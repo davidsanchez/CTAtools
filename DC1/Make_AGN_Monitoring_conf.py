@@ -11,7 +11,7 @@ for i in xrange(len(data[0])):
     ra = data[2][i]
     dec = data[3][i]
     z = data[4][i]
-    print srcname," ",ra," ",dec
+    print srcname," ",ra," ",dec, " ", z
     
     config = get_config('Template.conf')
     config = CF.MakeconfigFromFile(cwd,srcname,ra,dec,'Template.conf')
@@ -33,6 +33,6 @@ for i in xrange(len(data[0])):
     Tau_franceschini = tau.opt_depth(z,ETeV)
 
     Etau = numpy.interp([1.],Tau_franceschini,ETeV)
-    config['energy']['emin'] = 0.2
+    config['energy']['emin'] = 0.05
 
     config.write(open(cwd+"/"+srcname+"_DC1.conf", 'w'))
