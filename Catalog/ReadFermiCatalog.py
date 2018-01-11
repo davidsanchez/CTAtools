@@ -240,6 +240,8 @@ class FermiCatalogReader(Loggin.base):
               tmp = self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']]
             
             dflux.append(abs(-tmp[0]+tmp[1])/2.)
+            # dflux.append(max(tmp[0],tmp[1]))
+            print max(tmp[0],tmp[1]), " ", abs(-tmp[0]+tmp[1])/2.
           else:
             dflux.append(self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']])
 

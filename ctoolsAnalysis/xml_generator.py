@@ -498,3 +498,53 @@ def LogParabolaEBL(lib,source,filefun,enorm=300,
     
     src.appendChild(specMulti)
     return src
+
+
+def PowerLawExpCutoffEBL(lib,source,filefun,eflux=1e5,
+                   flux_free=1, flux_value=1e-9, flux_scale=0,
+                   flux_max=1000.0, flux_min=1e-5,
+                   index_free=1, index_value=1.0,
+                   index_min=.1, index_max=5.,
+                   ecut_free=1, ecut_value=1.e6,
+                   ecut_min=100, ecut_max=100.e6,ebl_free=0):
+
+
+    doc = lib.ownerDocument
+    src = doc.createElement('source')
+    src.setAttribute('name', source)
+    src.setAttribute('type', "PointSource")
+    src.setAttribute('tscalc','1')
+
+    specMulti = doc.createElement('spectrum')
+    specMulti.setAttribute('type', 'Multiplicative')
+
+    
+    elim_min = 30
+    elim_max = 3e7
+    if flux_scale == 0:
+        flux_scale = MakeScale(flux_value)
+    flux_value /= flux_scale
+    doc = lib.ownerDocument
+
+    specPLEC = doc.createElement('spectrum')
+    specPLEC.setAttribute('type', 'ExponentialCutoffPowerLaw')
+    specPLEC.setAttribute('component', 'ExponentialCutoffPowerLawComponent')
+    addParameter(specPLEC, 'Prefactor',
+                 flux_free, flux_value, flux_scale, flux_min, flux_max)
+    addParameter(specPLEC, 'Index', index_free, index_value, 1.0,
+                 index_min, index_max)
+    addParameter(specPLEC, 'CutoffEnergy', ecut_free, ecut_value, 1.0,
+                 ecut_min, ecut_max)
+    addParameter(specPLEC, 'PivotEnergy', 0, eflux, 1.0, elim_min, elim_max)
+    specMulti.appendChild(specPLEC)
+    
+    specfile = doc.createElement('spectrum')
+    specfile.setAttribute('type', 'FileFunction')
+    specfile.setAttribute('file', filefun)
+    specfile.setAttribute('component', "EBLComponent")
+    addParameter(specfile, 'Normalization', ebl_free, 1, 1, 1e-5, 1e5)
+    specMulti.appendChild(specfile)
+    
+    src.appendChild(specMulti)
+    return src
+

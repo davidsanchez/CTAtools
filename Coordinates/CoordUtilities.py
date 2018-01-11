@@ -78,7 +78,7 @@ def GetAltAzLAPALMA(coords, date='2016-06-06 00:00:00'):
     '''
     #Site Location
     print "At CTA North Location at ",date
-    location = EarthLocation(lat = '28d45m43s' , lon = '-17d53m24s', height = 1800*u.m)
+    location = EarthLocation(lat = '28d45m43s' , lon = '-17d53m24s', height = 2200*u.m)
     time = Time(date, format='iso', scale='utc')
     return _GetAltAz(coords,location,time)
     

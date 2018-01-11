@@ -16,6 +16,7 @@ except :
 Model = "PL"
 Model = "LPEBL"
 Model = "PLEBL"
+Model = "PLECEBL"
 
 try:  #conf file provided
     config = get_config(sys.argv[-2])
@@ -54,6 +55,17 @@ elif Model == "LPEBL":
 	#------------------ Make the XML model
 	spec = xml.LogParabolaEBL(lib,srcname,filename)
 	#### EBL : end
+elif Model == "PLECEBL":
+	#### EBL
+	filename = config["out"]+"/tau_"+srcname+".txt"
+	filefun = open(filename,"w")
+	for j in xrange(len(ETeV)):
+	    filefun.write(str(ETeV[j]*1e6)+" "+str(max(1e-10,numpy.exp(-Tau_values)[j]))+"\n")
+	#------------------ Make the XML model
+	Ecut = 3./(1+redshift)*1e6
+	spec = xml.PowerLawExpCutoffEBL(lib,srcname,filename,ecut_value=Ecut,ecut_free=0)
+	#### EBL : end
+
 
 ra = config["target"]["ra"]
 dec = config["target"]["dec"]
@@ -65,6 +77,8 @@ lib.appendChild(spec)
 bkg = xml.addCTAIrfBackground(lib)
 lib.appendChild(bkg)
 
+# save the model into an xml file
+open(config["file"]["inmodel"], 'w').write(doc.toprettyxml('  '))
 
 #----------------- make the first DC1 selection 
 from ctoolsAnalysis.cscriptClass import CTA_ctools_script 

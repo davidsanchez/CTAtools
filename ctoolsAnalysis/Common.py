@@ -129,7 +129,7 @@ class CTA_ctools_common():
                     ctools_app[k] = self.config[k]
             
         for k in kwargs.keys():
-            if sctools_app.has_par(k):
+            if ctools_app.has_par(k):
                     ctools_app[k] = kwargs[k] if not kwargs[k] == None else ctools_app[k]
 
         if log:
