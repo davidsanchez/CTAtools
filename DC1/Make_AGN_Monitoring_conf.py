@@ -36,4 +36,3 @@ for i in xrange(len(data[0])):
     config['energy']['emin'] = 0.05
 
     config.write(open(cwd+"/"+srcname+"_DC1.conf", 'w'))
-    1/0
