@@ -90,24 +90,24 @@ Analyse = CTA_ctools_analyser.fromConfig(config)
 Analyse.ctselect(log = True)
 
 #------------------- Make the skymap
-#Analyse.ctskymap(log = True,debug = False) # --> It does not work (see comments).
+Analyse.ctskymap(log = True,debug = False) # --> It does not work (see comments).
 
-from ctools import ctskymap
-sm = ctools.ctskymap()
-sm["inobs"]=config["file"]["selectedevent"]
-sm["outmap"]= srcname+"skymap.fits"
-sm["emin"]=config["energy"]["emin"]
-sm["emax"]=config["energy"]["emax"]
-sm["nxpix"]=200
-sm["nypix"]=200
-sm["binsz"]=0.02
-sm["coordsys"]="CEL"
-sm["proj"]="CAR"
-sm["xref"]=ra
-sm["yref"]=dec
-sm["bkgsubtract"]="NONE"
-#sm["logfile"]= srcname+"_skymap.log" # --> Log file is not generated (why?)
-sm.execute()
+# from ctools import ctskymap
+# sm = ctools.ctskymap()
+# sm["inobs"]=config["file"]["selectedevent"]
+# sm["outmap"]= srcname+"skymap.fits"
+# sm["emin"]=config["energy"]["emin"]
+# sm["emax"]=config["energy"]["emax"]
+# sm["nxpix"]=200
+# sm["nypix"]=200
+# sm["binsz"]=0.02
+# sm["coordsys"]="CEL"
+# sm["proj"]="CAR"
+# sm["xref"]=ra
+# sm["yref"]=dec
+# sm["bkgsubtract"]="NONE"
+# #sm["logfile"]= srcname+"_skymap.log" # --> Log file is not generated (why?)
+# sm.execute()
 
 #------------------- fit the data
 Analyse.create_fit(log = True,debug = False)

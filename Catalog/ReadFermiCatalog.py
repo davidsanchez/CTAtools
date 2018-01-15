@@ -67,6 +67,14 @@ class FermiCatalogReader(Loggin.base):
     self.CatalogData['1FHL']['Band'] = ['Flux10_30GeV','Flux30_100GeV','Flux100_500GeV']
     self.CatalogData['2FHL']['Band'] = ['Flux50_171GeV','Flux171_585GeV','Flux585_2000GeV']
 
+    #read data points Significance
+    self.CatalogData['3FHL']['BandTS'] = ['Sqrt_TS_Band','Sqrt_TS_Band','Sqrt_TS_Band','Sqrt_TS_Band','Sqrt_TS_Band']
+    self.CatalogData['3FGL']['BandTS'] = ['Sqrt_TS100_300','Sqrt_TS300_1000','Sqrt_TS1000_3000','Sqrt_TS3000_10000','Sqrt_TS10000_100000']
+    self.CatalogData['2FGL']['BandTS'] = ['Sqrt_TS100_300','Sqrt_TS300_1000','Sqrt_TS1000_3000','Sqrt_TS3000_10000','Sqrt_TS10000_100000']
+    self.CatalogData['1FHL']['BandTS'] = ['Sqrt_TS10_30GeV','Sqrt_TS30_100GeV','Sqrt_TS100_500GeV']
+    self.CatalogData['2FHL']['BandTS'] = ['Sqrt_TS50_171GeV','Sqrt_TS171_585GeV','Sqrt_TS585_2000GeV']
+
+
     #upper bound of the energy bins of Fermi catalogs
     self.CatalogData['3FGL']['eMax'] = self._HandleEnergyUnit(numpy.array([300,1000,3000,10000,100000]))
     self.CatalogData['2FGL']['eMax'] = self._HandleEnergyUnit(numpy.array([300,1000,3000,10000,100000]))
@@ -238,16 +246,22 @@ class FermiCatalogReader(Loggin.base):
               tmp = self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']][i]
             else:
               tmp = self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']]
-            
-            dflux.append(abs(-tmp[0]+tmp[1])/2.)
+            try :
+              TS = self.CatalogData[key]['data'].field(self.CatalogData[key]['BandTS'][i])[self.CatalogData[key]['indice']]
+            except:
+              self.warning("No TS found in catalog: "+key)
+            if TS <2:
+              dflux.append(0)
+            else:
+              dflux.append(abs(tmp[0]))
             # dflux.append(max(tmp[0],tmp[1]))
-            print max(tmp[0],tmp[1]), " ", abs(-tmp[0]+tmp[1])/2.
+              print tmp[0]," ",tmp[1], " ", TS
           else:
             dflux.append(self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']])
 
       return self.CatalogData[key]['eMin'],self.CatalogData[key]['eMax'],numpy.array(flux),numpy.array(dflux)
     except :
-      self.error("No such catalog: "+key)
+      self.error("problem in GetDataPoints function for catalog : "+key)
 
 
 #########################
@@ -278,7 +292,6 @@ class FermiCatalogReader(Loggin.base):
         data = self.ReadLP(key)
       if model=="PLExpCutoff":
         data = self.ReadPLcutOff(key)
-      print model
       if model=="PLSuperExpCutoff":
         data = self.ReadPLSupercutOff(key)
     # except :

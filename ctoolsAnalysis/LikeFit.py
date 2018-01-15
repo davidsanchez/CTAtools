@@ -101,6 +101,9 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         
         self._fill_app( self.skymap,log=log,debug=debug, **kwargs)
 
+        self.skymap["xref"] = self.config['target']["ra"]
+        self.skymap["yref"] = self.config['target']["dec"]
+
         # Optionally open the log file
         self.skymap["logfile"] = self.config['file']["tag"]+"_ctskymap.log"
         if log:
