@@ -316,3 +316,40 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
     def PrintResults(self,srcname = ""):
         self.info("Results of the Fit")
         print self.like.obs().models()
+        
+    def ctbutterfly(self,log=False,debug=False, **kwargs):
+        '''
+        Create butterfly instance with given parameters
+        Parameters
+        ---------
+        log  : save or not the log file
+        debug  : debug mode or not. This will print a lot of information
+        '''
+        self.info("Running ctbuttefly to make butterfly plot")
+
+        self.ctbutterfly = ct.ctbutterfly()
+        
+        self._fill_app( self.ctbutterfly,log=log,debug=debug, **kwargs)
+
+        # Optionally open the log file
+        self.ctbutterfly["logfile"] = self.config['file']["tag"]+"_ctbutterfly.log"
+        if log:
+            self.ctbutterfly.logFileOpen()
+
+        # Optionally switch-on debugging model
+        if debug:
+            self.ctbutterfly["debug"].boolean(True)
+
+        self.ctbutterfly["srcname"]=self.config["target"]["name"]
+        self.ctbutterfly["outfile"] = self.config["target"]["name"]+"_butterfly.dat "
+        self.ctbutterfly["ebinalg"] = "LOG"
+        self.ctbutterfly["emin"]=self.config["energy"]["emin"]
+        self.ctbutterfly["emax"]=self.config["energy"]["emax"]
+
+        if self.verbose:
+            print self.ctbutterfly
+
+        self.ctbutterfly.run()
+
+        self.ctbutterfly.save()
+        self.info("Saved butterfly plot to {0:s}".format(self.ctbutterfly["outfile"]))
