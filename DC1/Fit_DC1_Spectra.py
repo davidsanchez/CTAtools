@@ -13,10 +13,10 @@ try:
 except :
     pass
 
-Model = "PL"
-Model = "LPEBL"
+#Model = "PL"
+#Model = "LPEBL"
 Model = "PLEBL"
-Model = "PLECEBL"
+#Model = "PLECEBL"
 
 try:  #conf file provided
     config = get_config(sys.argv[-2])
@@ -125,15 +125,20 @@ import show_spectrum
 show_spectrum.plot_spectrum(Script.csspec["outfile"].value(),Script.csspec["outfile"].value().replace("fits","png"))
 
 #------------------- make butterfly plot
-from ctools import ctbutterfly
-but = ctools.ctbutterfly(Analyse.like.obs())
-but["srcname"]=config["target"]["name"]
-but["ebinalg"]="LOG"
-but["emin"]=config["energy"]["emin"]
-but["emax"]=config["energy"]["emax"]
-but["outfile"] = srcname+"butterfly.dat "
-but.execute()
+Analyse.ctbutterfly(log = True,debug = False)
+
+#from ctools import ctbutterfly
+#but = ctools.ctbutterfly(Analyse.like.obs())
+#but["srcname"]=config["target"]["name"]
+#but["ebinalg"]="LOG"
+#but["emin"]=config["energy"]["emin"]
+#but["emax"]=config["energy"]["emax"]
+#but["outfile"] = srcname+"butterfly.dat "
+#but.execute()
 
 import show_butterfly
-show_butterfly.plot_butterfly(but["outfile"].value(),but["outfile"].value().replace("dat","png"))
+show_butterfly.plot_butterfly(Analyse.ctbutterfly["outfile"].value(),Analyse.ctbutterfly["outfile"].value().replace("dat","png"))
+
+#------------------- make residual maps
+Script.csresmap(log = True,debug = False)
 
