@@ -27,13 +27,17 @@ for i in xrange(len(data[0])):
     config["space"]["yref"] = dec
 
     from ebltable.tau_from_model import OptDepth as OD
-    tau = OD.readmodel(model = 'dominguez')
+    tau = OD.readmodel(model = 'franceschini')
     # array with energies in TeV
     ETeV = numpy.logspace(-1,1,50)
-    Tau_dominguez = tau.opt_depth(z,ETeV)
+    Tau_franceschini = tau.opt_depth(z,ETeV)
 
-    Etau = numpy.interp([1.],Tau_dominguez,ETeV)
+    Etau = numpy.interp([1.],Tau_franceschini,ETeV)
+    Etau_max = numpy.interp([3.],Tau_franceschini,ETeV)
+    #config['energy']['emin'] = Etau[0] #energy corresponding to tau=1
     config['energy']['emin'] = 0.05
+    config['energy']['emax'] = 1.00
+    #config['energy']['emax'] = Etau_max[0] #energy corresponding to tau=3
+    
 
     config.write(open(cwd+"/"+srcname+"_DC1.conf", 'w'))
-    1/0
