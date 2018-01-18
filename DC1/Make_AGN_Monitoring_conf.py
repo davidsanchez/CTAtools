@@ -26,6 +26,10 @@ for i in xrange(len(data[0])):
     config["space"]["xref"] = ra
     config["space"]["yref"] = dec
 
+    config["irfs"]["irf"] = "South_z20_50h"
+    config["irfs"]["caldb"] = "1dc"
+
+
     from ebltable.tau_from_model import OptDepth as OD
     tau = OD.readmodel(model = 'franceschini')
     # array with energies in TeV

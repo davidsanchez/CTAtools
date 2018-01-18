@@ -4,7 +4,7 @@ Class to read the Fermi catalogs
 """
 import pyfits,string,numpy
 from Plot import PlotLibrary
-from environ import VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL,VERSION_3FHL,FERMI_CATALOG_DIR
+from environ import VERSION_4FGL,VERSION_3FGL,VERSION_2FGL,VERSION_1FHL,VERSION_2FHL,VERSION_3FHL,FERMI_CATALOG_DIR
 import Loggin
 from math import *
 
@@ -46,14 +46,22 @@ class FermiCatalogReader(Loggin.base):
     if not(escale in supportedEscale):
         raise RuntimeError("Escale not supported")
 
+
+    # list of supported catalog
+    self.list_of_catalog = ['4FGL','3FGL','2FGL','2FHL','1FHL', '3FHL']
     #all the information are in a python dictionnary
-    self.CatalogData = {'3FGL':{},'2FGL':{},'1FHL':{},'2FHL':{},'3FHL':{}}
+    self.CatalogData = {}
+    for cat in self.list_of_catalog:
+      self.CatalogData[cat] = {}
+      # self.CatalogData = {'3FGL':{},'2FGL':{},'1FHL':{},'2FHL':{},'3FHL':{}}
+    self.CatalogData['4FGL']['fits'] = folder+"/gll_psc_"+VERSION_4FGL+".fit"
     self.CatalogData['3FGL']['fits'] = folder+"/gll_psc_v"+VERSION_3FGL+".fit"
     self.CatalogData['2FGL']['fits'] = folder+"/gll_psc_v"+VERSION_2FGL+".fit"
     self.CatalogData['1FHL']['fits'] = folder+"/gll_psch_v"+VERSION_1FHL+".fit"
     self.CatalogData['2FHL']['fits'] = folder+"/gll_psch_v"+VERSION_2FHL+".fit"
     self.CatalogData['3FHL']['fits'] = folder+"/gll_psch_v"+VERSION_3FHL+".fit"
 
+    self.CatalogData['4FGL']['data'] = pyfits.open(self.CatalogData['4FGL']['fits'])[1].data
     self.CatalogData['3FGL']['data'] = pyfits.open(self.CatalogData['3FGL']['fits'])[1].data
     self.CatalogData['2FGL']['data'] = pyfits.open(self.CatalogData['2FGL']['fits'])[1].data
     self.CatalogData['1FHL']['data'] = pyfits.open(self.CatalogData['1FHL']['fits'])[1].data
@@ -92,7 +100,9 @@ class FermiCatalogReader(Loggin.base):
     self.name = name
     self.Spec = None
 
-    self.info("creating catalogues Reader with\n\t "+self.CatalogData['3FGL']['fits']+"\n\t "+self.CatalogData['2FGL']['fits']+"\n\t "+self.CatalogData['1FHL']['fits']+"\n\t "+self.CatalogData['2FHL']['fits'])
+    self.info("creating catalogues Reader with\n\t ")
+    for cat in self.list_of_catalog:
+      print self.CatalogData[cat]['fits']+"\n\t "
 
     # get table indices corresponding to the source entry
     if name != None:
@@ -114,7 +124,7 @@ class FermiCatalogReader(Loggin.base):
     if astropy:
         c = CH.CoordinatesHandler.fromName(name,frame)
         catalog = FermiCatalogReader(None,folder)
-        for k in ['3FGL','2FGL','2FHL','1FHL', '3FHL']:
+        for k in self.list_of_catalog:
             catalog.findfromCoordinate(k,c.skycoord.ra.deg,c.skycoord.dec.deg)
             if catalog.CatalogData[k]['found']:
                 break
@@ -227,13 +237,17 @@ class FermiCatalogReader(Loggin.base):
     ----------
     key   : name of the catalog 2FGL, 3FGL, etc...
     '''
+
+    if key == "4FGL":
+      self.warning("No data points yet  in catalog: "+key)
+      return
     flux  = []
     dflux = []
     try:
       if self.CatalogData[key]['found'] == False: 
         self.error("This source does not belong to "+key)
         return 0,0,0,0
-      self.info("Results for "+key)
+      self.info("Read data points for "+key)
       for i in xrange(len(self.CatalogData[key]['Band'])):
           #print self.CatalogData[key]
           if key == '3FHL':
@@ -248,6 +262,8 @@ class FermiCatalogReader(Loggin.base):
               tmp = self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']]
             try :
               TS = self.CatalogData[key]['data'].field(self.CatalogData[key]['BandTS'][i])[self.CatalogData[key]['indice']]
+              if key == '3FHL':
+                TS = TS[i]
             except:
               self.warning("No TS found in catalog: "+key)
             if TS <2:
@@ -255,7 +271,6 @@ class FermiCatalogReader(Loggin.base):
             else:
               dflux.append(abs(tmp[0]))
             # dflux.append(max(tmp[0],tmp[1]))
-              print tmp[0]," ",tmp[1], " ", TS
           else:
             dflux.append(self.CatalogData[key]['data'].field("Unc_"+self.CatalogData[key]['Band'][i])[self.CatalogData[key]['indice']])
 
@@ -314,8 +329,12 @@ class FermiCatalogReader(Loggin.base):
     key   : name of the catalog 2FGL, 3FGL, etc...
     '''
     indice = self.CatalogData[key]['indice']
-    index  = self.CatalogData[key]['data'].field('Powerlaw_Index')[indice]
-    eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
+    if key == "4FGL":
+      index  = self.CatalogData[key]['data'].field('PL_Index')[indice]
+      eindex = self.CatalogData[key]['data'].field('Unc_PL_Index')[indice]
+    else :
+      index  = self.CatalogData[key]['data'].field('Powerlaw_Index')[indice]
+      eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
 
     flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]
     eflux  = self.CatalogData[key]['data'].field('Unc_Flux_Density')[indice]
@@ -340,8 +359,13 @@ class FermiCatalogReader(Loggin.base):
     key   : name of the catalog 2FGL, 3FGL, etc...
     '''
     indice = self.CatalogData[key]['indice']
-    index  = self.CatalogData[key]['data'].field('Powerlaw_Index')[indice]
-    eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
+
+    if key == "4FGL":
+      index  = self.CatalogData[key]['data'].field('PLEC_Index')[indice]
+      eindex = self.CatalogData[key]['data'].field('Unc_PLEC_Index_Index')[indice]
+    else :
+      index  = self.CatalogData[key]['data'].field('Powerlaw_Index')[indice]
+      eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
 
     flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]
     eflux  = self.CatalogData[key]['data'].field('Unc_Flux_Density')[indice]
@@ -419,13 +443,22 @@ class FermiCatalogReader(Loggin.base):
     key   : name of the catalog 2FGL, 3FGL, etc...
     '''
     indice = self.CatalogData[key]['indice']
+
+    if key == "4FGL":
+      index  = self.CatalogData[key]['data'].field('LP_Index')[indice]
+      eindex = self.CatalogData[key]['data'].field('Unc_LP_Index')[indice]
+      beta = self.CatalogData[key]['data'].field('LP_beta')[indice]
+      ebeta = self.CatalogData[key]['data'].field('Unc_LP_beta')[indice]
+    else :
+      index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
+      eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
+      beta = self.CatalogData[key]['data'].field('beta')[indice]
+      ebeta = self.CatalogData[key]['data'].field('Unc_beta')[indice]
     flux   = self.CatalogData[key]['data'].field('Flux_Density')[indice]
     pivot  = self.CatalogData[key]['data'].field('Pivot_Energy')[indice]
-    index  = self.CatalogData[key]['data'].field('Spectral_Index')[indice]
+    
     eflux  = self.CatalogData[key]['data'].field('Unc_Flux_Density')[indice]
-    eindex = self.CatalogData[key]['data'].field('Unc_Spectral_Index')[indice]
-    beta = self.CatalogData[key]['data'].field('beta')[indice]
-    ebeta = self.CatalogData[key]['data'].field('Unc_beta')[indice]
+
     
     if key == '1FHL'  or key == '3FHL' :
       pivot *= 1e3

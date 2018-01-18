@@ -342,9 +342,6 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.ctbutterfly["srcname"]=self.config["target"]["name"]
         self.ctbutterfly["outfile"] = self.config["target"]["name"]+"_butterfly.dat "
-        self.ctbutterfly["ebinalg"] = "LOG"
-        self.ctbutterfly["emin"]=self.config["energy"]["emin"]
-        self.ctbutterfly["emax"]=self.config["energy"]["emax"]
 
         if self.verbose:
             print self.ctbutterfly

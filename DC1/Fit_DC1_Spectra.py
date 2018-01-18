@@ -92,23 +92,6 @@ Analyse.ctselect(log = True)
 #------------------- Make the skymap
 Analyse.ctskymap(log = True,debug = False) # --> It does not work (see comments).
 
-# from ctools import ctskymap
-# sm = ctools.ctskymap()
-# sm["inobs"]=config["file"]["selectedevent"]
-# sm["outmap"]= srcname+"skymap.fits"
-# sm["emin"]=config["energy"]["emin"]
-# sm["emax"]=config["energy"]["emax"]
-# sm["nxpix"]=200
-# sm["nypix"]=200
-# sm["binsz"]=0.02
-# sm["coordsys"]="CEL"
-# sm["proj"]="CAR"
-# sm["xref"]=ra
-# sm["yref"]=dec
-# sm["bkgsubtract"]="NONE"
-# #sm["logfile"]= srcname+"_skymap.log" # --> Log file is not generated (why?)
-# sm.execute()
-
 #------------------- fit the data
 Analyse.create_fit(log = True,debug = False)
 Analyse.fit()
@@ -126,15 +109,6 @@ show_spectrum.plot_spectrum(Script.csspec["outfile"].value(),Script.csspec["outf
 
 #------------------- make butterfly plot
 Analyse.ctbutterfly(log = True,debug = False)
-
-#from ctools import ctbutterfly
-#but = ctools.ctbutterfly(Analyse.like.obs())
-#but["srcname"]=config["target"]["name"]
-#but["ebinalg"]="LOG"
-#but["emin"]=config["energy"]["emin"]
-#but["emax"]=config["energy"]["emax"]
-#but["outfile"] = srcname+"butterfly.dat "
-#but.execute()
 
 import show_butterfly
 show_butterfly.plot_butterfly(Analyse.ctbutterfly["outfile"].value(),Analyse.ctbutterfly["outfile"].value().replace("dat","png"))

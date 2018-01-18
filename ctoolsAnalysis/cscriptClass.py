@@ -7,8 +7,7 @@ import ctoolsAnalysis.Loggin as Loggin
 from ctoolsAnalysis.config import get_config
 import ctoolsAnalysis.Common as Common
 
-import csobsselect,csspec,cssrcdetect,csresmap
-
+import csobsselect,csspec,cssrcdetect,csresmap,csresspec
 class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
     def __init__(self,outdir='.',verbose = True):
         super(CTA_ctools_script,self).__init__()
@@ -68,7 +67,7 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
 
         self.csspec["srcname"] = self.config["target"]["name"]
         self.csspec["enumbins"] = nbpoint
-        #self.csspec["method"] = "AUTO" --> (for Barbara this option generates an error)
+        self.csspec["method"] = "AUTO"
         self.csspec["outfile"] = "spectrum_"+self.config["target"]["name"]+".fits "
         
         if self.verbose:
@@ -127,16 +126,8 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
         self.csresmap["logfile"] = self.config['file']["tag"]+"_resmap.log"
 
         self.csresmap["outmap"] = self.config["target"]["name"]+"_resmap.fits "
-        self.csresmap["inmodel"] = self.config["file"]["inmodel"]
-        self.csresmap["emin"] = self.config["energy"]["emin"]
-        self.csresmap["emax"] = self.config["energy"]["emax"]
-        self.csresmap["coordsys"] = "CEL"
-        self.csresmap["proj"] = "CAR"
         self.csresmap["xref"] = self.config["target"]["ra"]
         self.csresmap["yref"] = self.config["target"]["dec"]
-        self.csresmap["nxpix"] = 200
-        self.csresmap["nypix"] = 200
-        self.csresmap["binsz"] = 0.02
         self.csresmap["algorithm"] = "SIGNIFICANCE"
                 
         if self.verbose:
@@ -145,3 +136,31 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
         self.csresmap.run()
         self.csresmap.save()
         self.info("csresmap successfuly ran")
+
+
+    def csresspec(self, log=False,debug=False, **kwargs):
+        '''
+        Create csobsselect instance with given parameters
+        Parameters
+        ---------
+        log  : save or not the log file
+        debug  : debug mode or not. This will print a lot of information
+        '''
+        self.info("Running csobsselect to select data")
+
+        self.csresspec = csresspec.csresspec()
+        self._fill_app( self.csresspec,log=log,debug=debug, **kwargs)
+
+        # Optionally open the log file
+        self.csresspec["logfile"] = self.config['file']["tag"]+"_csresspec.log"
+
+        self.csresspec["stack"] = False
+        self.csresspec["mask"] = False
+        self.csresspec["algorithm"] = "SIGNIFICANCE"
+
+        if self.verbose:
+            print self.csresspec
+
+        self.csresspec.run()
+        self.csresspec.save()
+        self.info("csresspec successfuly ran")
