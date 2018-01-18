@@ -7,7 +7,7 @@ import ctoolsAnalysis.Loggin as Loggin
 from ctoolsAnalysis.config import get_config
 import ctoolsAnalysis.Common as Common
 
-import csobsselect,csspec,cssrcdetect,csresmap,csresspec
+import csobsselect,csspec,cssrcdetect,csresmap
 class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
     def __init__(self,outdir='.',verbose = True):
         super(CTA_ctools_script,self).__init__()
