@@ -6,6 +6,7 @@ import ctools
 from ctoolsAnalysis.config import get_config,get_default_config
 from ctoolsAnalysis.LikeFit import CTA_ctools_analyser
 from Script.Common_Functions import *
+from Script.Utils import LiMa
 import  ctoolsAnalysis.xml_generator as xml
 # ------------------------------ #
 try:
@@ -87,6 +88,30 @@ Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debu
 
 #------------------- Select the files
 Analyse = CTA_ctools_analyser.fromConfig(config)
+Analyse.ctselect(log = False)
+
+#------------------- make an on off analysis
+Script.csphagen(log = True)
+prefix = Script.csphagen["prefix"]
+Onfile = config['out']+"/"+prefix+"_stacked_pha_on.fits"
+Offfile = config['out']+"/"+prefix+"_stacked_pha_off.fits"
+Ondata = pyfits.open(Onfile)[1].data
+Oncount = Ondata['COUNTS']
+Alpha = Ondata['BACKSCAL']
+Ebound = pyfits.open(Onfile)[2].data
+Offdata = pyfits.open(Offfile)[1].data
+Offcount = Offdata['COUNTS']
+
+print "Excess   significance  Excess/bkg"
+for i in xrange(len(Oncount)):
+	excess = Oncount[i]-Offcount[i]*Alpha[i]
+	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
+	print excess," ",sigma," ",(excess)/Offcount[i]
+	if excess/Offcount[i]<0.05 or sigma<2:
+		Emax = Ebound[i+2]['E_MAX']
+print "Found maximal energy for the analysis to be ",Emax
+Analyse.config["energy"]["emax"] = Emax
+Script.config["energy"]["emax"] = Emax
 Analyse.ctselect(log = True)
 
 #------------------- Make the skymap
@@ -115,4 +140,5 @@ show_butterfly.plot_butterfly(Analyse.ctbutterfly["outfile"].value(),Analyse.ctb
 
 #------------------- make residual maps
 Script.csresmap(log = True,debug = False)
+
 

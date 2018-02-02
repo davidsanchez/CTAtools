@@ -74,11 +74,11 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.filter.run()
         # if not(self.m_obs):
-        self.filter.obs()[0].id(self.config['file']["selectedevent"])
-        self.filter.obs()[0].eventfile(self.config['file']["selectedevent"])
+        # self.filter.obs()[0].id(self.config['file']["selectedevent"])
+        # self.filter.obs()[0].eventfile(self.config['file']["selectedevent"])
 
         self.filter.save()
-        self.info("Saved counts cube to {0:s}".format(self.filter["outobs"]))
+        self.info("Saved selected events to {0:s}".format(self.filter["outobs"]))
         # Append result to observations
         self.selectobs.extend(self.filter.obs())
 
