@@ -92,7 +92,7 @@ Analyse.ctselect(log = False)
 
 #------------------- make an on off analysis
 Script.csphagen(log = True)
-prefix = Script.csphagen["prefix"]
+prefix = Script.config["target"]["name"]+"_onoff"
 Onfile = config['out']+"/"+prefix+"_stacked_pha_on.fits"
 Offfile = config['out']+"/"+prefix+"_stacked_pha_off.fits"
 Ondata = pyfits.open(Onfile)[1].data
