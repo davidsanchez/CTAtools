@@ -124,7 +124,7 @@ class FermiCatalogReader(Loggin.base):
     if astropy:
         c = CH.CoordinatesHandler.fromName(name,frame)
         catalog = FermiCatalogReader(None,folder)
-        for k in self.list_of_catalog:
+        for k in catalog.list_of_catalog:
             catalog.findfromCoordinate(k,c.skycoord.ra.deg,c.skycoord.dec.deg)
             if catalog.CatalogData[k]['found']:
                 break
