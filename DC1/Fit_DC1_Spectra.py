@@ -8,6 +8,7 @@ from ctoolsAnalysis.LikeFit import CTA_ctools_analyser
 from Script.Common_Functions import *
 from Script.Utils import LiMa
 import  ctoolsAnalysis.xml_generator as xml
+import pyfits
 # ------------------------------ #
 try:
     get_ipython().magic(u'pylab')
@@ -102,13 +103,16 @@ Ebound = pyfits.open(Onfile)[2].data
 Offdata = pyfits.open(Offfile)[1].data
 Offcount = Offdata['COUNTS']
 
+Emax = Analyse.config["energy"]["emax"]
 print "Excess   significance  Excess/bkg"
-for i in xrange(len(Oncount)):
+for i in xrange(len(Oncount)-2):
 	excess = Oncount[i]-Offcount[i]*Alpha[i]
 	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
 	print excess," ",sigma," ",(excess)/Offcount[i]
 	if excess/Offcount[i]<0.05 or sigma<2:
 		Emax = Ebound[i+2]['E_MAX']
+		break
+
 print "Found maximal energy for the analysis to be ",Emax
 Analyse.config["energy"]["emax"] = Emax
 Script.config["energy"]["emax"] = Emax
