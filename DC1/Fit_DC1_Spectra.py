@@ -109,7 +109,7 @@ for i in xrange(len(Oncount)-2):
 	excess = Oncount[i]-Offcount[i]*Alpha[i]
 	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
 	print excess," ",sigma," ",(excess)/Offcount[i]
-	if excess/Offcount[i]<0.05 or sigma<2:
+	if excess/Offcount[i]<0.05 or sigma<2 or excess<10:
 		Emax = Ebound[i+2]['E_MAX']
 		break
 
