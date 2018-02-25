@@ -25,9 +25,14 @@ for i in xrange(len(data[0])):
     
     config["space"]["xref"] = ra
     config["space"]["yref"] = dec
+    config["space"]["rad"] = 5
 
     config["irfs"]["irf"] = "South_z20_50h"
     config["irfs"]["caldb"] = "1dc"
+    
+    config["SkyMap"]["nxpix"] = 500
+    config["SkyMap"]["nypix"] = 500
+    config["SkyMap"]["binsz"] = 0.02
 
 
     from ebltable.tau_from_model import OptDepth as OD
