@@ -38,6 +38,12 @@ Analyse = CTA_ctools_analyser.fromConfig(config)
 Analyse.ctselect(log = False)
 
 #------------------- make an on off analysis
+
+#--- Compute the number of bins (for csphagen) according to the energy range (rule: 5 bins/decade).
+num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
+if num_bin == 0:
+    num_bin = 1
+
 Script.csphagen(log = True)
 
 #read the files and compute the new Emax
@@ -57,7 +63,7 @@ for i in xrange(len(Oncount)-2):
 	excess = Oncount[i]-Offcount[i]*Alpha[i]
 	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
 	print excess," ",sigma," ",(excess)/Offcount[i]," ",Ebound[i]['E_MIN']," ",Ebound[i]['E_MAX']
-	if excess/Offcount[i]<0.05 or sigma<2 or excess<10:
+	if excess/(Offcount[i]*Alpha[i])<0.05 or sigma<2 or excess<10:
 		Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
 		break
 
@@ -176,8 +182,10 @@ show_butterfly.plot_butterfly(Analyse.ctbutterfly["outfile"].value(),Analyse.ctb
 Script.csresmap(log = True,debug = False)
 
 #------------------- make spectral point
-#5 point per decade
-npoint = int((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/5.)
+#--- Compute the number of spectral points according to the energy range (rule: 5 bins/decade).
+npoint = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
+if npoint == 0:
+    npoint = 1
 Script.csspec(npoint = npoint,log = True,debug = False)
 
 #------------------- plot the points
