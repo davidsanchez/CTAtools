@@ -38,6 +38,9 @@ Analyse = CTA_ctools_analyser.fromConfig(config)
 Analyse.ctselect(log = False)
 
 #------------------- make an on off analysis
+num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
+if num_bin == 0:
+    num_bin = 1
 Script.csphagen(log = True)
 
 #read the files and compute the new Emax
@@ -52,16 +55,24 @@ Offdata = pyfits.open(Offfile)[1].data
 Offcount = Offdata['COUNTS']
 
 Emax = Analyse.config["energy"]["emax"]
+
 print "Excess   significance  Excess/bkg Emin Emax"
+srcname = config["target"]["name"]
+filename_excess = "BinExcess_"+srcname+".txt"
+filefun = open(filename_excess,"w")
+filefun.write("Excess    Sigma    Excess/Off    E_min[TeV]    E_max[TeV]    \n")
+
 for i in xrange(len(Oncount)-2):
 	excess = Oncount[i]-Offcount[i]*Alpha[i]
 	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
 	print excess," ",sigma," ",(excess)/Offcount[i]," ",Ebound[i]['E_MIN']," ",Ebound[i]['E_MAX']
+	filefun.write(str(excess)+" "+str(sigma)+" "+str((excess)/(Offcount[i]*Alpha[i])) +" "+str(Ebound[i]['E_MIN']*1e-9)+" "+str(Ebound[i]['E_MAX']*1e-9)+"\n")
 	if excess/Offcount[i]<0.05 or sigma<2 or excess<10:
 		Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
 		break
 
 print "Found maximal energy for the analysis to be ",Emax
+filefun.write("Found maximal energy for the analysis to be "+str(Emax))
 Analyse.config["energy"]["emax"] = Emax
 Script.config["energy"]["emax"] = Emax
 
@@ -126,7 +137,7 @@ for i in xrange(len(data[0])):
 	z = float(data[4][i])
 	Tau_values = tau.opt_depth(z,ETeV)
 	r = numpy.sqrt((ra_cat-ra)**2+(dec_cat-dec)**2)
-	if r>0.1 and r<5.:
+	if r>0.1 and r<3.:
 		print "Add source in the FoV : ",srcname_cat," ",ra_cat," ",dec_cat
 		if data[0][i] == "1FHL":
 			print "Add simple PowerLaw + EBL"
@@ -152,8 +163,6 @@ lib.appendChild(bkg)
 # save the model into an xml file
 open(config["file"]["inmodel"], 'w').write(doc.toprettyxml('  '))
 
-1/0
-
 #------------------- Select the files
 Analyse.ctselect(log = True)
 
@@ -177,8 +186,12 @@ Script.csresmap(log = True,debug = False)
 
 #------------------- make spectral point
 #5 point per decade
-npoint = int((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/5.)
-Script.csspec(npoint = npoint,log = True,debug = False)
+#npoint = int((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/5.)
+#Script.csspec(npoint = npoint,log = True,debug = False)
+npoint = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
+if npoint == 0:
+    npoint = 1
+Script.csspec(npoint,log = True,debug = False)
 
 #------------------- plot the points
 import show_spectrum
