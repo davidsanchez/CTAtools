@@ -202,7 +202,7 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
         self.csphagen["bkgmethod"] = "REFLECTED"
         self.csphagen["rad"] = 0.2
         self.csphagen["outobs"] = self.config["out"]+"/"+self.config["target"]["name"]+"_csphagen.xml"
-
+        self.csphagen["enumbins"] = nbin
         self.csphagen["prefix"] = self.config["target"]["name"]+"_onoff"
 
         if self.verbose:
