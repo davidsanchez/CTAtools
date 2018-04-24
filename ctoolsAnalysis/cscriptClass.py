@@ -52,7 +52,8 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
         self.csobsselect.save()
         self.info("csobsselect successfully ran")
         
-    def csspec(self,nbpoint=5, log=False,debug=False, **kwargs):
+    #def csspec(self,nbpoint=5, log=False,debug=False, **kwargs):
+    def csspec(self,nbpoint, log=False,debug=False, **kwargs):
         '''
         Create csspec instance with given parameters
         Parameters
@@ -178,7 +179,8 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
         self.csresspec.save()
         self.info("csresspec successfully ran")
 
-    def csphagen(self, log=False,debug=False, **kwargs):
+    #def csphagen(self, log=False,debug=False, **kwargs):
+    def csphagen(self, nbin, log=False,debug=False, **kwargs):
         '''
         Create csphagen instance with given parameters
         Parameters
