@@ -41,7 +41,8 @@ Analyse.ctselect(log = False)
 num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
 if num_bin == 0:
     num_bin = 1
-Script.csphagen(log = True)
+#Script.csphagen(log = True)
+Script.csphagen(num_bin, log = True)
 
 #read the files and compute the new Emax
 prefix = Script.config["target"]["name"]+"_onoff"
