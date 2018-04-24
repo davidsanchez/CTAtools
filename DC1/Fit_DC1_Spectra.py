@@ -65,9 +65,9 @@ filefun.write("Excess    Sigma    Excess/Off    E_min[TeV]    E_max[TeV]    \n")
 for i in xrange(len(Oncount)-2):
 	excess = Oncount[i]-Offcount[i]*Alpha[i]
 	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
-	print excess," ",sigma," ",(excess)/Offcount[i]," ",Ebound[i]['E_MIN']," ",Ebound[i]['E_MAX']
+	print excess," ",sigma," ",(excess)/(Offcount[i]*Alpha[i])," ",Ebound[i]['E_MIN']," ",Ebound[i]['E_MAX']
 	filefun.write(str(excess)+" "+str(sigma)+" "+str((excess)/(Offcount[i]*Alpha[i])) +" "+str(Ebound[i]['E_MIN']*1e-9)+" "+str(Ebound[i]['E_MAX']*1e-9)+"\n")
-	if excess/Offcount[i]<0.05 or sigma<2 or excess<10:
+	if (excess/(Offcount[i]*Alpha[i]))<0.05 or sigma<2 or excess<10:
 		Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
 		break
 
