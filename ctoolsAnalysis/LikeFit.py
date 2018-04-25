@@ -327,7 +327,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         '''
         self.info("Running ctbuttefly to make butterfly plot")
 
-        self.ctbutterfly = ct.ctbutterfly()
+        self.ctbutterfly = ct.ctbutterfly(self.like.obs())
         
         self._fill_app( self.ctbutterfly,log=log,debug=debug, **kwargs)
 

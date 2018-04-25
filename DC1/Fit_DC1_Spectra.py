@@ -41,7 +41,7 @@ Analyse.ctselect(log = False)
 num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
 if num_bin == 0:
     num_bin = 1
-#Script.csphagen(log = True)
+
 Script.csphagen(num_bin, log = True)
 
 #read the files and compute the new Emax
@@ -63,14 +63,25 @@ filename_excess = "BinExcess_"+srcname+".txt"
 filefun = open(filename_excess,"w")
 filefun.write("Excess    Sigma    Excess/Off    E_min[TeV]    E_max[TeV]    \n")
 
+
+firstbin_found = False # to prevent the algo to stop at the first bin
 for i in xrange(len(Oncount)-2):
 	excess = Oncount[i]-Offcount[i]*Alpha[i]
 	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
 	print excess," ",sigma," ",(excess)/(Offcount[i]*Alpha[i])," ",Ebound[i]['E_MIN']," ",Ebound[i]['E_MAX']
 	filefun.write(str(excess)+" "+str(sigma)+" "+str((excess)/(Offcount[i]*Alpha[i])) +" "+str(Ebound[i]['E_MIN']*1e-9)+" "+str(Ebound[i]['E_MAX']*1e-9)+"\n")
-	if (excess/(Offcount[i]*Alpha[i]))<0.05 or sigma<2 or excess<10:
-		Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
-		break
+	if ((excess/(Offcount[i]*Alpha[i]))<0.05 or sigma<2 or excess<10):
+		if firstbin_found:
+			Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
+			if (excess/(Offcount[i]*Alpha[i]))<0.05:
+				print "excess/bkg < 5 %"
+			if sigma<2:
+				print "sigma < 2"
+			if excess<10:
+				print "excess < 10 count"
+			break
+	else :
+		firstbin_found = True
 
 print "Found maximal energy for the analysis to be ",Emax
 filefun.write("Found maximal energy for the analysis to be "+str(Emax))
@@ -183,7 +194,7 @@ import show_butterfly
 show_butterfly.plot_butterfly(Analyse.ctbutterfly["outfile"].value(),Analyse.ctbutterfly["outfile"].value().replace("dat","png"))
 
 #------------------- make residual maps
-Script.csresmap(log = True,debug = False)
+Script.csresmap(Analyse.like.obs(), log = True,debug = False)
 
 #------------------- make spectral point
 #5 point per decade

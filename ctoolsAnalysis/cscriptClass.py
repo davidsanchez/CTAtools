@@ -117,7 +117,7 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
         self.info("cssrcdetect successfully ran")
         #-------------------detect new sources
         
-    def csresmap(self, log=False,debug=False, **kwargs):
+    def csresmap(self, obs, log=False,debug=False, **kwargs):
         '''
         Create resmap instance with given parameters
         Parameters
@@ -127,7 +127,7 @@ class CTA_ctools_script(Loggin.base,Common.CTA_ctools_common):
         '''
         self.info("Running csresmap to make the residual map")
 
-        self.csresmap = csresmap.csresmap()
+        self.csresmap = csresmap.csresmap(obs)
         self._fill_app( self.csresmap,log=log,debug=debug, **kwargs)
 
         # Optionally open the log file
