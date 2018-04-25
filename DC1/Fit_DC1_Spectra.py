@@ -69,7 +69,8 @@ for i in xrange(len(Oncount)-2):
 	print excess," ",sigma," ",(excess)/(Offcount[i]*Alpha[i])," ",Ebound[i]['E_MIN']," ",Ebound[i]['E_MAX']
 	filefun.write(str(excess)+" "+str(sigma)+" "+str((excess)/(Offcount[i]*Alpha[i])) +" "+str(Ebound[i]['E_MIN']*1e-9)+" "+str(Ebound[i]['E_MAX']*1e-9)+"\n")
 	if (excess/(Offcount[i]*Alpha[i]))<0.05 or sigma<2 or excess<10:
-		Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
+		#Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
+		Emax = Ebound[i+1]['E_MAX']*1e-9 #in MeV
 		break
 
 print "Found maximal energy for the analysis to be ",Emax
