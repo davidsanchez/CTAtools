@@ -49,12 +49,14 @@ Script = CTA_ctools_script.fromConfig(config)
 Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
 
 #------------------- Select the files
+print 'first selection of the data'
 Analyse = CTA_ctools_analyser.fromConfig(config)
 Analyse.ctselect(log = True)
 
 loglike_res = open(srcname+"_AlphaScan_DC1.txt","w")
 
 for ii in xrange(len(Alpha)):
+    print "Running the fit for alpha = ",Alpha[ii]
     filename = config["out"]+"/tau_"+str(redshift)+"_"+str(Alpha[ii])+".txt"
     filefun = open(filename,"w")
     for j in xrange(len(ETeV)):
@@ -141,6 +143,7 @@ for ii in xrange(len(Alpha)):
     open(srcname+'.xml', 'w').write(doc.toprettyxml('  '))
 
     #------------------- fit the data
+    Analyse.config['file']["tag"] = "EBL_Alpha"+str(Alpha[ii])
     Analyse.create_fit(log = True,debug = False)
     Analyse.fit()
 #    Analyse.PrintResults()
@@ -153,4 +156,7 @@ plt.plot(d[0],d[1])
 plt.ylabel('Log_like' )
 plt.xlabel('Alpha')
 plt.show()
-
+plt.savefig(Analyse.config['out']+"/"+Analyse.config['target']['name']+"Loglike_Alpha_profile.png", dpi=400, facecolor='w', edgecolor='w',
+            orientation='portrait', papertype=None, format=None,
+            transparent=False, bbox_inches=None, pad_inches=0.1,
+            frameon=None)
