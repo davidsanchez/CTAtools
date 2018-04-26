@@ -55,10 +55,10 @@ Ebound = pyfits.open(Onfile)[2].data
 Offdata = pyfits.open(Offfile)[1].data
 Offcount = Offdata['COUNTS']
 
-Emax = Analyse.config["energy"]["emax"]
-
-print "Excess   significance  Excess/bkg Emin Emax"
 srcname = config["target"]["name"]
+Emax = Analyse.config["energy"]["emax"]
+print "Excess   significance  Excess/bkg Emin Emax"
+
 filename_excess = "BinExcess_"+srcname+".txt"
 filefun = open(filename_excess,"w")
 filefun.write("Excess    Sigma    Excess/Off    E_min[TeV]    E_max[TeV]    \n")
