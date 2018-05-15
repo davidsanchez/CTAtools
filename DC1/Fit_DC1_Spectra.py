@@ -31,18 +31,18 @@ except :
 # #----------------- make the first DC1 selection 
 from ctoolsAnalysis.cscriptClass import CTA_ctools_script 
 Script = CTA_ctools_script.fromConfig(config)
-# Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
+Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
 
 # #------------------- Select the files
 Analyse = CTA_ctools_analyser.fromConfig(config)
-# Analyse.ctselect(log = False)
+Analyse.ctselect(log = False)
 
 # #------------------- make an on off analysis
-# num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
-# if num_bin == 0:
-#     num_bin = 1
+num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
+if num_bin == 0:
+    num_bin = 1
 
-# Script.csphagen(num_bin, log = True)
+Script.csphagen(num_bin, log = True)
 
 #read the files and compute the new Emax
 prefix = Script.config["target"]["name"]+"_onoff"
