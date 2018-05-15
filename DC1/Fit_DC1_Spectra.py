@@ -28,21 +28,21 @@ except :
     print "usage : python "+sys.argv[0]+" config_file redshift"
     exit()
 
-#----------------- make the first DC1 selection 
+# #----------------- make the first DC1 selection 
 from ctoolsAnalysis.cscriptClass import CTA_ctools_script 
 Script = CTA_ctools_script.fromConfig(config)
-Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
+# Script.csobsselect(obsXml = "$CTADATA/obs/obs_agn_baseline.xml", log = True,debug = False)
 
-#------------------- Select the files
+# #------------------- Select the files
 Analyse = CTA_ctools_analyser.fromConfig(config)
-Analyse.ctselect(log = False)
+# Analyse.ctselect(log = False)
 
-#------------------- make an on off analysis
-num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
-if num_bin == 0:
-    num_bin = 1
+# #------------------- make an on off analysis
+# num_bin = int(round((numpy.log10(config["energy"]["emax"])-numpy.log10(config["energy"]["emin"]))/0.2,0))
+# if num_bin == 0:
+#     num_bin = 1
 
-Script.csphagen(num_bin, log = True)
+# Script.csphagen(num_bin, log = True)
 
 #read the files and compute the new Emax
 prefix = Script.config["target"]["name"]+"_onoff"
@@ -55,14 +55,14 @@ Ebound = pyfits.open(Onfile)[2].data
 Offdata = pyfits.open(Offfile)[1].data
 Offcount = Offdata['COUNTS']
 
-srcname = config["target"]["name"]
+Emin = Analyse.config["energy"]["emin"]
 Emax = Analyse.config["energy"]["emax"]
-print "Excess   significance  Excess/bkg Emin Emax"
 
+print "Excess   significance  Excess/bkg Emin Emax"
+srcname = config["target"]["name"]
 filename_excess = "BinExcess_"+srcname+".txt"
 filefun = open(filename_excess,"w")
 filefun.write("Excess    Sigma    Excess/Off    E_min[TeV]    E_max[TeV]    \n")
-
 
 firstbin_found = False # to prevent the algo to stop at the first bin
 for i in xrange(len(Oncount)-2):
@@ -72,7 +72,7 @@ for i in xrange(len(Oncount)-2):
 	filefun.write(str(excess)+" "+str(sigma)+" "+str((excess)/(Offcount[i]*Alpha[i])) +" "+str(Ebound[i]['E_MIN']*1e-9)+" "+str(Ebound[i]['E_MAX']*1e-9)+"\n")
 	if ((excess/(Offcount[i]*Alpha[i]))<0.05 or sigma<2 or excess<10):
 		if firstbin_found:
-			Emax = Ebound[i+2]['E_MAX']*1e-9 #in MeV
+			Emax = Ebound[i+1]['E_MAX']*1e-9 #in MeV
 			if (excess/(Offcount[i]*Alpha[i]))<0.05:
 				print "excess/bkg < 5 %"
 			if sigma<2:
@@ -80,12 +80,17 @@ for i in xrange(len(Oncount)-2):
 			if excess<10:
 				print "excess < 10 count"
 			break
-	else :
+	if ((excess/(Offcount[i]*Alpha[i]))>0.05 and sigma>2 and excess>10 and not(firstbin_found)):
+		Emin = Ebound[i]['E_MIN']*1e-9 #in MeV
 		firstbin_found = True
 
+print "Found minimal energy for the analysis to be ",Emin
 print "Found maximal energy for the analysis to be ",Emax
 filefun.write("Found maximal energy for the analysis to be "+str(Emax))
+filefun.write("Found minimal energy for the analysis to be "+str(Emin))
+Analyse.config["energy"]["emin"] = Emin
 Analyse.config["energy"]["emax"] = Emax
+Script.config["energy"]["emin"] = Emin
 Script.config["energy"]["emax"] = Emax
 
 #------------------ Value of the EBL  and redshift
