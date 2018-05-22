@@ -86,8 +86,8 @@ for i in xrange(len(Oncount)-2):
 
 print "Found minimal energy for the analysis to be ",Emin
 print "Found maximal energy for the analysis to be ",Emax
+filefun.write("\nFound minimal energy for the analysis to be "+str(Emin)+"\n")
 filefun.write("Found maximal energy for the analysis to be "+str(Emax))
-filefun.write("Found minimal energy for the analysis to be "+str(Emin))
 Analyse.config["energy"]["emin"] = Emin
 Analyse.config["energy"]["emax"] = Emax
 Script.config["energy"]["emin"] = Emin
