@@ -25,7 +25,7 @@ for i in xrange(len(data[0])):
     
     config["space"]["xref"] = ra
     config["space"]["yref"] = dec
-    config["space"]["rad"] = 5
+    config["space"]["rad"] = 3
 
     config["irfs"]["irf"] = "South_z20_50h"
     config["irfs"]["caldb"] = "1dc"
