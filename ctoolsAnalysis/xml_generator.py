@@ -33,55 +33,55 @@ def addParameter(el, name, free, value, scale, min, max):
     el.appendChild(param)
 
 
-def AddPointLike(doc,ra,dec):
+def AddPointLike(doc,ra,dec,coord_free=0):
     spatial = doc.createElement('spatialModel')
     spatial.setAttribute('type', 'SkyDirFunction')
-    addParameter(spatial, 'RA', 0, ra, 1.0, -360.0, 360.0)
-    addParameter(spatial, 'DEC', 0, dec, 1.0, -90.0, 90.0)
+    addParameter(spatial, 'RA', int(coord_free), ra, 1.0, -360.0, 360.0)
+    addParameter(spatial, 'DEC', int(coord_free), dec, 1.0, -90.0, 90.0)
     return spatial
 
-def AddDisk(doc,ra,dec,radius):
+def AddDisk(doc,ra,dec,radius,coord_free=0):
     spatial = doc.createElement('spatialModel')
     spatial.setAttribute('type', 'DiskFunction')
-    addParameter(spatial, 'RA', 0, ra, 1.0, -360.0, 360.0)
-    addParameter(spatial, 'DEC', 0, dec, 1.0, -90.0, 90.0)
+    addParameter(spatial, 'RA', int(coord_free), ra, 1.0, -360.0, 360.0)
+    addParameter(spatial, 'DEC', int(coord_free), dec, 1.0, -90.0, 90.0)
     addParameter(spatial, 'Radius', 1, radius, 1., 0.01, 10.0)
     return spatial
 
-def AddGauss(doc,ra,dec,radius):
+def AddGauss(doc,ra,dec,radius,coord_free=0):
     spatial = doc.createElement('spatialModel')
     spatial.setAttribute('type', 'GaussFunction')
-    addParameter(spatial, 'RA', 0, ra, 1.0, -360.0, 360.0)
-    addParameter(spatial, 'DEC', 0, dec, 1.0, -90.0, 90.0)
+    addParameter(spatial, 'RA', int(coord_free), ra, 1.0, -360.0, 360.0)
+    addParameter(spatial, 'DEC', int(coord_free), dec, 1.0, -90.0, 90.0)
     addParameter(spatial, 'Sigma', 1, radius, 1., 0.01, 10.0)
     return spatial
 
 
-def AddShell(doc,ra,dec,radius,width):
+def AddShell(doc,ra,dec,radius,width,coord_free=0):
     spatial = doc.createElement('spatialModel')
     spatial.setAttribute('type', 'ShellFunction')
-    addParameter(spatial, 'RA', 0, ra, 1.0, -360.0, 360.0)
-    addParameter(spatial, 'DEC', 0, dec, 1.0, -90.0, 90.0)
+    addParameter(spatial, 'RA', int(coord_free), ra, 1.0, -360.0, 360.0)
+    addParameter(spatial, 'DEC', int(coord_free), dec, 1.0, -90.0, 90.0)
     addParameter(spatial, 'Radius', 1, radius, 1., 0.01, 10.0)
     addParameter(spatial, 'Width', 1, width, 1., 0.01, 10.0)
     return spatial
     
     
-def AddEllipticalDisk(doc,ra,dec,PA,MinorRadius,MajorRadius):
+def AddEllipticalDisk(doc,ra,dec,PA,MinorRadius,MajorRadius,coord_free=0):
     spatial = doc.createElement('spatialModel')
     spatial.setAttribute('type', 'EllipticalDisk')
-    addParameter(spatial, 'RA', 0, ra, 1.0, -360.0, 360.0)
-    addParameter(spatial, 'DEC', 0, dec, 1.0, -90.0, 90.0)
+    addParameter(spatial, 'RA', int(coord_free), ra, 1.0, -360.0, 360.0)
+    addParameter(spatial, 'DEC', int(coord_free), dec, 1.0, -90.0, 90.0)
     addParameter(spatial, 'PA', 0, PA, 1.0, -360.0, 360.0)
     addParameter(spatial, 'MinorRadius', 1, MinorRadius, 1., 0.001, 10.0)
     addParameter(spatial, 'MajorRadius', 1, MajorRadius, 1., 0.001, 10.0)
     return spatial
 
-def AddEllipticalGauss(doc,ra,dec,PA,MinorRadius,MajorRadius):
+def AddEllipticalGauss(doc,ra,dec,PA,MinorRadius,MajorRadius,coord_free=0):
     spatial = doc.createElement('spatialModel')
     spatial.setAttribute('type', 'EllipticalGauss')
-    addParameter(spatial, 'RA', 0, ra, 1.0, -360.0, 360.0)
-    addParameter(spatial, 'DEC', 0, dec, 1.0, -90.0, 90.0)
+    addParameter(spatial, 'RA', int(coord_free), ra, 1.0, -360.0, 360.0)
+    addParameter(spatial, 'DEC', int(coord_free), dec, 1.0, -90.0, 90.0)
     addParameter(spatial, 'PA', 1, PA, 1.0, -360.0, 360.0)
     addParameter(spatial, 'MinorRadius', 1, MinorRadius, 1., 0.001, 10.0)
     addParameter(spatial, 'MajorRadius', 1, MajorRadius, 1., 0.001, 10.0)
