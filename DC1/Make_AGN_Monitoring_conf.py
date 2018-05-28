@@ -25,7 +25,7 @@ for i in xrange(len(data[0])):
     
     config["space"]["xref"] = ra
     config["space"]["yref"] = dec
-    config["space"]["rad"] = 5
+    config["space"]["rad"] = 3
 
     config["irfs"]["irf"] = "South_z20_50h"
     config["irfs"]["caldb"] = "1dc"
@@ -45,7 +45,7 @@ for i in xrange(len(data[0])):
     Etau_max = numpy.interp([3.],Tau_franceschini,ETeV)
     #config['energy']['emin'] = Etau[0] #energy corresponding to tau=1
     config['energy']['emin'] = 0.05
-    config['energy']['emax'] = 1.00
+    config['energy']['emax'] = 50.0
     #config['energy']['emax'] = Etau_max[0] #energy corresponding to tau=3
     
 
