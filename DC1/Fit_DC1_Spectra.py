@@ -56,7 +56,7 @@ Offdata = pyfits.open(Offfile)[1].data
 Offcount = Offdata['COUNTS']
 
 Emin = Analyse.config["energy"]["emin"]
-Emax = Analyse.config["energy"]["emax"]
+Emax =  Ebound[2]['E_MAX']*1e-9 #in MeV Analysis performed just in the first 2 bins.
 
 print "Excess   significance  Excess/bkg Emin Emax"
 srcname = config["target"]["name"]
@@ -64,13 +64,14 @@ filename_excess = "BinExcess_"+srcname+".txt"
 filefun = open(filename_excess,"w")
 filefun.write("Excess    Sigma    Excess/Off    E_min[TeV]    E_max[TeV]    \n")
 
+Emin
 firstbin_found = False # to prevent the algo to stop at the first bin
 for i in xrange(len(Oncount)-2):
 	excess = Oncount[i]-Offcount[i]*Alpha[i]
 	sigma = LiMa(Oncount[i],Offcount[i],Alpha[i])
 	print excess," ",sigma," ",(excess)/(Offcount[i]*Alpha[i])," ",Ebound[i]['E_MIN']," ",Ebound[i]['E_MAX']
 	filefun.write(str(excess)+" "+str(sigma)+" "+str((excess)/(Offcount[i]*Alpha[i])) +" "+str(Ebound[i]['E_MIN']*1e-9)+" "+str(Ebound[i]['E_MAX']*1e-9)+"\n")
-	if ((excess/(Offcount[i]*Alpha[i]))<0.05 or sigma<2 or excess<10):
+	if ((excess/(Offcount[i]*Alpha[i]))<0.05 or sigma<2 or excess<10) and 0:
 		if firstbin_found:
 			Emax = Ebound[i+1]['E_MAX']*1e-9 #in MeV
 			if (excess/(Offcount[i]*Alpha[i]))<0.05:
