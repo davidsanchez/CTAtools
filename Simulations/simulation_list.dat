@@ -1,0 +1,6 @@
+
+# name 		      ra           dec          z	EBL_mod	   Spec_mod   Prefactor [ph/cm2/s/MeV]  Pivot_E[MeV]   Index	Cur.   E_cutoff   n_hours  E_min [TeV]   E_max [TeV]
+  PKS  0507+17	      77.509871    18.011551    0.416   dominguez  EBLPW      1.5e-10			300.000	       -2.2     0      ...        1.5      0.03		 8
+  PKS  0507+17_a      77.509871    18.011551    0.416   dominguez  EBLPW      1.5e-10			300.000	       -2.5     0      ...        1.0      0.03		 8
+  PKS  0507+17_b      77.509871    18.011551    0.416   dominguez  EBLPW      1.5e-10			300.000	       -3.2     0      ...        2.5      0.03		 8
+
