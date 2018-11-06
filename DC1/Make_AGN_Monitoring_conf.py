@@ -33,6 +33,17 @@ for i in xrange(len(data[0])):
     config["SkyMap"]["nxpix"] = 500
     config["SkyMap"]["nypix"] = 500
     config["SkyMap"]["binsz"] = 0.02
+    
+    config["simulation"]["pivot_sim"] = 2000
+    config["simulation"]["prefactor_sim"] = 1.465
+    config["simulation"]["prefactor_max_sim"] = 1.665
+    config["simulation"]["prefactor_min_sim"] = 1.275
+    config["simulation"]["prefactor_scale_sim"] = 1e-10
+    config["simulation"]["index_value_sim"] = -2.184
+    config["simulation"]["index_min_sim"] = -2.3334
+    config["simulation"]["index_maz_sim"] = -2.0346
+    config["simulation"]["emin_sim"] = 0.03 #TeV
+    config["simulation"]["emax_sim"] = 8    #TeV
 
 
     from ebltable.tau_from_model import OptDepth as OD
