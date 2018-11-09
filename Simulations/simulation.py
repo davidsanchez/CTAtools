@@ -126,8 +126,8 @@ for i in range(1, n_simulations+1):
     sm["irf"]= config["irfs"]["irf"]
     #sm["edisp"]=yes
     sm["seed"]=seeds[i-1]
-    sm["ra"]= config["target"]["ra"]
-    sm["dec"]= config["target"]["dec"]
+    sm["ra"]= config["target"]["ra"]+0.4   # +0.4 deg to create an offset with respect to the source position.
+    sm["dec"]= config["target"]["dec"]+0.4 # +0.4 deg to create an offset with respect to the source position.
     sm["rad"]= 3
     sm["tmin"]= start_time_MET
     sm["tmax"]= end_time_MET
