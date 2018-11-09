@@ -61,13 +61,13 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.filter["outobs"] = join(self.outdir,self.config['file']["selectedevent"])
 
         # Optionally open the log file
-        self.filter["logfile"] = self.config['file']["tag"]+"_ctselect.log"
-        if log:
-            self.filter.logFileOpen()
+        # self.filter["logfile"] = self.config['file']["tag"]+"_ctselect.log"
+        # if log:
+        #     self.filter.logFileOpen()
 
-        # Optionally switch-on debugging model
-        if debug:
-            self.filter["debug"].boolean(True)
+        # # Optionally switch-on debugging model
+        # if debug:
+        #     self.filter["debug"].boolean(True)
 
         if self.verbose:
             print self.filter
@@ -105,13 +105,13 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.skymap["yref"] = self.config['target']["dec"]
 
         # Optionally open the log file
-        self.skymap["logfile"] = self.config['file']["tag"]+"_ctskymap.log"
-        if log:
-            self.skymap.logFileOpen()
+        # self.skymap["logfile"] = self.config['file']["tag"]+"_ctskymap.log"
+        # if log:
+        #     self.skymap.logFileOpen()
 
-        # Optionally switch-on debugging model
-        if debug:
-            self.skymap["debug"].boolean(True)
+        # # Optionally switch-on debugging model
+        # if debug:
+        #     self.skymap["debug"].boolean(True)
 
         if self.verbose:
             print self.skymap
@@ -161,17 +161,17 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
                     self.model[k] = kwargs[k] if not kwargs[k]==None else self.model[k]
 
         self.model["inobs"] = eventfile
-        self.model["incube"] = join(self.outdir,self.config['file']["cube"])
+        self.model["incube"] = join(self.outdir,self.config['file']["cntcube"])
         self.model["outcube"] = join(self.outdir,self.config['file']["model"])
 
         # Optionally open the log file
-        self.model["logfile"] = self.config['file']["tag"]+"_ctmodel.log"
-        if log:
-            self.model.logFileOpen()
+        # self.model["logfile"] = self.config['file']["tag"]+"_ctmodel.log"
+        # if log:
+        #     self.model.logFileOpen()
 
-        # Optionally switch-on debugging model
-        if debug:
-            self.model["debug"].boolean(True)
+        # # Optionally switch-on debugging model
+        # if debug:
+        #     self.model["debug"].boolean(True)
 
         if self.verbose:
             print self.model
@@ -213,9 +213,11 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             except:
                 self.error("No observation given and no simulation run.")
 
-        self.cubeobs     = gl.GObservations()
+        self.cubeobs = gl.GObservations()
 
-        self._fill_app(self.cubeobs,log=log,debug=debug, **kwargs)
+        self._fill_app(self.bin,log=log,debug=debug, **kwargs)
+
+        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
 
         for k in kwargs.keys():
             if self.bin.has_par(k):
@@ -230,16 +232,16 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
                     self.bin[k] = kwargs[k] if not kwargs[k] == None else self.bin[k]
 
         self.bin["inobs"] = eventfile
-        self.bin["outcube"] = join(self.outdir,self.config['file']["cube"])
+        self.bin["outcube"] = join(self.outdir,self.config['file']["cntcube"])
 
         # Optionally open the log file
-        self.bin["logfile"] = self.config['file']["tag"]+"_ctbin.log"
-        if log:
-            self.bin.logFileOpen()
+        # self.bin["logfile"] = self.config['file']["tag"]+"_ctbin.log"
+        # if log:
+        #     self.bin.logFileOpen()
 
-        # Optionally switch-on debugging model
-        if debug:
-            self.bin["debug"].boolean(True)
+        # # Optionally switch-on debugging model
+        # if debug:
+        #     self.bin["debug"].boolean(True)
 
         if self.verbose:
             print self.bin
@@ -248,8 +250,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         # the container and bin the events in counts maps
         self.bin.run()
 
-        self.bin.obs()[0].id(self.config['file']["cube"])
-        self.bin.obs()[0].eventfile(self.config['file']["cube"])
+        self.bin.obs()[0].id(self.config['file']["cntcube"])
+        self.bin.obs()[0].eventfile(self.config['file']["cntcube"])
 
         self.bin.save()
         self.info("Saved counts cube to {0:s}".format(self.bin["outcube"]))
@@ -279,17 +281,17 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
             self._fill_app(self.like,log=log,debug=debug, **kwargs)
 
             if self.config["analysis"]["likelihood"] == "binned":
-                self.like["inobs"] = join(self.outdir,self.config['file']["cube"])
+                self.like["inobs"] = join(self.outdir,self.config['file']["cntcube"])
 
         self.like["outmodel"] = self.config['out']+"/"+self.config['file']["tag"]+"_results.xml"
 
         # Optionally open the log file
-        self.like["logfile"] = self.config['file']["tag"]+"_ctlike.log"
-        if log:
-            self.like.logFileOpen()
-        # Optionally switch-on debugging model
-        if debug:
-            self.like["debug"].boolean(True)
+        # self.like["logfile"] = self.config['file']["tag"]+"_ctlike.log"
+        # if log:
+        #     self.like.logFileOpen()
+        # # Optionally switch-on debugging model
+        # if debug:
+        #     self.like["debug"].boolean(True)
 
         if self.verbose:
             print self.like
@@ -332,13 +334,13 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self._fill_app( self.ctbutterfly,log=log,debug=debug, **kwargs)
 
         # Optionally open the log file
-        self.ctbutterfly["logfile"] = self.config['file']["tag"]+"_ctbutterfly.log"
-        if log:
-            self.ctbutterfly.logFileOpen()
+        # self.ctbutterfly["logfile"] = self.config['file']["tag"]+"_ctbutterfly.log"
+        # if log:
+        #     self.ctbutterfly.logFileOpen()
 
-        # Optionally switch-on debugging model
-        if debug:
-            self.ctbutterfly["debug"].boolean(True)
+        # # Optionally switch-on debugging model
+        # if debug:
+        #     self.ctbutterfly["debug"].boolean(True)
 
         self.ctbutterfly["srcname"]=self.config["target"]["name"]
         self.ctbutterfly["outfile"] = self.config["target"]["name"]+"_butterfly.dat "
@@ -350,3 +352,93 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.ctbutterfly.save()
         self.info("Saved butterfly plot to {0:s}".format(self.ctbutterfly["outfile"]))
+
+
+    def ctexpcube(self,log=False,debug=False, **kwargs):
+        '''
+        Create ctexpcube instance with given parameters
+        Parameters
+        ---------
+        log  : save or not the log file
+        debug  : debug mode or not. This will print a lot of information
+        '''
+        self.info("Running ctexpcube to compute the instrument response for the counts cube")
+
+
+        self.expcube = ct.ctexpcube()
+        
+        self._fill_app( self.expcube,log=log,debug=debug, **kwargs)
+
+        self.expcube["incube"] = self.config['file']["cntcube"]
+        self.expcube["outcube"] = self.config['file']["expcube"]
+
+        # Optionally open the log file
+        # self.expcube["logfile"] = self.config['file']["tag"]+"_ctexpcube.log"
+        # if log:
+        #     self.expcube.logFileOpen()
+
+        # # Optionally switch-on debugging model
+        # if debug:
+        #     self.expcube["debug"].boolean(True)
+
+        if self.verbose:
+            print self.expcube
+
+        self.expcube.run()
+
+        self.expcube.save()
+        self.info("Saved expcube to {0:s}".format(self.expcube["outcube"]))
+
+
+    def ctpsfcube(self,log=False,debug=False, **kwargs):
+        '''
+        Create ctpsfcube instance with given parameters
+        Parameters
+        ---------
+        log  : save or not the log file
+        debug  : debug mode or not. This will print a lot of information
+        '''
+        self.info("Running ctpsfcube to compute point spread function (PSF) cube")
+
+        self.ctpsfcube = ct.ctpsfcube()
+        
+        self._fill_app( self.ctpsfcube,log=log,debug=debug, **kwargs)
+
+        self.ctpsfcube["incube"] = self.config['file']["cntcube"]
+        self.ctpsfcube["outcube"] = self.config['file']["psfcube"]
+
+        if self.verbose:
+            print self.ctpsfcube
+
+        self.ctpsfcube.run()
+
+        self.ctpsfcube.save()
+        self.info("Saved psfcube to {0:s}".format(self.ctpsfcube["outcube"]))
+
+    def ctbkgcube(self,log=False,debug=False, **kwargs):
+        '''
+        Create ctbkgcube instance with given parameters
+        Parameters
+        ---------
+        log  : save or not the log file
+        debug  : debug mode or not. This will print a lot of information
+        '''
+        self.info("Running ctbkgcube to compute the predicted background rate")
+
+        self.ctbkgcube = ct.ctbkgcube()
+        
+        self._fill_app( self.ctbkgcube,log=log,debug=debug, **kwargs)
+
+        self.ctbkgcube["incube"] = self.config['file']["cntcube"]
+        self.ctbkgcube["outcube"] = self.config['file']["bkgcube"]
+
+        self.ctbkgcube["outmodel"] = self.config['out']+"/binned_models.xml"
+        self.config["file"]["inmodel"] = self.config['out']+"/binned_models.xml"
+
+        if self.verbose:
+            print self.ctbkgcube
+
+        self.ctbkgcube.run()
+
+        self.ctbkgcube.save()
+        self.info("Saved background cube to {0:s}".format(self.ctbkgcube["outcube"]))
