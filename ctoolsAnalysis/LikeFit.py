@@ -284,6 +284,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
                 self.like["inobs"] = join(self.outdir,self.config['file']["cntcube"])
 
         self.like["outmodel"] = self.config['out']+"/"+self.config['file']["tag"]+"_results.xml"
+        # if self.config['analysis']["edisp"]:
+        self.like["edisp"] = self.config['analysis']["edisp"]
 
         # Optionally open the log file
         # self.like["logfile"] = self.config['file']["tag"]+"_ctlike.log"
@@ -442,3 +444,29 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.ctbkgcube.save()
         self.info("Saved background cube to {0:s}".format(self.ctbkgcube["outcube"]))
+
+        
+    def ctedispcube(self,log=False,debug=False, **kwargs):
+        '''
+        Create ctbkgcube instance with given parameters
+        Parameters
+        ---------
+        log  : save or not the log file
+        debug  : debug mode or not. This will print a lot of information
+        '''
+        self.info("Running ctedispcube to compute the edisp rate")
+
+        self.ctedispcube = ct.ctedispcube()
+        
+        self._fill_app( self.ctedispcube,log=log,debug=debug, **kwargs)
+
+        self.ctedispcube["incube"] = self.config['file']["cntcube"]
+        self.ctedispcube["outcube"] = self.config['file']["edispcube"]
+
+        if self.verbose:
+            print self.ctedispcube
+
+        self.ctedispcube.run()
+
+        self.ctedispcube.save()
+        self.info("Saved edisp cube to {0:s}".format(self.ctedispcube["outcube"]))
