@@ -27,7 +27,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.m_obs = obs #set the GObservation container
 
 
-    def ctselect(self,obsXml= None, log=False,debug=False, **kwargs):
+    def ctselect(self, log=False,debug=False, **kwargs):
         '''
         Create ctselect instance with given parameters
         Parameters
@@ -37,54 +37,21 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         '''
         self.info("Running ctselect to cut on events")
 
-
         self.filter = ct.ctselect()
-        Fits_provided = False
-        if obsXml:
-            sim_obs = gl.GObservations(obsXml)
-        elif self.config['file']["inobs"] != '':
-            sim_obs = join(self.outdir,self.config['file']["inobs"])
-            Fits_provided = True
-        else:
-            try:
-                sim_obs = self.m_obs
-            except:
-                self.error("No observation given and no simulation run.")
-
-        self.selectobs     = gl.GObservations()
-
-        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
-
         self._fill_app( self.filter,log=log,debug=debug, **kwargs)
-            
-        self.filter["inobs"] = eventfile
+
         self.filter["outobs"] = join(self.outdir,self.config['file']["selectedevent"])
-
-        # Optionally open the log file
-        # self.filter["logfile"] = self.config['file']["tag"]+"_ctselect.log"
-        # if log:
-        #     self.filter.logFileOpen()
-
-        # # Optionally switch-on debugging model
-        # if debug:
-        #     self.filter["debug"].boolean(True)
 
         if self.verbose:
             print self.filter
 
         self.filter.run()
-        # if not(self.m_obs):
-        # self.filter.obs()[0].id(self.config['file']["selectedevent"])
-        # self.filter.obs()[0].eventfile(self.config['file']["selectedevent"])
 
         self.filter.save()
         self.info("Saved selected events to {0:s}".format(self.filter["outobs"]))
-        # Append result to observations
-        self.selectobs.extend(self.filter.obs())
 
         # change the inobs (data) to the selected data set
         self.config['file']["inobs"] = self.config['file']["selectedevent"]
-
 
     def ctskymap(self,log=False,debug=False, **kwargs):
         '''
@@ -103,15 +70,6 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.skymap["xref"] = self.config['target']["ra"]
         self.skymap["yref"] = self.config['target']["dec"]
-
-        # Optionally open the log file
-        # self.skymap["logfile"] = self.config['file']["tag"]+"_ctskymap.log"
-        # if log:
-        #     self.skymap.logFileOpen()
-
-        # # Optionally switch-on debugging model
-        # if debug:
-        #     self.skymap["debug"].boolean(True)
 
         if self.verbose:
             print self.skymap
@@ -132,46 +90,11 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.info("Running ctmodel to create model map")
 
         self.model= ct.ctmodel()
-        Fits_provided = False
-        if obsXml:
-            sim_obs = gl.GObservations(obsXml)
-        elif self.config['file']["inobs"] != '':
-            sim_obs = join(self.outdir,self.config['file']["inobs"])
-            Fits_provided = True
-        else:
-            try:
-                sim_obs = self.m_obs
-            except:
-                self.error("No observation given and no simulation run.")
 
-        self.modelobs     = gl.GObservations()
+        self._fill_app( self.model,log=log,debug=debug, **kwargs)
 
-        self._fill_app( self.modelobs,log=log,debug=debug, **kwargs)
-
-        for k in kwargs.keys():
-            if self.model.has_par(k):
-                if k == 'enumbins' and not kwargs['incube']:
-                    self.model[k] = kwargs[k] if kwargs[k] else \
-                            int(np.floor(
-                            np.log10(kwargs['emax'] / \
-                            kwargs['emin'])) * \
-                            (kwargs['ebins_per_dec'] + 1)
-                            )
-                else:
-                    self.model[k] = kwargs[k] if not kwargs[k]==None else self.model[k]
-
-        self.model["inobs"] = eventfile
         self.model["incube"] = join(self.outdir,self.config['file']["cntcube"])
         self.model["outcube"] = join(self.outdir,self.config['file']["model"])
-
-        # Optionally open the log file
-        # self.model["logfile"] = self.config['file']["tag"]+"_ctmodel.log"
-        # if log:
-        #     self.model.logFileOpen()
-
-        # # Optionally switch-on debugging model
-        # if debug:
-        #     self.model["debug"].boolean(True)
 
         if self.verbose:
             print self.model
@@ -181,14 +104,6 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.model.run()
         self.model.save()
         self.info("Saved Model cube to {0:s}".format(self.model["outcube"]))
-        # Append result to observations
-        self.modelobs.extend(self.bin.obs())
-
-        # if self.m_obs:
-            # # Make a deep copy of the observation that will be returned
-            # # (the ctmodel object will go out of scope one the function is
-            # # left)
-            # self.m_obs = model.obs().copy()
 
     def ctbin(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
@@ -201,47 +116,9 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.info("Running ctbin to create count map")
 
         self.bin = ct.ctbin()
-        Fits_provided = False
-        if obsXml:
-            sim_obs = gl.GObservations(obsXml)
-        elif self.config['file']["inobs"] != '':
-            sim_obs = join(self.outdir,self.config['file']["inobs"])
-            Fits_provided = True
-        else:
-            try:
-                sim_obs = self.m_obs
-            except:
-                self.error("No observation given and no simulation run.")
 
-        self.cubeobs = gl.GObservations()
-
-        self._fill_app(self.bin,log=log,debug=debug, **kwargs)
-
-        eventfile = sim_obs if Fits_provided else sim_obs.eventfile()
-
-        for k in kwargs.keys():
-            if self.bin.has_par(k):
-                if k == 'enumbins':
-                    self.bin[k] = kwargs[k] if kwargs[k] else \
-                        int(np.floor(
-                        np.log10(kwargs['emax'] / \
-                        kwargs['emin'])) * \
-                        (kwargs['ebins_per_dec'] + 1)
-                        )
-                else:
-                    self.bin[k] = kwargs[k] if not kwargs[k] == None else self.bin[k]
-
-        self.bin["inobs"] = eventfile
+        self._fill_app( self.bin,log=log,debug=debug, **kwargs)
         self.bin["outcube"] = join(self.outdir,self.config['file']["cntcube"])
-
-        # Optionally open the log file
-        # self.bin["logfile"] = self.config['file']["tag"]+"_ctbin.log"
-        # if log:
-        #     self.bin.logFileOpen()
-
-        # # Optionally switch-on debugging model
-        # if debug:
-        #     self.bin["debug"].boolean(True)
 
         if self.verbose:
             print self.bin
@@ -250,20 +127,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         # the container and bin the events in counts maps
         self.bin.run()
 
-        self.bin.obs()[0].id(self.config['file']["cntcube"])
-        self.bin.obs()[0].eventfile(self.config['file']["cntcube"])
-
         self.bin.save()
         self.info("Saved counts cube to {0:s}".format(self.bin["outcube"]))
-        # Append result to observations
-        self.cubeobs.extend(self.bin.obs())
-
-        # if self.m_obs:
-        #     # Make a deep copy of the observation that will be returned
-        #     # (the ctbin object will go out of scope one the function is
-        #     # left)
-        #     self.m_obs = bin.obs().copy()
-
 
     def create_fit(self,log=False,debug=False, **kwargs):
         '''
@@ -284,16 +149,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
                 self.like["inobs"] = join(self.outdir,self.config['file']["cntcube"])
 
         self.like["outmodel"] = self.config['out']+"/"+self.config['file']["tag"]+"_results.xml"
-        # if self.config['analysis']["edisp"]:
         self.like["edisp"] = self.config['analysis']["edisp"]
-
-        # Optionally open the log file
-        # self.like["logfile"] = self.config['file']["tag"]+"_ctlike.log"
-        # if log:
-        #     self.like.logFileOpen()
-        # # Optionally switch-on debugging model
-        # if debug:
-        #     self.like["debug"].boolean(True)
 
         if self.verbose:
             print self.like
@@ -335,15 +191,6 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         
         self._fill_app( self.ctbutterfly,log=log,debug=debug, **kwargs)
 
-        # Optionally open the log file
-        # self.ctbutterfly["logfile"] = self.config['file']["tag"]+"_ctbutterfly.log"
-        # if log:
-        #     self.ctbutterfly.logFileOpen()
-
-        # # Optionally switch-on debugging model
-        # if debug:
-        #     self.ctbutterfly["debug"].boolean(True)
-
         self.ctbutterfly["srcname"]=self.config["target"]["name"]
         self.ctbutterfly["outfile"] = self.config["target"]["name"]+"_butterfly.dat "
 
@@ -373,15 +220,6 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.expcube["incube"] = self.config['file']["cntcube"]
         self.expcube["outcube"] = self.config['file']["expcube"]
-
-        # Optionally open the log file
-        # self.expcube["logfile"] = self.config['file']["tag"]+"_ctexpcube.log"
-        # if log:
-        #     self.expcube.logFileOpen()
-
-        # # Optionally switch-on debugging model
-        # if debug:
-        #     self.expcube["debug"].boolean(True)
 
         if self.verbose:
             print self.expcube
