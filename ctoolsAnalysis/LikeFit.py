@@ -135,8 +135,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         Fits_provided = False
         if obsXml:
             sim_obs = gl.GObservations(obsXml)
-        elif self.config['file']["selectedevent"] != '':
-            sim_obs = join(self.outdir,self.config['file']["selectedevent"])
+        elif self.config['file']["inobs"] != '':
+            sim_obs = join(self.outdir,self.config['file']["inobs"])
             Fits_provided = True
         else:
             try:
@@ -176,7 +176,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         if self.verbose:
             print self.model
 
-        # Run ctbin application. This will loop over all observations in
+        # Run ctmodel application. This will loop over all observations in
         # the container and bin the events in counts maps
         self.model.run()
         self.model.save()
@@ -186,7 +186,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         # if self.m_obs:
             # # Make a deep copy of the observation that will be returned
-            # # (the ctbin object will go out of scope one the function is
+            # # (the ctmodel object will go out of scope one the function is
             # # left)
             # self.m_obs = model.obs().copy()
 
@@ -204,8 +204,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         Fits_provided = False
         if obsXml:
             sim_obs = gl.GObservations(obsXml)
-        elif self.config['file']["selectedevent"] != '':
-            sim_obs = join(self.outdir,self.config['file']["selectedevent"])
+        elif self.config['file']["inobs"] != '':
+            sim_obs = join(self.outdir,self.config['file']["inobs"])
             Fits_provided = True
         else:
             try:
