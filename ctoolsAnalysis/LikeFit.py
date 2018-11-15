@@ -53,6 +53,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         # change the inobs (data) to the selected data set
         self.config['file']["inobs"] = self.config['file']["selectedevent"]
 
+        del self.filter
+
     def ctskymap(self,log=False,debug=False, **kwargs):
         '''
         Create ctskymap instance with given parameters
@@ -78,6 +80,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.skymap.save()
         self.info("Saved sky map to {0:s}".format(self.skymap["outmap"]))
+
+        del self.skymap
 
     def ctmodel(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
@@ -105,6 +109,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.model.save()
         self.info("Saved Model cube to {0:s}".format(self.model["outcube"]))
 
+        del self.model
+
     def ctbin(self,obsXml= None, log=False,debug=False, **kwargs):
         '''
         Create ctbin instance with given parameters
@@ -129,6 +135,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.bin.save()
         self.info("Saved counts cube to {0:s}".format(self.bin["outcube"]))
+
+        self.bin
 
     def create_fit(self,log=False,debug=False, **kwargs):
         '''
@@ -203,6 +211,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.info("Saved butterfly plot to {0:s}".format(self.ctbutterfly["outfile"]))
 
 
+        self.ctbutterfly
+
     def ctexpcube(self,log=False,debug=False, **kwargs):
         '''
         Create ctexpcube instance with given parameters
@@ -229,6 +239,7 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.expcube.save()
         self.info("Saved expcube to {0:s}".format(self.expcube["outcube"]))
 
+        self.expcube
 
     def ctpsfcube(self,log=False,debug=False, **kwargs):
         '''
@@ -254,6 +265,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.ctpsfcube.save()
         self.info("Saved psfcube to {0:s}".format(self.ctpsfcube["outcube"]))
+
+        self.ctpsfcube
 
     def ctbkgcube(self,log=False,debug=False, **kwargs):
         '''
@@ -283,7 +296,8 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
         self.ctbkgcube.save()
         self.info("Saved background cube to {0:s}".format(self.ctbkgcube["outcube"]))
 
-        
+        self.ctbkgcube
+
     def ctedispcube(self,log=False,debug=False, **kwargs):
         '''
         Create ctbkgcube instance with given parameters
@@ -308,3 +322,5 @@ class CTA_ctools_analyser(Loggin.base,Common.CTA_ctools_common):
 
         self.ctedispcube.save()
         self.info("Saved edisp cube to {0:s}".format(self.ctedispcube["outcube"]))
+
+        del self.ctedispcube
