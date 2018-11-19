@@ -48,12 +48,12 @@ def AddDisk(doc,ra,dec,radius,coord_free=0):
     addParameter(spatial, 'Radius', 1, radius, 1., 0.01, 10.0)
     return spatial
 
-def AddGauss(doc,ra,dec,radius,coord_free=0):
+def AddGauss(doc,ra,dec,radius,coord_free=0,radius_free=1):
     spatial = doc.createElement('spatialModel')
     spatial.setAttribute('type', 'GaussFunction')
     addParameter(spatial, 'RA', int(coord_free), ra, 1.0, -360.0, 360.0)
     addParameter(spatial, 'DEC', int(coord_free), dec, 1.0, -90.0, 90.0)
-    addParameter(spatial, 'Sigma', 1, radius, 1., 0.01, 10.0)
+    addParameter(spatial, 'Sigma', int(radius_free), radius, 1., 0.01, 10.0)
     return spatial
 
 
