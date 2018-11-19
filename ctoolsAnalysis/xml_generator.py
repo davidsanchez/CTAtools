@@ -336,7 +336,7 @@ def addExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
 
     return src
 
-def addExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
+def addSuperExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
                    flux_free=1, flux_value=1e-9, flux_scale=0,
                    flux_max=1000.0, flux_min=1e-5,
                    index1_free=1, index1_value=-2.0,
