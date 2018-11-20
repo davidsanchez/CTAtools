@@ -308,7 +308,7 @@ def addExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
                    flux_max=1000.0, flux_min=1e-5,
                    index_free=1, index_value=-2.0,
                    index_min=-5.0, index_max=-0.5,
-                   cutoff_free=1, cutoff_value=1e6,
+                   cutoff_free=1, cutoff_value=1e6, cutoff_scale=0,
                    cutoff_min=0.01, cutoff_max=1000):
     """Add a source with a Exponentially cut-off power law model"""
     elim_min = 30
@@ -319,6 +319,9 @@ def addExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
     if flux_scale == 0:
         flux_scale = MakeScale(flux_value)
     flux_value /= flux_scale
+    if cutoff_scale == 0:
+        cutoff_scale = MakeScale(cutoff_value)
+    cutoff_value /= cutoff_scale
     doc = lib.ownerDocument
     src = doc.createElement('source')
     src.setAttribute('name', name)
@@ -331,7 +334,7 @@ def addExponotialCutOffPL(lib, name,  type = "PointSource", eflux=0,
     addParameter(spec, 'Index', index_free, index_value, 1.0,
                  index_min, index_max)
     addParameter(spec, 'Scale', 0, eflux, 1.0, elim_min, elim_max)
-    addParameter(spec, 'Cutoff', cutoff_free, cutoff_value, 1.0, cutoff_min, cutoff_max)
+    addParameter(spec, 'Cutoff', cutoff_free, cutoff_value, cutoff_scale, cutoff_min, cutoff_max)
     src.appendChild(spec)
 
     return src
